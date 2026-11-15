@@ -245,7 +245,7 @@ export const EarthExplorerSection: React.FC = () => {
         </div>
 
         {/* Dataset Editorial Layer Switcher Bar */}
-        <div className="explorer-reveal flex flex-wrap items-center gap-2.5 sm:gap-3 mb-10 pb-5 border-b border-[#F0EEE5]/10">
+        <div className="explorer-reveal flex flex-wrap items-center gap-2.5 sm:gap-3 mb-4 pb-4 border-b border-[#F0EEE5]/10">
           <span className="font-mono text-xs text-[#D1B77D] uppercase tracking-[0.2em] mr-2 flex items-center gap-1.5">
             <Compass className="w-3.5 h-3.5 text-[#D1B77D]" />
             DATA LAYERS:
@@ -275,6 +275,40 @@ export const EarthExplorerSection: React.FC = () => {
               </button>
             );
           })}
+        </div>
+
+        {/* Verified Climate Sentinels Quick Nav */}
+        <div className="explorer-reveal flex flex-wrap items-center gap-2 sm:gap-2.5 mb-10 pb-4 border-b border-[#F0EEE5]/10 text-xs">
+          <span className="font-mono text-xs text-[#E16D54] uppercase tracking-[0.2em] mr-2 flex items-center gap-1.5">
+            <MapPin className="w-3.5 h-3.5 text-[#E16D54]" />
+            CLIMATE SENTINELS:
+          </span>
+          {CLIMATE_SENTINELS.map((s) => {
+            const isSelected = activeSentinelId === s.id;
+            return (
+              <button
+                key={s.id}
+                onClick={() => selectSentinel(isSelected ? null : s.id)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono transition-all duration-200 rounded-full cursor-pointer ${
+                  isSelected
+                    ? 'bg-[#E16D54] text-[#F0EEE5] font-semibold shadow-[0_2px_12px_rgba(225,109,84,0.3)]'
+                    : 'bg-[#0C1017] text-[#F0EEE5]/70 border border-[#F0EEE5]/10 hover:border-[#E16D54] hover:text-[#E16D54]'
+                }`}
+              >
+                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: s.color }} />
+                <span>{s.name}</span>
+                <span className="text-[10px] text-[#F0EEE5]/40">({s.stationCode})</span>
+              </button>
+            );
+          })}
+          {activeSentinelId && (
+            <button
+              onClick={handleBackToOverview}
+              className="px-3 py-1.5 text-xs font-mono text-[#D1B77D] hover:text-white underline cursor-pointer ml-auto"
+            >
+              RESET TO GLOBAL OVERVIEW
+            </button>
+          )}
         </div>
 
         {/* Main 3D Canvas Viewport & Comprehensive Scientific Detail Panel */}
