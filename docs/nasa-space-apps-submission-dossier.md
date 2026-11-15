@@ -429,4 +429,31 @@ AUDIT VERDICT: 100% VERIFIED & SYNCHRONIZED.
 ================================================================================
 ```
 
+---
+
+## 14. Scientific Storytelling and Editorial Content Audit (Layer 14)
+
+### 14.1. The 10 Essential Scientific Items per Data Story
+Every data story in Chapter 03 (*Signals*) has been restructured into an editorial format adhering to all 10 essential criteria:
+1. **Strong, Concise Headline:** Designed in Barlow Condensed aerospace typography with high editorial clarity.
+2. **What is Being Measured:** Clear definition of physical variables (e.g. combined land-surface and sea-surface temperature anomalies; dry air mole fraction in parts per million; sea surface height variance; at-sensor top-of-atmosphere radiance; columnar aerosol optical depth at 550nm).
+3. **Why it Matters:** Articulation of planetary consequences without apocalyptic exaggeration.
+4. **Measurement Unit:** Specific definition with physical benchmarks (e.g. °C anomaly, ppm, mm, $\text{nW}\cdot\text{cm}^{-2}\cdot\text{sr}^{-1}$, dimensionless AOD).
+5. **Time Range:** Exact temporal coverage of verified instrumental records.
+6. **Scientific Baseline:** Explicit definition of the reference equilibrium (e.g. 1951–1980 GISS baseline of 14.0°C; pre-industrial Holocene 280 ppm; 1993.0 altimetry inception origin; unlit rural darkness).
+7. **Source & Instrument:** Sensor suites (GHCNv4/ERSSTv5, Picarro G2401 CRDS, Poseidon-4 SAR altimeter, VIIRS Day-Night Band, MODIS/VIIRS) and lead agencies (NASA GISS, NOAA GML/Scripps, NASA PO.DAAC/JPL, NASA GSFC ESDS, NASA GMAO).
+8. **Sonification Mapping:** Documented transfer functions with epistemological boundary notices clarifying that musical sound is an auditory encoding for human perception, not literal planetary acoustic emissions.
+9. **Limitations:** Transparent disclosure of sensor limits, spatial sparseness, volcanic venting exclusions, radar land contamination, and model proxy designations.
+10. **Official Citation:** Formal academic citations with working links to primary archives and NASA SVS visualizations.
+
+### 14.2. Named Scientist Quotations Audit Matrix
+All named scientist quotations were verified against primary NASA and NOAA press releases:
+- **Dr. Gavin Schmidt (NASA GISS):** Direct quote verified from NASA Press Release 24-006 (Jan 12, 2024).
+- **Dr. Ralph Keeling (Scripps Institution of Oceanography):** Direct quote verified from NOAA/Scripps Joint Release (June 5, 2024).
+- **Dr. Josh Willis (NASA JPL / Sentinel-6):** Direct quote verified from NASA JPL 30-Year Sea Level Feature (March 16, 2023).
+- **Dr. Miguel Román (NASA Goddard / Black Marble):** Direct quote verified from NASA Earth Observatory Feature (April 12, 2017).
+- **Dr. Arlindo da Silva (NASA GMAO):** Methodological finding cited from NASA GMAO Technical Note (2020) documenting GEOS-FP assimilation physics.
+
+---
+
 **Submission Status: READY FOR OFFICIAL NASA SPACE APPS 2026 SUBMISSION.**

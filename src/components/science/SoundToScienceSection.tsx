@@ -27,7 +27,7 @@ const AUDITION_EPOCHS: EpochAudition[] = [
   {
     id: '1880',
     year: 1880,
-    title: 'Pre-Industrial Equilibrium',
+    title: 'Pre-Industrial Climatological Baseline',
     co2: 280.0,
     anomaly: -0.16,
     frequencyHz: 146.8,
@@ -35,15 +35,15 @@ const AUDITION_EPOCHS: EpochAudition[] = [
     intervalRatio: '3:2 Perfect 5th',
     tempoBpm: 48,
     tensionScore: 0.0,
-    character: 'Harmonic Resolution',
+    character: 'Harmonic Fifth (146.8 Hz)',
     explanation:
-      'Equilibrium state. Fundamental tone pairs with a natural 3:2 harmonic fifth and serene 48 BPM biological resting pulse.',
+      'Pre-industrial reference state. The baseline temperature anomaly (-0.16°C) and equilibrium carbon concentration (280 ppm) are encoded as a consonant D3 fundamental (146.8 Hz) and a 48 BPM baseline pulse.',
     color: '#83BBD5',
   },
   {
     id: '1975',
     year: 1975,
-    title: 'Mid-Century Acceleration',
+    title: 'Mid-Century Radiative Inflection',
     co2: 331.1,
     anomaly: 0.0,
     frequencyHz: 196.0,
@@ -51,9 +51,9 @@ const AUDITION_EPOCHS: EpochAudition[] = [
     intervalRatio: '5:4 Major 3rd',
     tempoBpm: 69,
     tensionScore: 0.35,
-    character: 'Developing Tension',
+    character: 'Major Third (196.0 Hz)',
     explanation:
-      'Infrared trapping emerges. Cadence accelerates to 69 BPM, harmonics brighten as carbon radiative forcing builds.',
+      'Mid-century benchmark. At the climatological baseline origin (0.0°C anomaly, 331.1 ppm CO₂), the transfer function shifts to G3 (196.0 Hz) and the rhythmic cadence accelerates to 69 BPM.',
     color: '#252D36',
   },
   {
@@ -64,12 +64,12 @@ const AUDITION_EPOCHS: EpochAudition[] = [
     anomaly: 1.28,
     frequencyHz: 392.0,
     noteName: 'G4',
-    intervalRatio: '16:15 Minor 2nd + Tritone',
+    intervalRatio: '16:15 Minor 2nd + Upper Octave',
     tempoBpm: 92,
     tensionScore: 0.90,
-    character: 'Severe Dissonance',
+    character: 'Elevated Register (392.0 Hz)',
     explanation:
-      'Planetary stress. +1.28°C empirical GISTEMP anomaly and 424.3 ppm Mauna Loa CO₂ introduce a grating minor second clash and urgent 92 BPM distress heartbeat.',
+      'Modern observation benchmark. The +1.28°C empirical GISTEMP anomaly and 424.3 ppm Mauna Loa CO₂ reading map to an elevated G4 (392.0 Hz) pitch and a 92 BPM cadence, providing clear psychoacoustic contrast across epochs.',
     color: '#FF5938',
   },
 ];
@@ -135,27 +135,27 @@ export const SoundToScienceSection: React.FC = () => {
   const principles = [
     {
       icon: <Brain className="w-5 h-5 text-[#FF5938]" />,
-      title: 'Human Auditory Temporal Resolution',
+      title: 'Deliberate Auditory Parameter Encoding',
       description:
-        'The human ear processes temporal transients up to 10× faster than visual saccades. Sonification allows researchers to perceive rapid acceleration and multi-decadal phase shifts simultaneously.',
+        'Our musical representation is an intentional auditory encoding of measured physical numbers into synthesizer frequencies and envelopes. Earth does not literally produce acoustic sounds or musical notes in space; the sonification operates as a perceptual instrument translating data into human hearing range.',
+    },
+    {
+      icon: <Music className="w-5 h-5 text-[#83BBD5]" />,
+      title: 'Psychoacoustic Interval Contrast',
+      description:
+        'Musical intervals and chord tensions are compositional tools chosen to provide perceptual contrast between baseline reference states and modern elevated measurements. Dissonant intervals (such as minor seconds or tritones) serve as auditory discriminators; they do not constitute a scientific diagnosis of planetary distress.',
+    },
+    {
+      icon: <Binary className="w-5 h-5 text-[#FF5938]" />,
+      title: 'Deterministic Mathematical Transfer',
+      description:
+        'Every frequency, filter cutoff, and pulse rhythm is derived deterministically from empirical NASA observations via documented transfer equations. There are zero randomized embellishments, generative AI hallucinations, or uncalibrated synthesizer presets.',
     },
     {
       icon: <Layers className="w-5 h-5 text-[#83BBD5]" />,
       title: 'Polyphonic Multi-Variable Tracking',
       description:
-        'While 2D visual charts suffer from severe clutter when plotting 5+ dimensions, the human auditory cortex effortlessly segregates independent sound streams into distinct harmonic components.',
-    },
-    {
-      icon: <Binary className="w-5 h-5 text-[#FF5938]" />,
-      title: 'Calibrated Deterministic Mapping',
-      description:
-        'Every sound synthesized in PRITHVI is mathematically bound to empirical NASA observations. There are zero randomized embellishments, generative hallucinations, or arbitrary synthesizer presets.',
-    },
-    {
-      icon: <Music className="w-5 h-5 text-[#83BBD5]" />,
-      title: 'Psychoacoustic Consonance vs Dissonance',
-      description:
-        'Equilibrium conditions (pre-industrial 280 ppm, 0°C anomaly) resolve into pure harmonic fifths. Climate stress introduces minor seconds and tritones, triggering natural biological urgency.',
+        'While 2D visual charts often suffer from clutter when plotting multivariate phenomena across multi-decadal time spans, the human auditory cortex effortlessly segregates independent parallel timbres, isolating distinct trends across thermal, carbon, and oceanic domains.',
     },
   ];
 
@@ -260,29 +260,37 @@ export const SoundToScienceSection: React.FC = () => {
           </div>
 
           {/* Scientific Limitations & Epistemological Boundaries */}
-          <div className="mt-6 pt-5 border-t border-[rgba(7,11,16,0.1)] grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
+          <div className="mt-6 pt-5 border-t border-[rgba(7,11,16,0.1)] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-mono">
             <div>
               <span className="text-[#FF5938] block mb-1 font-bold uppercase text-[10px]">
-                LIMITATION 01 // NYQUIST TEMPORAL SAMPLING
+                01 // NORMALIZATION & DOMAIN SCALING
               </span>
               <p className="text-[#252D36]/75 font-sans leading-relaxed font-normal">
-                Annual and monthly satellite sweeps are interpolated through cubic-spline smoothing; rapid diurnal variations are abstracted to preserve long-term decadal trends.
+                Physical quantities (e.g. -0.5°C to +1.5°C anomaly, 280 to 440 ppm CO₂) are bounded into normalized [0.0, 1.0] domain scales to prevent clipping while preserving proportional physical magnitude.
               </p>
             </div>
             <div>
               <span className="text-[#FF5938] block mb-1 font-bold uppercase text-[10px]">
-                LIMITATION 02 // DYNAMIC RANGE COMPRESSION
+                02 // DISCRETE SCALE QUANTIZATION
               </span>
               <p className="text-[#252D36]/75 font-sans leading-relaxed font-normal">
-                Acoustic amplitudes are bounded between -24 dBFS and -6 dBFS through lookahead peak limiting to protect auditory comfort while preserving proportional energy ratios.
+                Continuous physical variables are calculated in exact Hertz and rounded to nearest 12-tone equal temperament (12-TET) semitones with cents offset to ensure human pitch discriminability.
               </p>
             </div>
             <div>
               <span className="text-[#252D36] block mb-1 font-bold uppercase text-[10px]">
-                LIMITATION 03 // DISCRETE SCALE QUANTIZATION
+                03 // SAMPLE SELECTION & TEMPORAL RESOLUTION
               </span>
               <p className="text-[#252D36]/75 font-sans leading-relaxed font-normal">
-                Continuous physical parameters are mapped across 12-tone equal temperament micro-steps to retain musical comprehensibility without sacrificing decimal fidelity.
+                Curated benchmark snapshot years (38 records for GISTEMP, 21 for Mauna Loa) are utilized to communicate century-scale secular trends clearly without high-frequency diurnal or seasonal clutter.
+              </p>
+            </div>
+            <div>
+              <span className="text-[#252D36] block mb-1 font-bold uppercase text-[10px]">
+                04 // EPISTEMOLOGICAL BOUNDARY
+              </span>
+              <p className="text-[#252D36]/75 font-sans leading-relaxed font-normal">
+                Auditory parameters represent a mathematical translation into human hearing range. Earth does not literally produce acoustic music, and harmonic dissonance does not diagnose clinical distress.
               </p>
             </div>
           </div>

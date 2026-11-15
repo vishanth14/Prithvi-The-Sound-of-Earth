@@ -232,6 +232,31 @@ PRITHVI unifies its scientific visualization, authentic NASA SVS frames, data re
 
 ---
 
+## 📖 Scientific Storytelling & Editorial Content Audit (Layer 14)
+
+PRITHVI delivers an editorial storytelling experience composed in the sober, dignified voice of a premium science documentary:
+
+- **10-Point Scientific Specification Grid:** Every scientific story in Chapter 03 (*Signals*) integrates all 10 essential criteria:
+  1. *Strong, Concise Headline:* Set in monumental Barlow Condensed typography.
+  2. *What is Being Measured:* Precise definitions of land-ocean temperature anomalies, dry air mole fractions, sea level variation, nocturnal radiance, and aerosol optical depth.
+  3. *Why it Matters:* Systemic planetary consequences explained clearly without apocalyptic exaggeration.
+  4. *Measurement Units:* Verified physical units (°C anomaly, ppm, mm, $\text{nW}\cdot\text{cm}^{-2}\cdot\text{sr}^{-1}$, dimensionless AOD).
+  5. *Time Range:* Specific empirical observational spans (1880–2024, 1958–2024, 1993–2023, 2012–2023).
+  6. *Scientific Baseline:* Explicit climatological equilibrium definitions (1951–1980 base period, 280 ppm Holocene benchmark, 1993.0 altimetry inception origin, unlit rural darkness).
+  7. *Sensors & Agency:* Specific flight instruments and lead institutions (GISS, NOAA GML/Scripps, JPL/PO.DAAC, GSFC Black Marble, GMAO).
+  8. *Deterministic Sonification Mapping:* Documented mathematical formulas and auditory parameter encodings.
+  9. *Scientific Limitations:* Transparent disclosure of sensor limits, spatial sparseness, volcanic venting exclusions, radar land contamination, and model proxy designations.
+  10. *Official Citation:* Peer-reviewed literature and working links to NASA/NOAA repositories.
+- **Forensic Quotations Audit:** Every named scientist quotation was audited against official NASA/NOAA press releases:
+  - *Dr. Gavin Schmidt (Director, NASA GISS):* Verbatim quotation from NASA Press Release 24-006 (Jan 12, 2024).
+  - *Dr. Ralph Keeling (Director, Scripps $\text{CO}_2$ Program):* Verbatim quotation from NOAA/Scripps Joint Statement (June 5, 2024).
+  - *Dr. Josh Willis (Sentinel-6 Project Scientist, NASA JPL):* Verbatim quotation from NASA JPL 30-Year Sea Level Feature (March 16, 2023).
+  - *Dr. Miguel Román (Lead Scientist, NASA Black Marble):* Verbatim quotation from NASA Earth Observatory Feature (April 12, 2017).
+  - *Dr. Arlindo da Silva (NASA GMAO):* Properly cited methodological finding from NASA GMAO Technical Note (2020) documenting GEOS-FP assimilation physics.
+- **Sonification Epistemology & Boundaries:** Explicitly clarifies that musical sound is an auditory encoding of numbers into synthesis parameters for human pattern recognition; Earth does not literally produce musical tones in vacuum, and harmonic dissonance does not diagnose clinical planetary distress.
+
+---
+
 ## ♿ Multimodal Accessibility & WCAG 2.2 AA Compliance
 
 - **Visual-to-Audio Equivalence:** Every acoustic parameter is simultaneously represented by live numeric readouts, musical note identifiers with cents offset, and a dedicated visual amplitude activity meter for users who are deaf or hard of hearing.

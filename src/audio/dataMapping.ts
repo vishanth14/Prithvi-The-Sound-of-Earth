@@ -139,10 +139,10 @@ export function mapGistempObservation(
       intensityFormula: 'Dual-oscillator filter cutoff opens from 400 Hz to 3800 Hz as global heat accumulates',
       dissonanceInterpretation:
         anomaly <= 0.5
-          ? 'Pure harmonious Pythagorean fifths (equilibrium stability)'
+          ? 'Consonant harmonic intervals (baseline thermal stability)'
           : anomaly <= 1.0
-          ? 'Emergent major second dissonance (systemic warming onset)'
-          : 'High tritone and diminished dissonance (Paris Agreement threshold tension)',
+          ? 'Chromatic frequency ascent providing auditory contrast as anomaly increases'
+          : 'High register tension with upper overtones encoding the elevated >1.0°C anomaly',
     },
   };
 }
@@ -202,10 +202,10 @@ export function mapCo2Observation(
       intensityFormula: 'Acoustic membrane resonance density increases with greenhouse radiative forcing',
       dissonanceInterpretation:
         ppm < 350
-          ? 'Stable atmospheric baseline heartbeat (~50 BPM)'
+          ? 'Steady baseline pulse cadence (48–60 BPM) reflecting pre-1990 concentrations'
           : ppm < 400
-          ? 'Accelerating planetary pulse; subharmonic weight deepens'
-          : 'Anthropocene threshold: relentless 130+ BPM emergency cadence',
+          ? 'Moderately accelerated cadence (60–85 BPM) tracking steady atmospheric accumulation'
+          : 'Accelerated 90+ BPM cadence encoding post-2013 concentrations exceeding 400 ppm',
     },
   };
 }
@@ -265,10 +265,10 @@ export function mapSeaLevelObservation(
       intensityFormula: 'Acoustic wave power scales directly with total ocean heat content uptake',
       dissonanceInterpretation:
         mm < 40
-          ? 'Sub-surface calm oceanic brownian drift (120 Hz to 350 Hz)'
+          ? 'Low-frequency resonant filtering (120 Hz to 350 Hz) encoding early 1990s baseline'
           : mm < 85
-          ? 'Expanding oceanic resonance with prominent mid-range harmonic swell'
-          : 'High-energy coastal surge: resonant peak reaches 2400 Hz',
+          ? 'Expanding mid-frequency spectral bandwidth as ocean elevation increases'
+          : 'High-frequency resonance peak reaching 2,400 Hz encoding cumulative +111.4 mm rise',
     },
   };
 }
@@ -324,10 +324,10 @@ export function mapAerosolsObservation(
       intensityFormula: 'FM Modulation Index (1.0 to 9.0) scales with wildfire smoke optical scattering',
       dissonanceInterpretation:
         blackCarbon < 0.5
-          ? 'Clear atmospheric crystal tone (harmonicity 2.76, low mod depth)'
+          ? 'Harmonic FM carrier tone (low modulation depth) encoding clean atmospheric column'
           : blackCarbon < 0.65
-          ? 'Moderate particulate haze: metallic shimmering sidebands appear'
-          : 'Severe wildfire smoke emergency: sharp dissonant FM particulate cloud',
+          ? 'Moderate particulate sidebands emerging as aerosol optical depth increases'
+          : 'Dense inharmonic sidebands encoding elevated smoke and particulate turbidity',
     },
   };
 }
@@ -380,7 +380,7 @@ export function mapNightlightsObservation(
       rhythmFormula: 'Global urbanization cadence: 68 BPM to 108 BPM',
       intensityFormula: 'Analog filter resonance expands tracking artificial nocturnal illumination',
       dissonanceInterpretation:
-        'Warm consonant pentatonic spread reflecting human electrification and urban energy flux',
+        'Consonant pentatonic voicing where chord density scales with nocturnal artificial radiance',
     },
   };
 }

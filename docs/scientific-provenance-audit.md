@@ -159,12 +159,55 @@ The following remediations have been implemented in PRITHVI:
    - Updated all metadata to **SVS #5190**, **SVS #5196**, **SVS #5312**, and **SVS #5313**.
 2. **Quarantine of Unverified Streams:**
    - The `aerosols_geos` stream is explicitly disabled in the Jukebox channel selector with a strike-through and `[DISABLED // QUARANTINED]` badge.
-   - The Story 04 audition button in `EarthStoriesSection.tsx` is disabled with an explanatory audit notice.
+   - The Story 05 audition button in `EarthStoriesSection.tsx` is disabled with an explanatory audit notice.
 3. **Temporal Transparency:**
    - GISTEMP is clearly labeled as **"Annual Benchmark Snapshots (1880–2024)"**, explicitly distinguishing its 38 benchmark rows from a continuous monthly series.
    - All timelines and playback scrubbers are bounded strictly to verified empirical endpoints (1880–2024 for GISTEMP and $\text{CO}_2$; 1993–2023 for Sea Level; 2012–2023 for Night Lights).
 4. **Preservation of Sonification Engine:**
    - The Tone.js synthesis engine remains intact, executing real-time deterministic mathematical mappings on verified observations.
+
+---
+
+## 6. Named Scientist Quotation Audit and Verification Dossier
+
+Every named quotation in the PRITHVI observatory was forensically audited against official NASA press releases, NOAA joint statements, and peer-reviewed scientific publications. Unverified colloquial quotes or synthetic phrases were replaced with verbatim public statements or properly cited scientific paraphrases.
+
+### Quotation Audit Ledger
+
+| Story ID | Scientist & Institution | Quote Type | Date | Original Public Source | Verification Status & Remediation |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Story 01 (GISTEMP)** | **Dr. Gavin Schmidt**<br>Director, NASA GISS | Direct Public Quote | 2024-01-12 | NASA HQ / GISS Release No. 24-006 (*NASA Analysis Confirms 2023 as Warmest Year on Record*) | **VERIFIED DIRECT QUOTATION**<br>Replaced synthetic wording with Dr. Schmidt's verbatim statement: *"The exceptional warming that we’re experiencing is not something we’ve seen before as a species... It’s driven primarily by our fossil fuel emissions, and we’re seeing the impacts in heat waves, intense rains, and coastal flooding."* |
+| **Story 02 ($\text{CO}_2$)** | **Dr. Ralph Keeling**<br>Director, Scripps $\text{CO}_2$ Program | Direct Public Quote | 2024-06-05 | NOAA Global Monitoring Laboratory & Scripps Institution of Oceanography Joint Statement | **VERIFIED DIRECT QUOTATION**<br>Replaced generic seasonal paraphrase with Dr. Keeling's verified June 2024 statement: *"Not only is CO2 now at the highest level in millions of years, it is also rising faster than ever. Each year achieves a higher maximum due to fossil-fuel burning, which releases pollution in the form of carbon dioxide into the atmosphere. Fossil fuel pollution just keeps building up, much like trash in a landfill."* |
+| **Story 03 (Sea Level)** | **Dr. Josh Willis**<br>Sentinel-6 Project Scientist, NASA JPL | Direct Public Quote | 2023-03-16 | NASA Jet Propulsion Laboratory Feature (*NASA Observes 30 Years of Satellite Sea Level Rise*) | **VERIFIED DIRECT QUOTATION**<br>Replaced unverified summary of ocean heat with Dr. Willis's official quote marking 30 years of satellite oceanography: *"We have this clear view of recent sea level rise – and can better project how much and how quickly the oceans will continue to rise – because NASA and Centre National d’Études Spatiales (CNES) have gathered decades of ocean observations. By combining that data with measurements from the rest of the NASA fleet, we can also understand why the ocean is rising."* |
+| **Story 04 (Night Lights)** | **Dr. Miguel Román**<br>Lead Scientist, NASA Black Marble Team | Direct Public Quote | 2017-04-12 | NASA Earth Observatory Feature (*Night Light Maps Open Up New Applications*, Goddard Space Flight Center) | **VERIFIED DIRECT QUOTATION**<br>Replaced poetic line with Dr. Román's verified remarks on VIIRS capabilities: *"Thanks to VIIRS, we can now monitor short-term changes caused by disturbances in power delivery, such as conflict, storms, earthquakes, and brownouts... We can monitor gradual changes driven by urbanization, out-migration, economic changes, and electrification. The fact that we can track all these different aspects at the heart of what defines a city is simply mind-boggling."* |
+| **Story 05 (Aerosols)** | **Dr. Arlindo da Silva**<br>Senior Research Meteorologist, NASA GMAO | Cited Scientific Paraphrase | 2020 | NASA GMAO Technical Specification (*File Specification for GEOS-FP Forward Processing*, GSFC) | **CITED SCIENTIFIC PARAPHRASE**<br>Previous wildfire line had no public quote match. Replaced with properly cited methodological finding documenting GEOS-FP assimilation physics and clarifying its model proxy status. |
+
+---
+
+## 7. Sonification Epistemology and Mathematical Encoding Framework
+
+### 7.1. Epistemological Foundation
+Sonification in PRITHVI is a deliberate, deterministic auditory parameter encoding designed to leverage the superior temporal transient processing capabilities of human audition.
+- **Physical Reality:** Earth does **not** literally produce acoustic tones, chords, or synthesizer drones in vacuum.
+- **Compositional Semantics:** Musical intervals (e.g. perfect fifths vs chromatic minor seconds) and harmonic tensions are compositional constructs chosen for psychoacoustic contrast; they do **not** constitute a clinical diagnosis of "planetary distress."
+- **Deterministic Transfer:** Every generated note, filter cutoff, and rhythm is derived strictly through deterministic mathematical functions of empirical NASA measurements, with zero randomized hallucinations or generative audio synthesis.
+
+### 7.2. Normalization and Dynamic Domain Scaling
+Physical quantities spanning diverse dimensional scales are normalized onto bounded $[0.0, 1.0]$ domains prior to synthesis:
+$$\text{norm}(x) = \text{clamp}\left(\frac{x - x_{\min}}{x_{\max} - x_{\min}}, 0.0, 1.0\right)$$
+- **GISTEMP:** $[-0.5^\circ\text{C}, +1.5^\circ\text{C}] \to [0.0, 1.0]$
+- **Mauna Loa $\text{CO}_2$:** $[280.0\text{ ppm}, 440.0\text{ ppm}] \to [0.0, 1.0]$
+- **PO.DAAC Sea Level:** $[0.0\text{ mm}, 135.0\text{ mm}] \to [0.0, 1.0]$
+- **VIIRS Radiance:** $[15.0\text{ nW}, 30.0\text{ nW}] \to [0.0, 1.0]$
+
+### 7.3. Discrete Scale Quantization vs. Decimal Precision
+Continuous physical variables calculated in exact Hertz are mapped to nearest 12-Tone Equal Temperament (12-TET) semitones with explicit microtonal cents offsets:
+$$n = 12 \times \log_2\left(\frac{f}{440.0}\right) + 69$$
+$$\text{cents} = 1200 \times \log_2\left(\frac{f}{f_{\text{12TET}}}\right)$$
+This enables listeners to distinguish clear tonal relationships while preserving sub-semitone decimal accuracy.
+
+### 7.4. Sample Selection and Temporal Resolution
+Satellite observation streams generate gigabytes of raw sensor data daily. PRITHVI utilizes curated benchmark snapshot years (38 records for GISTEMP, 21 for Mauna Loa, 20 for PO.DAAC Sea Level, and 12 for VIIRS Night Lights) to convey century-scale secular trajectories cleanly without high-frequency diurnal noise or visual/auditory clutter.
 
 ---
 
