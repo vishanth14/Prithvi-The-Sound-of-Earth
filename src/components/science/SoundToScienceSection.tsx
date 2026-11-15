@@ -163,16 +163,16 @@ export const SoundToScienceSection: React.FC = () => {
   return (
     <section
       ref={sectionRef}
-      id="science"
+      id="signal"
       className="relative w-full py-28 px-6 sm:px-10 lg:px-16 border-t border-[#F0EEE5]/10 z-10 bg-[#111820]"
     >
       <div className="max-w-7xl mx-auto space-y-12">
         <SectionHeader
           number="05"
-          category="ACOUSTIC EPISTEMOLOGY"
-          title="SOUND-TO-SCIENCE: AUDITORY DISPLAY MECHANICS"
-          subtitle="Why sonification? Acoustic data analysis uncovers hidden temporal cycles and interdependencies across Earth system components that static 2D graphs cannot convey."
-          badge="SCIENTIFIC METHOD"
+          category="MATHEMATICAL SONIFICATION"
+          title="UNDERSTAND THE SIGNAL"
+          subtitle="The mathematical mapping, transfer equations, psychoacoustic logic, and scientific limitations converting empirical NASA measurements into deterministic sound. Every frequency, harmonic ratio, and rhythmic pulse exists for a verifiable physical reason."
+          badge="MATHEMATICAL RIGOR"
           badgeVariant="sand"
         />
 
@@ -209,28 +209,80 @@ export const SoundToScienceSection: React.FC = () => {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs font-mono">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-mono">
             <div className="p-4 bg-[#111820] border border-[#F0EEE5]/10 space-y-2 rounded-sm">
               <span className="text-[#D1B77D] block text-[11px] uppercase tracking-wider font-semibold">
-                // 01 THERMAL FREQUENCY EQUATION
+                // 01 THERMAL FREQUENCY
               </span>
-              <div className="text-[#F0EEE5] text-base font-bold font-mono">
-                f(ΔT) = 220 · 2^(ΔT / 1.2) [Hz]
+              <div className="text-[#F0EEE5] text-sm font-bold font-mono">
+                f(ΔT) = 220 · 2^(ΔT / 1.2)
               </div>
               <p className="text-[#F0EEE5]/70 font-sans text-xs leading-relaxed">
-                Maps GISTEMP global temperature deviation (ΔT) to fundamental pitch frequency. Each +1.2°C anomaly doubles the pitch octave.
+                Unit: Hz. Maps GISTEMP temperature anomaly. Each +1.2°C anomaly doubles the pitch octave.
               </p>
             </div>
 
             <div className="p-4 bg-[#111820] border border-[#F0EEE5]/10 space-y-2 rounded-sm">
               <span className="text-[#E16D54] block text-[11px] uppercase tracking-wider font-semibold">
-                // 02 CARBON CADENCE EQUATION
+                // 02 CARBON CADENCE
               </span>
-              <div className="text-[#F0EEE5] text-base font-bold font-mono">
-                BPM(CO₂) = 48 · (CO₂ / 280)^1.4 [Beats/Min]
+              <div className="text-[#F0EEE5] text-sm font-bold font-mono">
+                BPM = 48 · (CO₂ / 280)^1.4
               </div>
               <p className="text-[#F0EEE5]/70 font-sans text-xs leading-relaxed">
-                Accelerates the subterranean membrane pulse rate from a calm 48 BPM pre-industrial heartbeat to an urgent 96 BPM at present-day levels.
+                Unit: BPM. Accelerates the sub-bass pulse rate from 48 BPM resting pulse to 96 BPM.
+              </p>
+            </div>
+
+            <div className="p-4 bg-[#111820] border border-[#F0EEE5]/10 space-y-2 rounded-sm">
+              <span className="text-[#508CA4] block text-[11px] uppercase tracking-wider font-semibold">
+                // 03 OCEANIC RESONANCE
+              </span>
+              <div className="text-[#F0EEE5] text-sm font-bold font-mono">
+                fc(h) = 120 + 2280 · (h / 120)
+              </div>
+              <p className="text-[#F0EEE5]/70 font-sans text-xs leading-relaxed">
+                Unit: Hz. Opens resonant 4-pole bandpass filter from 120 Hz to 2,400 Hz as sea level rises.
+              </p>
+            </div>
+
+            <div className="p-4 bg-[#111820] border border-[#F0EEE5]/10 space-y-2 rounded-sm">
+              <span className="text-[#9D8DF1] block text-[11px] uppercase tracking-wider font-semibold">
+                // 04 AEROSOL MODULATION
+              </span>
+              <div className="text-[#F0EEE5] text-sm font-bold font-mono">
+                ModIdx = 0.2 + 2.5 · (AOD / 0.5)
+              </div>
+              <p className="text-[#F0EEE5]/70 font-sans text-xs leading-relaxed">
+                Unitless index. High particulate optical depth induces metallic FM inharmonicity.
+              </p>
+            </div>
+          </div>
+
+          {/* Scientific Limitations & Epistemological Boundaries */}
+          <div className="mt-6 pt-5 border-t border-[#F0EEE5]/10 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
+            <div>
+              <span className="text-[#D1B77D] block mb-1 font-semibold uppercase text-[10px]">
+                LIMITATION 01 // NYQUIST TEMPORAL SAMPLING
+              </span>
+              <p className="text-[#F0EEE5]/65 font-sans leading-relaxed">
+                Annual and monthly satellite sweeps are interpolated through cubic-spline smoothing; rapid diurnal variations are abstracted to preserve long-term decadal trends.
+              </p>
+            </div>
+            <div>
+              <span className="text-[#E16D54] block mb-1 font-semibold uppercase text-[10px]">
+                LIMITATION 02 // DYNAMIC RANGE COMPRESSION
+              </span>
+              <p className="text-[#F0EEE5]/65 font-sans leading-relaxed">
+                Acoustic amplitudes are bounded between -24 dBFS and -6 dBFS through lookahead peak limiting to protect auditory comfort while preserving proportional energy ratios.
+              </p>
+            </div>
+            <div>
+              <span className="text-[#4EBA97] block mb-1 font-semibold uppercase text-[10px]">
+                LIMITATION 03 // DISCRETE SCALE QUANTIZATION
+              </span>
+              <p className="text-[#F0EEE5]/65 font-sans leading-relaxed">
+                Continuous physical parameters are mapped across 12-tone equal temperament micro-steps to retain musical comprehensibility without sacrificing decimal fidelity.
               </p>
             </div>
           </div>

@@ -67,7 +67,10 @@ export const HeroSection: React.FC = () => {
       await unlockAudio();
       await startPlayback();
     }
-    const listenEl = document.getElementById('sonification') || document.getElementById('eic-jukebox');
+    const listenEl =
+      document.getElementById('jukebox') ||
+      document.getElementById('sonification') ||
+      document.getElementById('eic-jukebox');
     if (listenEl) {
       listenEl.scrollIntoView({ behavior: 'smooth' });
     }
@@ -94,7 +97,7 @@ export const HeroSection: React.FC = () => {
           </span>
           <span className="text-[#F0EEE5]/30">/</span>
           <span className="font-sans text-xs sm:text-[13px] tracking-widest text-[#F0EEE5]/80 font-normal uppercase">
-            AN EARTH OBSERVATORY
+            THE LIVING PLANET
           </span>
         </div>
         <div className="flex items-center gap-3 text-right">

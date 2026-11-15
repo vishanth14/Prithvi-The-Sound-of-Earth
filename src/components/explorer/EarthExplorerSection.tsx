@@ -205,17 +205,21 @@ export const EarthExplorerSection: React.FC = () => {
     }
     await setActiveEicKey(activeLayer.eicKey);
     await startPlayback();
-    const sonificationEl =
-      document.getElementById('sonification') || document.getElementById('listen');
-    if (sonificationEl) {
-      sonificationEl.scrollIntoView({ behavior: 'smooth' });
+    const jukeboxEl =
+      document.getElementById('jukebox') ||
+      document.getElementById('sonification') ||
+      document.getElementById('listen');
+    if (jukeboxEl) {
+      jukeboxEl.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
   const handleViewInJukebox = async () => {
     await setActiveEicKey(activeLayer.eicKey);
     const jukeboxEl =
-      document.getElementById('eic-jukebox') || document.getElementById('stories');
+      document.getElementById('jukebox') ||
+      document.getElementById('eic-jukebox') ||
+      document.getElementById('stories');
     if (jukeboxEl) {
       jukeboxEl.scrollIntoView({ behavior: 'smooth' });
     }
@@ -236,10 +240,10 @@ export const EarthExplorerSection: React.FC = () => {
         <div className="explorer-reveal">
           <SectionHeader
             number="02"
-            category="PLANETARY OBSERVATORY ATLAS"
-            title="INTERACTIVE 3D EARTH EXPLORATION"
-            subtitle="An interactive scientific atlas powered by authentic NASA Earth-observing satellite telemetry. Rotate the globe, pinpoint verified ground sentinels, and select empirical planetary layers to audition their sonic properties."
-            badge="NASA EIC VERIFIED DATA"
+            category="EARTH OBSERVATION JOURNEY"
+            title="A PLANET IN MOTION"
+            subtitle="A full-width scientific visualization introducing the Earth observation journey, powered by genuine NASA Earth Information Center imagery, physical ground sentinels, and the low-Earth orbit satellite fleet."
+            badge="NASA EIC OBSERVATION FLEET"
             badgeVariant="sand"
           />
         </div>

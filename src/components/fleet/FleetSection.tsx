@@ -37,11 +37,11 @@ export const FleetSection: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto space-y-12">
         <SectionHeader
-          number="03.5"
-          category="NASA EARTH SYSTEM OBSERVATORY"
-          title="ORBITAL SATELLITE CONSTELLATIONS"
-          subtitle="Continuous low-Earth orbit telemetry streams empirical data into PRITHVI. Each satellite instrument measures a distinct planetary vital sign."
-          badge="5 MISSIONS ACTIVE"
+          number="02.5"
+          category="CHAPTER 02 COMPANION // ORBITAL TELEMETRY"
+          title="THE EARTH OBSERVING CONSTELLATION"
+          subtitle="Continuous low-Earth orbit telemetry streams empirical data into PRITHVI. Five active satellite instruments monitor Earth's dynamic vital signs in motion."
+          badge="5 ACTIVE MISSIONS"
           badgeVariant="sand"
         />
 

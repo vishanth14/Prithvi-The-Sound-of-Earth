@@ -9,11 +9,12 @@ export interface NavChapter {
 }
 
 const CHAPTERS: NavChapter[] = [
-  { id: 'hero', label: 'HOME', number: '01' },
-  { id: 'explorer', label: 'EXPLORE', number: '02' },
-  { id: 'stories', label: 'EARTH STORIES', number: '03' },
-  { id: 'listen', label: 'LISTEN', number: '04' },
-  { id: 'science', label: 'SCIENCE', number: '05' },
+  { id: 'hero', label: 'THE LIVING PLANET', number: '01' },
+  { id: 'explorer', label: 'A PLANET IN MOTION', number: '02' },
+  { id: 'stories', label: 'WHAT EARTH IS TELLING US', number: '03' },
+  { id: 'jukebox', label: 'THE EARTH JUKEBOX', number: '04' },
+  { id: 'signal', label: 'UNDERSTAND THE SIGNAL', number: '05' },
+  { id: 'open-science', label: 'OPEN SCIENCE', number: '06' },
 ];
 
 interface NavbarProps {
@@ -69,24 +70,23 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenShortcuts }) => {
 
     // Map chapter id to actual DOM element
     let targetId = id;
-    if (id === 'stories') {
-      targetId = 'eic-jukebox';
-    } else if (id === 'listen') {
-      targetId = 'sonification';
-    }
+    if (id === 'listen') targetId = 'jukebox';
+    if (id === 'science') targetId = 'signal';
+    if (id === 'methodology') targetId = 'open-science';
 
     const element = document.getElementById(targetId) || document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
   const isChapterActive = (chapterId: string) => {
     if (chapterId === 'hero' && activeSection === 'hero') return true;
-    if (chapterId === 'explorer' && activeSection === 'explorer') return true;
-    if (chapterId === 'stories' && (activeSection === 'eic-jukebox' || activeSection === 'fleet' || activeSection === 'timeline' || activeSection === 'stories')) return true;
-    if (chapterId === 'listen' && (activeSection === 'sonification' || activeSection === 'listen')) return true;
-    if (chapterId === 'science' && (activeSection === 'science' || activeSection === 'methodology')) return true;
+    if (chapterId === 'explorer' && (activeSection === 'explorer' || activeSection === 'fleet')) return true;
+    if (chapterId === 'stories' && (activeSection === 'stories' || activeSection === 'eic-jukebox')) return true;
+    if (chapterId === 'jukebox' && (activeSection === 'jukebox' || activeSection === 'sonification' || activeSection === 'timeline' || activeSection === 'listen')) return true;
+    if (chapterId === 'signal' && (activeSection === 'signal' || activeSection === 'science')) return true;
+    if (chapterId === 'open-science' && (activeSection === 'open-science' || activeSection === 'methodology')) return true;
     return false;
   };
 

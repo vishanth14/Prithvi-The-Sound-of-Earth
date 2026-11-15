@@ -121,14 +121,14 @@ export const MethodologySection: React.FC = () => {
   return (
     <section
       ref={sectionRef}
-      id="methodology"
+      id="open-science"
       className="relative w-full py-28 px-6 sm:px-10 lg:px-16 border-t border-[#F0EEE5]/10 z-10 bg-[#111820]"
     >
       <div className="max-w-7xl mx-auto space-y-12">
         <SectionHeader
-          number="05.5"
-          category="METHODOLOGY & CITATIONS"
-          title="OPEN SCIENCE CITATIONS & METHODOLOGY"
+          number="06"
+          category="SOURCES, ACCESSIBILITY & CREDITS"
+          title="OPEN SCIENCE"
           subtitle="PRITHVI is built upon open NASA Earth observation data architectures, honoring rigorous open-science principles, WCAG 2.2 AA accessibility, and transparent telemetry verification."
           badge="OPEN SCIENCE"
           badgeVariant="sand"
@@ -216,6 +216,52 @@ export const MethodologySection: React.FC = () => {
             </Panel>
           ))}
         </div>
+
+        {/* Software Architecture Blueprint Card */}
+        <Panel className="border-[#F0EEE5]/10 bg-[#0C1017] p-6 sm:p-8 rounded-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-[#F0EEE5]/10 pb-3">
+            <div className="flex items-center gap-2.5 text-[#D1B77D]">
+              <Globe className="w-4 h-4" />
+              <span className="font-mono text-xs uppercase tracking-[0.2em] font-semibold">
+                SOFTWARE ARCHITECTURE & SCIENTIFIC STACK
+              </span>
+            </div>
+            <span className="text-[10px] font-mono text-[#F0EEE5]/50">CLIENT-SIDE ONLY • ZERO TELEMETRY TRACKING</span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-2 text-xs font-mono">
+            <div className="p-3 bg-[#111820] border border-[#F0EEE5]/10 rounded-sm">
+              <span className="text-[#D1B77D] block text-[10px] uppercase mb-1">PLANETARY ENGINE</span>
+              <span className="text-[#F0EEE5] font-semibold block">Three.js + R3F</span>
+              <span className="text-[#F0EEE5]/50 text-[10px]">4K NASA Textures & Shaders</span>
+            </div>
+            <div className="p-3 bg-[#111820] border border-[#F0EEE5]/10 rounded-sm">
+              <span className="text-[#E16D54] block text-[10px] uppercase mb-1">SYNTHESIS CORE</span>
+              <span className="text-[#F0EEE5] font-semibold block">Web Audio + Tone.js</span>
+              <span className="text-[#F0EEE5]/50 text-[10px]">Deterministic Sonification</span>
+            </div>
+            <div className="p-3 bg-[#111820] border border-[#F0EEE5]/10 rounded-sm">
+              <span className="text-[#10B981] block text-[10px] uppercase mb-1">DATA INTEGRITY</span>
+              <span className="text-[#F0EEE5] font-semibold block">Zod + PapaParse</span>
+              <span className="text-[#F0EEE5]/50 text-[10px]">Schema-validated CSVs</span>
+            </div>
+            <div className="p-3 bg-[#111820] border border-[#F0EEE5]/10 rounded-sm">
+              <span className="text-[#508CA4] block text-[10px] uppercase mb-1">VISUALIZATION</span>
+              <span className="text-[#F0EEE5] font-semibold block">D3.js Polar Projections</span>
+              <span className="text-[#F0EEE5]/50 text-[10px]">NASA SVS #4976 Spiral</span>
+            </div>
+            <div className="p-3 bg-[#111820] border border-[#F0EEE5]/10 rounded-sm">
+              <span className="text-[#9D8DF1] block text-[10px] uppercase mb-1">ANIMATION LOOP</span>
+              <span className="text-[#F0EEE5] font-semibold block">GSAP 3 + Lenis</span>
+              <span className="text-[#F0EEE5]/50 text-[10px]">60 FPS Scroll Synchronization</span>
+            </div>
+            <div className="p-3 bg-[#111820] border border-[#F0EEE5]/10 rounded-sm">
+              <span className="text-[#F0EEE5] block text-[10px] uppercase mb-1">EDITORIAL DESIGN</span>
+              <span className="text-[#F0EEE5] font-semibold block">Tailwind CSS v4</span>
+              <span className="text-[#F0EEE5]/50 text-[10px]">WCAG 2.2 AA Contrast</span>
+            </div>
+          </div>
+        </Panel>
 
         {/* Space Apps Mission Information & Accessibility Statement */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 pt-8 border-t border-[#F0EEE5]/10">

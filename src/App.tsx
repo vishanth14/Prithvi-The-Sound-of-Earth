@@ -6,10 +6,9 @@ import { StarfieldCanvas } from './components/canvas/StarfieldCanvas';
 import { Navbar } from './components/navigation/Navbar';
 import { HeroSection } from './components/hero/HeroSection';
 import { EarthExplorerSection } from './components/explorer/EarthExplorerSection';
-import { EICJukeboxVisualizer } from './components/visualization/EICJukeboxVisualizer';
 import { FleetSection } from './components/fleet/FleetSection';
-import { DataTimelineSection } from './components/timeline/DataTimelineSection';
-import { SonificationLabSection } from './components/sonification/SonificationLabSection';
+import { EarthStoriesSection } from './components/stories/EarthStoriesSection';
+import { EarthJukeboxSection } from './components/jukebox/EarthJukeboxSection';
 import { SoundToScienceSection } from './components/science/SoundToScienceSection';
 import { MethodologySection } from './components/methodology/MethodologySection';
 import { ShortcutsModal } from './components/common/ShortcutsModal';
@@ -57,12 +56,11 @@ export const App: React.FC = () => {
     const sections: { id: string; target: 'hero' | 'explorer' | 'fleet' | 'timeline' | 'sonification' | 'science' }[] = [
       { id: 'hero', target: 'hero' },
       { id: 'explorer', target: 'explorer' },
-      { id: 'eic-jukebox', target: 'fleet' },
       { id: 'fleet', target: 'fleet' },
-      { id: 'timeline', target: 'timeline' },
-      { id: 'sonification', target: 'sonification' },
-      { id: 'science', target: 'science' },
-      { id: 'methodology', target: 'science' },
+      { id: 'stories', target: 'fleet' },
+      { id: 'jukebox', target: 'sonification' },
+      { id: 'signal', target: 'science' },
+      { id: 'open-science', target: 'science' },
     ];
 
     const triggers: ScrollTrigger[] = [];
@@ -163,28 +161,23 @@ export const App: React.FC = () => {
 
       {/* 4. Main Scrollytelling Sequence */}
       <main className="relative z-10 w-full flex flex-col">
-        {/* Section 01: Cinematic Landing Hero */}
+        {/* CHAPTER 01 — THE LIVING PLANET */}
         <HeroSection />
 
-        {/* Section 02: Interactive 3D Earth Exploration */}
+        {/* CHAPTER 02 — A PLANET IN MOTION */}
         <EarthExplorerSection />
-
-        {/* Section 03: NASA Earth Information Center Visualization (SVS Climate Spiral & 5-Stream Jukebox) */}
-        <EICJukeboxVisualizer />
-
-        {/* Section 04: NASA Earth Information Center Fleet */}
         <FleetSection />
 
-        {/* Section 05: Multi-Decadal Data Timeline */}
-        <DataTimelineSection />
+        {/* CHAPTER 03 — WHAT EARTH IS TELLING US */}
+        <EarthStoriesSection />
 
-        {/* Section 05: Real-Time Earth Sonification Laboratory */}
-        <SonificationLabSection />
+        {/* CHAPTER 04 — THE EARTH JUKEBOX */}
+        <EarthJukeboxSection />
 
-        {/* Section 06: Sound-to-Science Epistemology */}
+        {/* CHAPTER 05 — UNDERSTAND THE SIGNAL */}
         <SoundToScienceSection />
 
-        {/* Section 07: Sources, Methodology & Space Apps Credits */}
+        {/* CHAPTER 06 — OPEN SCIENCE */}
         <MethodologySection />
       </main>
     </div>

@@ -98,6 +98,11 @@ body {
   background-color: rgba(17, 24, 32, 0.12);
 }
 
+/* Ensure fixed navbar never obscures chapter section headers */
+section {
+  scroll-margin-top: 5rem;
+}
+
 /* Backwards-compatible glass & panel surfaces refactored into editorial elegance */
 .glass-panel {
   background: rgba(17, 24, 32, 0.82);
