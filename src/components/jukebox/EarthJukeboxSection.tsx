@@ -202,7 +202,6 @@ export const EarthJukeboxSection: React.FC = () => {
   useEffect(() => {
     const unsubTick = audioTransport.onTick((payload) => {
       setCurrentPayload(payload);
-      seekToIndex(payload.index, false);
     });
 
     const unsubState = audioTransport.onStateChange((state) => {
@@ -213,7 +212,7 @@ export const EarthJukeboxSection: React.FC = () => {
       unsubTick();
       unsubState();
     };
-  }, [seekToIndex]);
+  }, []);
 
   // Sync mute with synthesis core
   useEffect(() => {

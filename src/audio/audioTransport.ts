@@ -104,19 +104,24 @@ export class AudioTransport {
    * Direct timeline scrub / seek to a specific index
    */
   public seekToIndex(index: number, triggerAudio = true): void {
-    if (this.observations.length === 0) return;
-    const clamped = Math.max(0, Math.min(this.observations.length - 1, index));
-    this.currentIndex = clamped;
+    if (this.observations.length === 0 || this.isSeeking) return;
+    this.isSeeking = true;
+    try {
+      const clamped = Math.max(0, Math.min(this.observations.length - 1, index));
+      this.currentIndex = clamped;
 
-    const currentObs = this.observations[clamped];
-    const prevObs = clamped > 0 ? this.observations[clamped - 1] : undefined;
-    const params = mapObservationToAudio(currentObs, prevObs);
+      const currentObs = this.observations[clamped];
+      const prevObs = clamped > 0 ? this.observations[clamped - 1] : undefined;
+      const params = mapObservationToAudio(currentObs, prevObs);
 
-    if (triggerAudio) {
-      sonificationCore.playMeasurement(params);
+      if (triggerAudio) {
+        sonificationCore.playMeasurement(params);
+      }
+
+      this.notifyTick(currentObs, params, clamped);
+    } finally {
+      this.isSeeking = false;
     }
-
-    this.notifyTick(currentObs, params, clamped);
   }
 
   /**
@@ -192,15 +197,24 @@ export class AudioTransport {
     }
   }
 
+  private isNotifying = false;
+  private isSeeking = false;
+
   private notifyTick(obs: EicObservation, params: SonificationParams, index: number): void {
-    const payload: TransportTickPayload = {
-      observation: obs,
-      params,
-      index,
-      totalRecords: this.observations.length,
-      progressPercent: Number(((index / Math.max(1, this.observations.length - 1)) * 100).toFixed(1)),
-    };
-    this.tickListeners.forEach((l) => l(payload));
+    if (this.isNotifying) return;
+    this.isNotifying = true;
+    try {
+      const payload: TransportTickPayload = {
+        observation: obs,
+        params,
+        index,
+        totalRecords: this.observations.length,
+        progressPercent: Number(((index / Math.max(1, this.observations.length - 1)) * 100).toFixed(1)),
+      };
+      this.tickListeners.forEach((l) => l(payload));
+    } finally {
+      this.isNotifying = false;
+    }
   }
 
   // Configuration Getters & Setters
