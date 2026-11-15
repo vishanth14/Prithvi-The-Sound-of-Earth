@@ -13,6 +13,7 @@ import { EarthJukeboxSection } from './components/jukebox/EarthJukeboxSection';
 import { SoundToScienceSection } from './components/science/SoundToScienceSection';
 import { MethodologySection } from './components/methodology/MethodologySection';
 import { ShortcutsModal } from './components/common/ShortcutsModal';
+import { ScrollProgressHUD } from './components/navigation/ScrollProgressHUD';
 import { scrollState } from './lib/scrollState';
 
 export const App: React.FC = () => {
@@ -186,8 +187,9 @@ export const App: React.FC = () => {
         <PersistentEarthCanvas />
       </div>
 
-      {/* 2. Global Observatory Navigation Bar */}
+      {/* 2. Global Observatory Navigation Bar & Mission Progress HUD */}
       <Navbar onOpenShortcuts={() => setShortcutsOpen(true)} />
+      <ScrollProgressHUD />
 
       {/* 3. Accessible Keyboard Navigation Guide Dialog */}
       <ShortcutsModal isOpen={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />

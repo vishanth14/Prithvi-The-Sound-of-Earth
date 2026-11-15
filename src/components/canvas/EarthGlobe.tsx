@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { gsap } from '../../lib/gsap';
 import { useObservatoryStore, CLIMATE_SENTINELS } from '../../store/useObservatoryStore';
 import { SATELLITE_FLEET } from '../../data/earthDatasets';
+import { scrollState } from '../../lib/scrollState';
 
 // Converts geographic Latitude & Longitude to 3D Cartesian coordinates on sphere (Radius 2.0)
 function latLngToVector3(lat: number, lng: number, radius = 2.018): [number, number, number] {
@@ -432,10 +433,39 @@ export const EarthGlobe: React.FC = () => {
     }));
   }, []);
 
-  // 60fps Continuous Loop (Zero-allocation animation loop)
-  useFrame((_, delta) => {
+  // 60fps Continuous Loop (Zero-allocation animation loop with subtle pointer parallax)
+  useFrame((state, delta) => {
     if (earthGroupRef.current && globeRotating) {
       earthGroupRef.current.rotation.y += delta * 0.038;
+    }
+
+    // Gentle, restrained aerospace pointer parallax in Hero chapter (observer vantage response)
+    if (earthGroupRef.current && !scrollState.isInteractingWithGlobe) {
+      if (scrollState.progress <= 0.12 && !scrollState.prefersReducedMotion) {
+        const targetTiltX = 0.41 - state.pointer.y * 0.038; // subtle orbital pitch (max ~2.2 deg)
+        const targetRollZ = state.pointer.x * 0.028;        // subtle orbital roll (max ~1.6 deg)
+        earthGroupRef.current.rotation.x = THREE.MathUtils.lerp(
+          earthGroupRef.current.rotation.x,
+          targetTiltX,
+          delta * 2.2
+        );
+        earthGroupRef.current.rotation.z = THREE.MathUtils.lerp(
+          earthGroupRef.current.rotation.z,
+          targetRollZ,
+          delta * 2.2
+        );
+      } else {
+        earthGroupRef.current.rotation.x = THREE.MathUtils.lerp(
+          earthGroupRef.current.rotation.x,
+          0.41,
+          delta * 2.5
+        );
+        earthGroupRef.current.rotation.z = THREE.MathUtils.lerp(
+          earthGroupRef.current.rotation.z,
+          0.0,
+          delta * 2.5
+        );
+      }
     }
 
     // Cloud system drift (slow atmospheric jet stream)

@@ -177,6 +177,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenShortcuts }) => {
               <button
                 onClick={handleAudioAction}
                 data-cursor-label="AUDIO"
+                data-cursor-magnetic="true"
                 className="inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-display font-bold tracking-wider uppercase border border-[#FF5938] bg-[#FF5938]/15 hover:bg-[#FF5938] text-[#E9EDF0] hover:text-[#070B10] transition-all duration-200 cursor-pointer"
                 title="Activate Real-Time Scientific Sonification Engine"
               >
@@ -191,6 +192,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenShortcuts }) => {
                 <button
                   onClick={handleAudioAction}
                   data-cursor-label={transportState === 'PLAYING' ? 'PAUSE' : 'PLAY'}
+                  data-cursor-magnetic="true"
                   className="flex items-center gap-2 text-xs font-mono tracking-wide text-[#E9EDF0] hover:text-[#83BBD5] transition-colors cursor-pointer"
                   title={transportState === 'PLAYING' ? 'Pause Sonification' : 'Play Sonification'}
                 >

@@ -54,25 +54,26 @@ export const FleetSection: React.FC = () => {
           {SATELLITE_FLEET.map((sat) => (
             <div
               key={sat.id}
-              className="fleet-card flex flex-col justify-between bg-white border-2 border-[#252D36] p-7 shadow-sm hover:border-[#FF5938] transition-all"
+              data-cursor-label="DISCOVER"
+              className="fleet-card group flex flex-col justify-between bg-white border-2 border-[#252D36] p-7 shadow-sm hover:border-[#FF5938] hover:shadow-[0_12px_32px_rgba(255,89,56,0.14)] hover:scale-[1.015] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
             >
               <div>
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#252D36]/20">
                   <div className="flex items-center gap-2">
                     <span
-                      className="w-2.5 h-2.5"
+                      className="w-2.5 h-2.5 transition-transform group-hover:scale-125"
                       style={{ backgroundColor: sat.color }}
                     />
                     <span className="font-mono text-xs text-[#252D36] tracking-wider uppercase font-bold">
                       LAUNCH {sat.launchYear}
                     </span>
                   </div>
-                  <span className="px-2 py-0.5 bg-[#E9EDF0] text-[#070B10] font-mono text-[10px] uppercase font-bold border border-[#252D36]/20">
+                  <span className="px-2 py-0.5 bg-[#E9EDF0] text-[#070B10] font-mono text-[10px] uppercase font-bold border border-[#252D36]/20 group-hover:border-[#FF5938]/40">
                     LEO
                   </span>
                 </div>
 
-                <h4 className="font-display text-3xl font-extrabold text-[#070B10] uppercase tracking-tight mb-2">
+                <h4 className="font-display text-3xl font-extrabold text-[#070B10] group-hover:text-[#FF5938] uppercase tracking-tight group-hover:tracking-wide transition-all duration-200 mb-2">
                   {sat.name}
                 </h4>
 

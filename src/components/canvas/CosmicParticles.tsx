@@ -50,8 +50,20 @@ export const CosmicParticles: React.FC = () => {
     });
   }, []);
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     if (!pointsRef.current || scrollState.prefersReducedMotion) return;
+
+    // Subtle pointer parallax response on space dust
+    pointsRef.current.rotation.y = THREE.MathUtils.lerp(
+      pointsRef.current.rotation.y,
+      state.pointer.x * 0.04,
+      delta * 2.0
+    );
+    pointsRef.current.rotation.x = THREE.MathUtils.lerp(
+      pointsRef.current.rotation.x,
+      -state.pointer.y * 0.03,
+      delta * 2.0
+    );
 
     const posAttr = pointsRef.current.geometry.attributes.position as THREE.BufferAttribute;
     const posArray = posAttr.array as Float32Array;

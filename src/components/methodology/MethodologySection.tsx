@@ -155,8 +155,10 @@ export const MethodologySection: React.FC = () => {
             size="md"
             onClick={handleExportCsv}
             disabled={isExporting}
+            data-cursor-label="EXPORT"
+            data-cursor-magnetic="true"
             icon={<Download className="w-4 h-4 text-white" />}
-            className="shrink-0 w-full sm:w-auto"
+            className="shrink-0 w-full sm:w-auto hover:tracking-widest transition-all duration-300"
           >
             {isExporting ? 'GENERATING CSV...' : 'EXPORT OBSERVATIONS (CSV)'}
           </Button>
@@ -187,6 +189,7 @@ export const MethodologySection: React.FC = () => {
               <div className="flex items-center gap-3 shrink-0">
                 <button
                   onClick={() => handleCopyCitation(s.citation, idx)}
+                  data-cursor-label="COPY"
                   className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-mono border border-[#252D36] bg-[#070B10] hover:border-[#83BBD5] text-[#E9EDF0]/70 hover:text-white transition-colors cursor-pointer rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5938]"
                   title="Copy BibTeX / APA citation to clipboard"
                 >
@@ -207,6 +210,7 @@ export const MethodologySection: React.FC = () => {
                   href={s.url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-cursor-label="OPEN"
                   className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-mono border border-[#252D36] bg-[#070B10] hover:border-[#FF5938] text-[#E9EDF0] hover:text-[#FF5938] transition-colors rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5938]"
                 >
                   <span>DATA ARCHIVE</span>

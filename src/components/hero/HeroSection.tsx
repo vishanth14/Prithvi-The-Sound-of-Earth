@@ -75,6 +75,26 @@ export const HeroSection: React.FC = () => {
           ease: 'power1.in',
         }),
       });
+
+      // Subtle Aerospace Pointer Parallax on Monumental Typography
+      const xToTitle = gsap.quickTo('.hero-char-title', 'x', { duration: 0.9, ease: 'power2.out' });
+      const yToTitle = gsap.quickTo('.hero-char-title', 'y', { duration: 0.9, ease: 'power2.out' });
+      const xToSubtitle = gsap.quickTo('.hero-subtitle', 'x', { duration: 1.1, ease: 'power2.out' });
+      const yToSubtitle = gsap.quickTo('.hero-subtitle', 'y', { duration: 1.1, ease: 'power2.out' });
+
+      const handlePointer = (e: PointerEvent) => {
+        const nx = (e.clientX / window.innerWidth - 0.5) * 2;
+        const ny = (e.clientY / window.innerHeight - 0.5) * 2;
+        xToTitle(nx * 8);
+        yToTitle(ny * 5);
+        xToSubtitle(nx * 4);
+        yToSubtitle(ny * 3);
+      };
+
+      window.addEventListener('pointermove', handlePointer, { passive: true });
+      return () => {
+        window.removeEventListener('pointermove', handlePointer);
+      };
     },
     { scope: containerRef }
   );
@@ -163,7 +183,7 @@ export const HeroSection: React.FC = () => {
             onClick={handleBeginJourney}
             data-cursor-label="JOURNEY"
             data-cursor-magnetic="true"
-            className="group flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-3.5 bg-[#FF5938] hover:bg-[#E84C2C] text-[#070B10] font-display font-extrabold text-sm tracking-wider uppercase transition-all duration-200 cursor-pointer shadow-[0_4px_24px_rgba(255,89,56,0.3)] hover:shadow-[0_6px_32px_rgba(255,89,56,0.5)] active:translate-y-0.5"
+            className="group flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-3.5 bg-[#FF5938] hover:bg-[#E84C2C] text-[#070B10] font-display font-extrabold text-sm tracking-wider hover:tracking-widest uppercase transition-all duration-300 cursor-pointer shadow-[0_4px_24px_rgba(255,89,56,0.3)] hover:shadow-[0_6px_32px_rgba(255,89,56,0.5)] hover:scale-[1.02] active:scale-[0.98]"
           >
             <Compass className="w-4 h-4 text-[#070B10] group-hover:rotate-45 transition-transform duration-300" />
             <span>BEGIN THE JOURNEY</span>
@@ -174,7 +194,7 @@ export const HeroSection: React.FC = () => {
             onClick={handleListenToEarth}
             data-cursor-label="LISTEN"
             data-cursor-magnetic="true"
-            className="group flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-3.5 border border-[#252D36] hover:border-[#83BBD5] bg-[#070B10]/85 backdrop-blur-md text-[#E9EDF0] font-display font-extrabold text-sm tracking-wider uppercase transition-all duration-200 cursor-pointer hover:bg-[#0E141D] active:translate-y-0.5"
+            className="group flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-3.5 border border-[#252D36] hover:border-[#83BBD5] bg-[#070B10]/85 backdrop-blur-md text-[#E9EDF0] font-display font-extrabold text-sm tracking-wider hover:tracking-widest uppercase transition-all duration-300 cursor-pointer hover:bg-[#0E141D] hover:scale-[1.02] active:scale-[0.98]"
           >
             <Headphones className="w-4 h-4 text-[#83BBD5] group-hover:scale-110 transition-transform duration-200" />
             <span>LISTEN TO EARTH</span>

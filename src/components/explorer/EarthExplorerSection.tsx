@@ -266,7 +266,8 @@ export const EarthExplorerSection: React.FC = () => {
                 <button
                   key={item.id}
                   onClick={() => handleSelectLayer(item.id)}
-                  className={`inline-flex items-center gap-2 px-4 py-2 text-xs font-display font-bold tracking-wider uppercase transition-all duration-200 cursor-pointer ${
+                  data-cursor-label="EXPLORE"
+                  className={`inline-flex items-center gap-2 px-4 py-2 text-xs font-display font-bold tracking-wider uppercase transition-all duration-200 cursor-pointer hover:scale-[1.02] active:scale-[0.98] ${
                     isActive
                       ? 'bg-[#070B10] text-[#E9EDF0] border-2 border-[#070B10]'
                       : 'bg-white text-[#070B10] border border-[#252D36]/30 hover:border-[#FF5938]'
@@ -298,7 +299,8 @@ export const EarthExplorerSection: React.FC = () => {
                 <button
                   key={s.id}
                   onClick={() => selectSentinel(isSelected ? null : s.id)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono transition-all duration-200 cursor-pointer ${
+                  data-cursor-label="DISCOVER"
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono transition-all duration-200 cursor-pointer hover:scale-[1.03] active:scale-[0.98] ${
                     isSelected
                       ? 'bg-[#FF5938] text-[#070B10] font-bold border border-[#FF5938]'
                       : 'bg-white text-[#252D36] border border-[#252D36]/30 hover:border-[#FF5938]'
@@ -313,6 +315,7 @@ export const EarthExplorerSection: React.FC = () => {
             {activeSentinelId && (
               <button
                 onClick={handleBackToOverview}
+                data-cursor-label="RESET"
                 className="px-3 py-1.5 text-xs font-mono text-[#070B10] font-bold underline cursor-pointer ml-auto hover:text-[#FF5938]"
               >
                 RESET TO GLOBAL OVERVIEW
@@ -348,7 +351,8 @@ export const EarthExplorerSection: React.FC = () => {
                 )}
                 <button
                   onClick={() => setGlobeRotating(!globeRotating)}
-                  className={`p-2 border text-xs font-mono transition-all cursor-pointer ${
+                  data-cursor-label="ROTATE"
+                  className={`p-2 border text-xs font-mono transition-all cursor-pointer hover:scale-105 active:scale-95 ${
                     globeRotating
                       ? 'border-[#FF5938] bg-[#FF5938]/20 text-[#FF5938]'
                       : 'border-[#252D36] bg-[#070B10] text-[#7E8B98] hover:text-[#E9EDF0]'
@@ -364,7 +368,7 @@ export const EarthExplorerSection: React.FC = () => {
             {/* 3D Interactive Aperture Viewport (Persistent Earth shines through) */}
             <div
               className="absolute inset-0 z-10 pointer-events-auto cursor-grab active:cursor-grabbing"
-              data-cursor-label="ORBIT 3D"
+              data-cursor-label="ROTATE"
               onPointerDown={() => {
                 scrollState.isInteractingWithGlobe = true;
               }}
@@ -462,7 +466,9 @@ export const EarthExplorerSection: React.FC = () => {
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={handleListenToData}
-                    className="flex-1 py-3 px-4 text-xs font-display font-bold tracking-widest uppercase bg-[#FF5938] hover:bg-[#E84C2C] text-[#070B10] transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                    data-cursor-label="LISTEN"
+                    data-cursor-magnetic="true"
+                    className="flex-1 py-3 px-4 text-xs font-display font-bold tracking-widest uppercase bg-[#FF5938] hover:bg-[#E84C2C] text-[#070B10] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98]"
                   >
                     <Headphones className="w-4 h-4 text-[#070B10]" />
                     <span>LISTEN TO THIS DATA</span>
@@ -470,7 +476,8 @@ export const EarthExplorerSection: React.FC = () => {
 
                   <button
                     onClick={handleBackToOverview}
-                    className="py-3 px-4 text-xs font-display font-bold tracking-wider uppercase border border-[#252D36] hover:border-[#83BBD5] text-[#E9EDF0] transition-colors cursor-pointer text-center"
+                    data-cursor-label="RESET"
+                    className="py-3 px-4 text-xs font-display font-bold tracking-wider uppercase border border-[#252D36] hover:border-[#83BBD5] text-[#E9EDF0] transition-colors cursor-pointer text-center hover:bg-[#0E141D]"
                   >
                     RESET OVERVIEW
                   </button>
@@ -566,7 +573,9 @@ export const EarthExplorerSection: React.FC = () => {
               <div className="pt-4 border-t border-[#252D36]/20 flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={handleListenToData}
-                  className="flex-1 py-3.5 px-6 text-xs font-display font-bold tracking-widest uppercase bg-[#FF5938] hover:bg-[#E84C2C] text-[#070B10] transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                  data-cursor-label="LISTEN"
+                  data-cursor-magnetic="true"
+                  className="flex-1 py-3.5 px-6 text-xs font-display font-extrabold tracking-widest uppercase bg-[#FF5938] hover:bg-[#E84C2C] text-[#070B10] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:scale-[1.02] hover:tracking-[0.18em] active:scale-[0.98]"
                 >
                   <Headphones className="w-4 h-4 text-[#070B10]" />
                   <span>LISTEN TO THIS DATA</span>
@@ -575,7 +584,9 @@ export const EarthExplorerSection: React.FC = () => {
 
                 <button
                   onClick={handleViewInJukebox}
-                  className="py-3.5 px-5 text-xs font-display font-bold tracking-wider uppercase border-2 border-[#252D36] hover:bg-[#070B10] hover:text-[#E9EDF0] text-[#070B10] transition-all cursor-pointer flex items-center justify-center gap-2"
+                  data-cursor-label="OPEN"
+                  data-cursor-magnetic="true"
+                  className="py-3.5 px-5 text-xs font-display font-extrabold tracking-wider uppercase border-2 border-[#252D36] hover:bg-[#070B10] hover:text-[#E9EDF0] text-[#070B10] transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 hover:scale-[1.02] hover:border-[#070B10] active:scale-[0.98]"
                 >
                   <span>VIEW EIC JUKEBOX</span>
                   <ExternalLink className="w-3.5 h-3.5" />

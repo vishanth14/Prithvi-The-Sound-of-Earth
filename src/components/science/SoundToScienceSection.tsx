@@ -311,7 +311,8 @@ export const SoundToScienceSection: React.FC = () => {
               return (
                 <div
                   key={epoch.id}
-                  className={`flex flex-col justify-between transition-all duration-300 p-7 bg-white rounded-none border ${
+                  data-cursor-label="EPOCH"
+                  className={`flex flex-col justify-between transition-all duration-300 p-7 bg-white rounded-none border hover:scale-[1.015] hover:-translate-y-1 ${
                     isActive
                       ? 'border-[#FF5938] shadow-[0_8px_30px_rgba(255,89,56,0.2)]'
                       : 'border-[rgba(7,11,16,0.12)] hover:border-[#FF5938]'
@@ -366,8 +367,10 @@ export const SoundToScienceSection: React.FC = () => {
                     variant={isActive ? 'primary' : 'paper'}
                     size="sm"
                     onClick={() => handleAuditionEpoch(epoch)}
+                    data-cursor-label="LISTEN"
+                    data-cursor-magnetic="true"
                     icon={<Volume2 className="w-3.5 h-3.5" />}
-                    className="w-full"
+                    className="w-full hover:tracking-wider transition-all duration-300"
                   >
                     {isActive ? `PLAYING ${epoch.year} HARMONIC` : `AUDITION ${epoch.year} FREQUENCY`}
                   </Button>

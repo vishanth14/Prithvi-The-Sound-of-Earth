@@ -516,12 +516,13 @@ export const EarthJukeboxSection: React.FC = () => {
                 key={track.key}
                 disabled={isQuarantined}
                 onClick={() => !isQuarantined && handleSelectTrack(track.key)}
+                data-cursor-label={isQuarantined ? 'LOCKED' : 'LISTEN'}
                 title={
                   isQuarantined
                     ? 'Quarantined by Scientific Provenance Audit: Historical assimilation proxy table is not a verified NASA DAAC Level-3 empirical release.'
                     : undefined
                 }
-                className={`px-4 py-2 text-xs font-display tracking-wider uppercase transition-all duration-200 rounded-none border flex items-center gap-2 ${
+                className={`px-4 py-2 text-xs font-display tracking-wider uppercase transition-all duration-200 rounded-none border flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] ${
                   isQuarantined
                     ? 'opacity-40 cursor-not-allowed bg-[#070B10] text-[#7E8B98] border-[#252D36]'
                     : isSelected
@@ -576,6 +577,7 @@ export const EarthJukeboxSection: React.FC = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setActiveVisualTab('spiral')}
+                  data-cursor-label="SPIRAL"
                   className={`px-3 py-1 text-[11px] font-mono tracking-wider uppercase rounded-none border transition-colors cursor-pointer ${
                     activeVisualTab === 'spiral'
                       ? 'bg-[#FF5938] text-white font-bold border-[#FF5938]'
@@ -586,6 +588,7 @@ export const EarthJukeboxSection: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setActiveVisualTab('multitrack')}
+                  data-cursor-label="SERIES"
                   className={`px-3 py-1 text-[11px] font-mono tracking-wider uppercase rounded-none border transition-colors cursor-pointer ${
                     activeVisualTab === 'multitrack'
                       ? 'bg-[#FF5938] text-white font-bold border-[#FF5938]'
@@ -596,6 +599,7 @@ export const EarthJukeboxSection: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setActiveVisualTab('audit')}
+                  data-cursor-label="AUDIT"
                   className={`px-3 py-1 text-[11px] font-mono tracking-wider uppercase rounded-none border transition-colors cursor-pointer ${
                     activeVisualTab === 'audit'
                       ? 'bg-[#FF5938] text-white font-bold border-[#FF5938]'
@@ -1012,6 +1016,7 @@ export const EarthJukeboxSection: React.FC = () => {
                   max={Math.max(0, observations.length - 1)}
                   value={selectedObservationIndex || 0}
                   onChange={(e) => handleScrub(parseInt(e.target.value, 10))}
+                  data-cursor-label="SEEK"
                   aria-label="Seek timeline observation"
                   className="w-full h-2 bg-[#070B10] rounded-none appearance-none cursor-pointer accent-[#FF5938] border border-[#252D36]"
                 />
@@ -1033,6 +1038,7 @@ export const EarthJukeboxSection: React.FC = () => {
                       const idx = observations.findIndex((o) => o.year >= m.year);
                       if (idx !== -1) handleScrub(idx);
                     }}
+                    data-cursor-label="SEEK"
                     className="px-2 py-0.5 text-[10px] font-mono border border-[#252D36] bg-[#070B10] hover:border-[#FF5938] text-[#E9EDF0]/60 hover:text-[#FF5938] rounded-none transition-colors cursor-pointer"
                   >
                     {m.year}
@@ -1047,6 +1053,8 @@ export const EarthJukeboxSection: React.FC = () => {
                     variant="primary"
                     size="sm"
                     onClick={handleTogglePlay}
+                    data-cursor-label={transportState === 'PLAYING' ? 'PAUSE' : 'PLAY'}
+                    data-cursor-magnetic="true"
                     icon={
                       transportState === 'PLAYING' ? (
                         <Pause className="w-4 h-4 text-white" />
@@ -1060,7 +1068,9 @@ export const EarthJukeboxSection: React.FC = () => {
 
                   <button
                     onClick={handleRestart}
-                    className="p-2 border border-[#252D36] bg-[#070B10] hover:border-[#83BBD5] text-[#E9EDF0]/70 hover:text-white rounded-none transition-colors cursor-pointer"
+                    data-cursor-label="RESET"
+                    data-cursor-magnetic="true"
+                    className="p-2 border border-[#252D36] bg-[#070B10] hover:border-[#83BBD5] text-[#E9EDF0]/70 hover:text-white rounded-none transition-all cursor-pointer hover:scale-105 active:scale-95"
                     title="Reset to 1880 origin"
                   >
                     <RotateCcw className="w-4 h-4" />
@@ -1068,7 +1078,9 @@ export const EarthJukeboxSection: React.FC = () => {
 
                   <button
                     onClick={handleSpeedCycle}
-                    className="px-2.5 py-1 text-xs font-mono border border-[#252D36] bg-[#070B10] hover:border-[#83BBD5] text-[#83BBD5] rounded-none transition-colors cursor-pointer"
+                    data-cursor-label="SPEED"
+                    data-cursor-magnetic="true"
+                    className="px-2.5 py-1 text-xs font-mono border border-[#252D36] bg-[#070B10] hover:border-[#83BBD5] text-[#83BBD5] rounded-none transition-all cursor-pointer hover:scale-105 active:scale-95"
                     title="Cycle Playback Speed"
                   >
                     {speedMultiplier}x
@@ -1076,7 +1088,9 @@ export const EarthJukeboxSection: React.FC = () => {
 
                   <button
                     onClick={handleToggleLoop}
-                    className={`p-2 border rounded-none transition-colors cursor-pointer ${
+                    data-cursor-label="LOOP"
+                    data-cursor-magnetic="true"
+                    className={`p-2 border rounded-none transition-all cursor-pointer hover:scale-105 active:scale-95 ${
                       isLooping
                         ? 'border-[#FF5938] text-[#FF5938] bg-[#FF5938]/10'
                         : 'border-[#252D36] bg-[#070B10] text-[#E9EDF0]/60 hover:text-white'
@@ -1091,7 +1105,9 @@ export const EarthJukeboxSection: React.FC = () => {
                 <div className="flex items-center gap-2.5">
                   <button
                     onClick={toggleMute}
-                    className="text-[#E9EDF0]/70 hover:text-white transition-colors cursor-pointer"
+                    data-cursor-label={isMuted ? 'UNMUTE' : 'MUTE'}
+                    data-cursor-magnetic="true"
+                    className="text-[#E9EDF0]/70 hover:text-white transition-all cursor-pointer hover:scale-110"
                     title={isMuted ? 'Unmute' : 'Mute'}
                   >
                     {isMuted ? (
@@ -1107,6 +1123,7 @@ export const EarthJukeboxSection: React.FC = () => {
                     step={0.05}
                     value={isMuted ? 0 : masterVolume}
                     onChange={(e) => setMasterVolume(parseFloat(e.target.value))}
+                    data-cursor-label="VOLUME"
                     aria-label="Master Sonification Volume"
                     className="w-16 h-1 bg-[#070B10] rounded-none appearance-none cursor-pointer accent-[#FF5938] border border-[#252D36]"
                   />

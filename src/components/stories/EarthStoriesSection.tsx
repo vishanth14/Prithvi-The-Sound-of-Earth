@@ -291,7 +291,8 @@ export const EarthStoriesSection: React.FC = () => {
               <button
                 key={story.id}
                 onClick={() => setActiveStoryIdx(idx)}
-                className={`group px-4 py-2 text-xs font-display tracking-wider uppercase transition-all duration-200 flex items-center gap-2.5 cursor-pointer rounded-none border ${
+                data-cursor-label="STORY"
+                className={`group px-4 py-2 text-xs font-display tracking-wider uppercase transition-all duration-200 flex items-center gap-2.5 cursor-pointer rounded-none border hover:scale-[1.02] active:scale-[0.98] ${
                   isSelected
                     ? 'bg-[#FF5938] text-white font-bold border-[#FF5938] shadow-[0_4px_16px_rgba(255,89,56,0.25)]'
                     : 'bg-[#0E141D] text-[#E9EDF0]/70 border-[#252D36] hover:border-[#83BBD5] hover:text-[#E9EDF0]'
@@ -302,7 +303,10 @@ export const EarthStoriesSection: React.FC = () => {
                   style={{ backgroundColor: isSelected ? '#FFFFFF' : story.themeColor }}
                 />
                 <span className="font-mono text-[10px] opacity-80">{story.number}</span>
-                <span className="tracking-wide">{story.headline.split(':')[0]}</span>
+                <span className="tracking-wide relative">
+                  {story.headline.split(':')[0]}
+                  <span className={`block h-[1px] bg-[#FF5938] transition-all duration-300 ${isSelected ? 'w-full' : 'w-0 group-hover:w-full'}`} />
+                </span>
               </button>
             );
           })}
@@ -379,7 +383,10 @@ export const EarthStoriesSection: React.FC = () => {
                     variant="primary"
                     size="md"
                     onClick={() => handleAuditionStory(activeStory.eicKey)}
-                    icon={<Headphones className="w-4 h-4 text-white" />}
+                    icon={<Headphones className="w-4 h-4 text-[#070B10]" />}
+                    data-cursor-label="LISTEN"
+                    data-cursor-magnetic="true"
+                    className="hover:tracking-widest transition-all duration-300"
                   >
                     AUDITION THIS STORY IN THE JUKEBOX
                   </Button>
