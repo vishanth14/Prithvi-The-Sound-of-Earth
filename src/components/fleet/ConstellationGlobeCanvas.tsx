@@ -100,9 +100,10 @@ export const ConstellationGlobeCanvas: React.FC<ConstellationGlobeCanvasProps> =
             toneMappingExposure: 0.95,
           }}
         >
-          <ambientLight intensity={0.4} />
-          <directionalLight position={[-6, 4, 5]} intensity={2.4} />
-          <directionalLight position={[6, -3, -4]} intensity={0.5} color="#83BBD5" />
+          {/* Natural Daylight Illumination Model */}
+          <ambientLight intensity={0.55} color="#eef6ff" />
+          <directionalLight position={[-4.0, 2.8, 4.5]} intensity={2.4} color="#fffcf5" />
+          <directionalLight position={[4.0, -2.0, -3.0]} intensity={0.45} color="#a8cce4" />
 
           <Suspense fallback={null}>
             <Stars radius={50} depth={25} count={500} factor={2} fade speed={0.25} />

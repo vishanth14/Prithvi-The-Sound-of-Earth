@@ -120,10 +120,10 @@ export const HeroSection: React.FC = () => {
       id="hero"
       className="relative min-h-screen h-[100dvh] w-full flex flex-col justify-between pt-24 pb-8 sm:pb-10 px-6 sm:px-10 lg:px-16 overflow-hidden z-10 bg-transparent selection:bg-[#FF5938]/30 selection:text-[#E9EDF0]"
     >
-      {/* Editorial Depth Vignettes: framed top & bottom while leaving persistent 3D Earth crystal clear at center */}
-      <div className="hero-backdrop absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-[#070B10]/90 via-[#070B10]/40 to-transparent pointer-events-none" />
-      <div className="hero-backdrop absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#070B10] to-transparent pointer-events-none" />
-      <div className="hero-backdrop absolute inset-0 [background:radial-gradient(ellipse_at_center,transparent_45%,#070B10_95%)] pointer-events-none" />
+      {/* Layer 2: Subtle Cinematic Vignettes — preserves crystal-clear daylight Earth visibility across the central viewport */}
+      <div className="hero-backdrop absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-[#070B10]/80 via-[#070B10]/20 to-transparent pointer-events-none" />
+      <div className="hero-backdrop absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#070B10]/80 via-[#070B10]/20 to-transparent pointer-events-none" />
+      <div className="hero-backdrop absolute inset-0 [background:radial-gradient(ellipse_at_center,transparent_55%,rgba(7,11,16,0.65)_100%)] pointer-events-none" />
 
       {/* 1. Top Aerospace Mission Metadata */}
       <div className="hero-meta relative z-10 flex flex-wrap items-center justify-between gap-4 border-b border-[#252D36] pb-4 max-w-7xl w-full mx-auto pointer-events-none">
@@ -150,9 +150,10 @@ export const HeroSection: React.FC = () => {
       {/* 2. Center Monumental Editorial Typography (Scroll-exit scrubbed) */}
       <div className="hero-content-wrapper relative z-10 max-w-5xl mx-auto w-full my-auto text-center py-2 sm:py-4 flex flex-col items-center pointer-events-none">
         {/* Mission Index Identification */}
-        <div className="mb-3.5 inline-flex items-center gap-2 px-3 py-1 bg-[#070B10]/75 backdrop-blur-md border border-[#252D36]/80 rounded-xs font-mono text-[10px] tracking-[0.28em] text-[#7E8B98] uppercase shadow-lg">
-          <span className="w-1.5 h-1.5 bg-[#FF5938]" />
-          <span>EXPEDITION IDENTIFIER: PRITHVI-EO26</span>
+        <div className="mb-3.5 inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 bg-[#070B10]/75 backdrop-blur-md border border-[#252D36]/80 rounded-xs font-mono text-[9px] sm:text-[10px] tracking-[0.14em] sm:tracking-[0.28em] text-[#7E8B98] uppercase shadow-lg max-w-[92vw] whitespace-nowrap overflow-hidden text-ellipsis">
+          <span className="w-1.5 h-1.5 bg-[#FF5938] shrink-0" />
+          <span className="hidden xs:inline">EXPEDITION: </span>
+          <span>PRITHVI-EO26</span>
           <span className="text-[#252D36]">|</span>
           <span className="text-[#83BBD5] font-semibold">MULTIVERSE VENDHAN</span>
         </div>

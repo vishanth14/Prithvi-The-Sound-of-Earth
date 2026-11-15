@@ -2,7 +2,6 @@ import React, { Suspense, Component, useState, useEffect, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stars } from '@react-three/drei';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { easing } from 'maath';
 import { EarthGlobe } from './EarthGlobe';
@@ -10,7 +9,7 @@ import { CosmicParticles } from './CosmicParticles';
 import { useObservatoryStore } from '../../store/useObservatoryStore';
 import { scrollState } from '../../lib/scrollState';
 import { experienceOrchestrator } from '../../orchestrator/experienceOrchestrator';
-import { AlertCircle, Globe } from 'lucide-react';
+import { Globe } from 'lucide-react';
 
 // Converts Latitude & Longitude to 3D Cartesian coordinates on sphere (Radius 2.0)
 function latLngToVector3(lat: number, lng: number, radius = 2.016): [number, number, number] {
@@ -145,7 +144,7 @@ const ContinuousScrollCameraController: React.FC<{
 
 /**
  * Dynamic Scene Lighting Controller
- * Seamlessly lerps solar key light and earthshine intensities between chapters.
+ * Aligned with natural daylight illumination for Google Earth-style planetary exploration.
  */
 const DynamicSceneLighting: React.FC = () => {
   const dirLightRef = useRef<THREE.DirectionalLight>(null);
@@ -163,12 +162,12 @@ const DynamicSceneLighting: React.FC = () => {
 
   return (
     <>
-      {/* Solar Directional Illumination (Key Light aligned with shader uSunPosition [-5, 3, 4]) */}
-      <directionalLight ref={dirLightRef} position={[-5, 3, 4]} intensity={2.2} color="#fffcf5" />
-      {/* Deep Space Ambient Earthshine */}
-      <ambientLight ref={ambLightRef} intensity={0.14} color="#0c1730" />
-      {/* Deep Oceanic Earthshine Scatter */}
-      <pointLight position={[5, -2, -4]} intensity={0.12} color="#17465B" />
+      {/* Solar Directional Key Light aligned with shader uSunPosition [-4.0, 2.8, 4.5] */}
+      <directionalLight ref={dirLightRef} position={[-4.0, 2.8, 4.5]} intensity={2.4} color="#fffcf5" />
+      {/* Balanced Natural Daylight Ambient Fill (prevents harsh black unlit hemisphere) */}
+      <ambientLight ref={ambLightRef} intensity={0.55} color="#eef6ff" />
+      {/* Subtle Back Daylight Scatter */}
+      <directionalLight position={[4.0, -2.0, -3.0]} intensity={0.45} color="#a8cce4" />
     </>
   );
 };
@@ -191,6 +190,9 @@ function isWebGLAvailable(): boolean {
 const WebGLMetricsProbe: React.FC = () => {
   useFrame((state) => {
     if (typeof window !== 'undefined') {
+      (window as any).__threeScene = state.scene;
+      (window as any).__threeCamera = state.camera;
+      (window as any).__threeGl = state.gl;
       (window as any).__threeMetrics = {
         drawCalls: state.gl.info.render.calls,
         triangles: state.gl.info.render.triangles,
@@ -204,6 +206,25 @@ const WebGLMetricsProbe: React.FC = () => {
   });
   return null;
 };
+
+// Static Photographic Fallback Component
+// Renders licensed NASA Blue Marble 4K photography with a subtle corner chip, NEVER overlapping hero typography
+const StaticEarthFallback: React.FC = () => (
+  <div className="relative w-full h-full overflow-hidden bg-[#070B10] pointer-events-none">
+    <img
+      src="/textures/nasa_earth_day_4k.jpg"
+      alt="NASA Blue Marble 4K Earth Surface"
+      className="w-full h-full object-cover object-center opacity-85 scale-105"
+      style={{ filter: 'brightness(0.95) contrast(1.08)' }}
+    />
+    <div className="absolute inset-0 bg-radial-gradient from-transparent via-[#070B10]/20 to-[#070B10]/80" />
+    {/* Unobtrusive corner badge placed safely in bottom-right corner */}
+    <div className="absolute bottom-6 right-6 z-20 flex items-center gap-2 px-3 py-1.5 bg-[#070B10]/90 border border-[#252D36] font-mono text-[10px] text-[#83BBD5]">
+      <Globe className="w-3.5 h-3.5 text-[#FF5938]" />
+      <span>NASA BLUE MARBLE 2D APERTURE ACTIVE</span>
+    </div>
+  </div>
+);
 
 // WebGL Fallback Error Boundary
 interface FallbackProps {
@@ -231,22 +252,7 @@ class WebGLErrorBoundary extends Component<FallbackProps, FallbackState> {
 
   render() {
     if (this.state.hasError) {
-      return (
-        <div className="w-full h-full min-h-[360px] flex flex-col items-center justify-center p-6 bg-[#070B10] border border-[#252D36] text-center">
-          <Globe className="w-12 h-12 text-[#FF5938] mb-3 animate-pulse" />
-          <h3 className="font-display text-lg font-bold text-[#E9EDF0] mb-2 uppercase">
-            3D Planetary Viewport Standby
-          </h3>
-          <p className="font-sans text-xs text-[#E9EDF0]/70 max-w-sm mb-4">
-            Hardware acceleration is unavailable or WebGL context was reset. Telemetry,
-            sonification, and scientific datasets remain fully operational.
-          </p>
-          <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#FF5938] border border-[#FF5938]/30 px-3 py-1 bg-[#FF5938]/10">
-            <AlertCircle className="w-3.5 h-3.5" />
-            <span>FALLBACK TELEMETRY MODE ACTIVE</span>
-          </div>
-        </div>
-      );
+      return <StaticEarthFallback />;
     }
     return this.props.children;
   }
@@ -259,7 +265,7 @@ class WebGLErrorBoundary extends Component<FallbackProps, FallbackState> {
 export const PersistentEarthCanvas: React.FC = () => {
   const { globeRotating } = useObservatoryStore();
   const [isMobile, setIsMobile] = useState(false);
-  const [isWebGLSupported, setIsWebGLSupported] = useState<boolean>(() => isWebGLAvailable());
+  const [isWebGLSupported] = useState<boolean>(() => isWebGLAvailable());
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const isInteractingRef = useRef<boolean>(false);
 
@@ -272,77 +278,31 @@ export const PersistentEarthCanvas: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  useEffect(() => {
-    const handleContextLost = (e: Event) => {
-      e.preventDefault();
-      console.warn('[WebGL] Context lost event captured.');
-      setIsWebGLSupported(false);
-    };
-    const handleContextRestored = () => {
-      console.info('[WebGL] Context restored.');
-      setIsWebGLSupported(true);
-    };
-    window.addEventListener('webglcontextlost', handleContextLost);
-    window.addEventListener('webglcontextrestored', handleContextRestored);
-
-    // Also attach directly to any existing canvas element
-    const canvas = document.querySelector('canvas');
-    if (canvas) {
-      canvas.addEventListener('webglcontextlost', handleContextLost);
-      canvas.addEventListener('webglcontextrestored', handleContextRestored);
-    }
-
-    return () => {
-      window.removeEventListener('webglcontextlost', handleContextLost);
-      window.removeEventListener('webglcontextrestored', handleContextRestored);
-      if (canvas) {
-        canvas.removeEventListener('webglcontextlost', handleContextLost);
-        canvas.removeEventListener('webglcontextrestored', handleContextRestored);
-      }
-    };
-  }, []);
-
   if (!isWebGLSupported) {
-    return (
-      <div className="w-full h-full min-h-[360px] flex flex-col items-center justify-center p-6 bg-[#070B10] border border-[#252D36] text-center">
-        <Globe className="w-12 h-12 text-[#FF5938] mb-3 animate-pulse" />
-        <h3 className="font-display text-lg font-bold text-[#E9EDF0] mb-2 uppercase">
-          3D Planetary Viewport Standby
-        </h3>
-        <p className="font-sans text-xs text-[#E9EDF0]/70 max-w-sm mb-4">
-          Hardware acceleration is unavailable or WebGL context was reset. Telemetry,
-          sonification, and scientific datasets remain fully operational.
-        </p>
-        <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#FF5938] border border-[#FF5938]/30 px-3 py-1 bg-[#FF5938]/10">
-          <AlertCircle className="w-3.5 h-3.5" />
-          <span>FALLBACK TELEMETRY MODE ACTIVE</span>
-        </div>
-      </div>
-    );
+    return <StaticEarthFallback />;
   }
 
   return (
     <WebGLErrorBoundary>
       <div className="relative w-full h-full pointer-events-auto" data-cursor-label="ROTATE">
         <Canvas
-          camera={{ position: [0.0, -0.02, 7.8], fov: 42 }}
+          camera={{ position: [0.0, 0.0, 6.8], fov: 42 }}
           dpr={isMobile ? [1, 1.5] : [1, 2]}
           gl={{
             antialias: true,
             alpha: true,
             powerPreference: 'high-performance',
             toneMapping: THREE.ACESFilmicToneMapping,
-            toneMappingExposure: 0.88,
+            toneMappingExposure: 0.95,
           }}
           onCreated={({ gl }) => {
+            // Prevent browser from destroying context; await automatic restoration
             gl.domElement.addEventListener('webglcontextlost', (e) => {
               e.preventDefault();
-              console.warn('[WebGL] Context lost on gl.domElement');
-              setIsWebGLSupported(false);
+              console.warn('[PersistentEarth] WebGL context lost. Awaiting restoration...');
             });
             gl.domElement.addEventListener('webglcontextrestored', () => {
-              console.info('[WebGL] Context restored on gl.domElement');
-              setIsWebGLSupported(true);
+              console.info('[PersistentEarth] WebGL context restored successfully.');
             });
           }}
         >
@@ -353,7 +313,7 @@ export const PersistentEarthCanvas: React.FC = () => {
               isInteractingRef={isInteractingRef}
             />
 
-            {/* Dynamic Cinematic Scene Lighting Lerped Between Chapters */}
+            {/* Dynamic Daylight Scene Lighting Aligned with Sun Vector */}
             <DynamicSceneLighting />
 
             {/* 3D Distant Starfield */}
@@ -370,8 +330,8 @@ export const PersistentEarthCanvas: React.FC = () => {
             {/* Fine Cosmic Particles Responding to Scroll Velocity */}
             <CosmicParticles />
 
-            {/* 3D Photorealistic Planetary Mesh */}
-            <EarthGlobe />
+            {/* 3D Daylight Natural Earth Globe (Clean on Hero without orbital clutter) */}
+            <EarthGlobe showSatellites={false} showSentinels={false} />
 
             {/* Real-time WebGL Metrics Telemetry Probe */}
             <WebGLMetricsProbe />
@@ -396,19 +356,6 @@ export const PersistentEarthCanvas: React.FC = () => {
                 scrollState.isInteractingWithGlobe = false;
               }}
             />
-
-            {/* Postprocessing Pipeline (Desktop Only) */}
-            {!isMobile && (
-              <EffectComposer multisampling={0}>
-                <Bloom
-                  luminanceThreshold={0.96}
-                  luminanceSmoothing={0.15}
-                  intensity={0.16}
-                  radius={0.25}
-                />
-                <Vignette eskil={false} offset={0.12} darkness={0.65} />
-              </EffectComposer>
-            )}
           </Suspense>
         </Canvas>
       </div>

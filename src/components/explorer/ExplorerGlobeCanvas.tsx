@@ -32,12 +32,13 @@ export const ExplorerGlobeCanvas: React.FC = () => {
           alpha: true,
           powerPreference: 'high-performance',
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 0.95,
+          toneMappingExposure: 0.98,
         }}
       >
-        <ambientLight intensity={0.35} />
-        <directionalLight position={[-6, 3, 5]} intensity={2.2} />
-        <directionalLight position={[6, -2, -3]} intensity={0.4} color="#83BBD5" />
+        {/* Natural Daylight Illumination Model (Google Earth Style) */}
+        <ambientLight intensity={0.55} color="#eef6ff" />
+        <directionalLight position={[-4.0, 2.8, 4.5]} intensity={2.4} color="#fffcf5" />
+        <directionalLight position={[4.0, -2.0, -3.0]} intensity={0.45} color="#a8cce4" />
 
         <Suspense fallback={null}>
           <Stars radius={50} depth={25} count={400} factor={2} fade speed={0.2} />
@@ -46,8 +47,8 @@ export const ExplorerGlobeCanvas: React.FC = () => {
             ref={controlsRef}
             enablePan={false}
             enableZoom={true}
-            minDistance={2.8}
-            maxDistance={8.5}
+            minDistance={2.6}
+            maxDistance={7.5}
             autoRotate={globeRotating}
             autoRotateSpeed={0.45}
             dampingFactor={0.06}

@@ -20,12 +20,12 @@ class ExperienceOrchestrator {
 
   // High-performance mutable camera transform read by R3F useFrame (no React renders)
   public currentCameraTransform: CameraTransformState = {
-    position: [0.0, 0.45, 7.5],
-    lookAt: [0.0, 0.32, 0.0],
+    position: [0.0, 0.0, 6.8],
+    lookAt: [0.0, 0.0, 0.0],
     fov: 42,
-    sunIntensity: 2.2,
-    ambientIntensity: 0.14,
-    atmosphereGlow: 0.85,
+    sunIntensity: 2.4,
+    ambientIntensity: 0.55,
+    atmosphereGlow: 0.95,
   };
 
   /**
@@ -141,7 +141,7 @@ class ExperienceOrchestrator {
       const c1 = CHAPTER_CONFIGS['ch1-origin'];
       const c2 = CHAPTER_CONFIGS['ch2-orbit'];
 
-      const startPos: [number, number, number] = [0.0, 0.45, 7.5 * distanceScale];
+      const startPos: [number, number, number] = [0.0, 0.0, 6.8 * distanceScale];
       const endPos: [number, number, number] = isMobile
         ? [0.0, 0.32, 7.8 * distanceScale]
         : [1.62, -0.08, 8.2 * distanceScale];
@@ -153,8 +153,8 @@ class ExperienceOrchestrator {
           lerp(startPos[2], endPos[2], t),
         ],
         lookAt: isMobile
-          ? [0.0, lerp(0.32, 0.0, t), 0.0]
-          : [lerp(0.0, 1.62, t), lerp(0.32, -0.08, t), 0.0],
+          ? [0.0, 0.0, 0.0]
+          : [lerp(0.0, 1.62, t), lerp(0.0, -0.08, t), 0.0],
         fov: lerp(c1.camera.fov, c2.camera.fov, t),
         sunIntensity: lerp(c1.lighting.sunIntensity, c2.lighting.sunIntensity, t),
         ambientIntensity: lerp(c1.lighting.ambientIntensity, c2.lighting.ambientIntensity, t),
