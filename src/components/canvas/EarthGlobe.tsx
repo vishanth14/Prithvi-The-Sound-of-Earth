@@ -298,14 +298,32 @@ export const EarthGlobe: React.FC = () => {
 
   const targetColorObj = useMemo(() => new THREE.Color(), []);
 
-  // Load NASA Scientific Texture Suite with full anisotropic mipmapping
+  const [isMobile, setIsMobile] = React.useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth < 768 : false
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Adaptive Quality: Load NASA 4K textures on Desktop, optimized 2K/1K textures on Mobile
   const textures = useMemo(() => {
     const loader = new THREE.TextureLoader();
-    const day = loader.load('/textures/nasa_earth_day_4k.jpg');
-    const night = loader.load('/textures/nasa_earth_night_4k.jpg');
-    const clouds = loader.load('/textures/nasa_earth_clouds_4k.png');
-    const specular = loader.load('/textures/nasa_earth_specular.jpg');
-    const normal = loader.load('/textures/nasa_earth_normal.jpg');
+    const daySrc = isMobile ? '/textures/earth_day_2048.jpg' : '/textures/nasa_earth_day_4k.jpg';
+    const nightSrc = isMobile ? '/textures/earth_night_2048.png' : '/textures/nasa_earth_night_4k.jpg';
+    const cloudsSrc = isMobile ? '/textures/earth_clouds_1024.png' : '/textures/nasa_earth_clouds_4k.png';
+    const specularSrc = isMobile ? '/textures/earth_specular_2048.jpg' : '/textures/nasa_earth_specular.jpg';
+    const normalSrc = isMobile ? '/textures/earth_normal_2048.jpg' : '/textures/nasa_earth_normal.jpg';
+
+    const day = loader.load(daySrc);
+    const night = loader.load(nightSrc);
+    const clouds = loader.load(cloudsSrc);
+    const specular = loader.load(specularSrc);
+    const normal = loader.load(normalSrc);
 
     day.colorSpace = THREE.SRGBColorSpace;
     night.colorSpace = THREE.SRGBColorSpace;
@@ -319,16 +337,17 @@ export const EarthGlobe: React.FC = () => {
       tex.generateMipmaps = true;
       tex.minFilter = THREE.LinearMipmapLinearFilter;
       tex.magFilter = THREE.LinearFilter;
-      tex.anisotropy = 16;
+      tex.anisotropy = isMobile ? 4 : 16;
     });
 
     return { day, night, clouds, specular, normal };
-  }, []);
+  }, [isMobile]);
 
-  // Shared Geometries (High-resolution 144-segment spheres eliminate polygonal silhouette faceting)
-  const sphereGeo = useMemo(() => new THREE.SphereGeometry(2.0, 144, 144), []);
-  const cloudsGeo = useMemo(() => new THREE.SphereGeometry(2.008, 144, 144), []);
-  const atmosphereGeo = useMemo(() => new THREE.SphereGeometry(2.016, 144, 144), []);
+  // Adaptive Geometry: 144 segments on Desktop (flawless round limb), 64 segments on Mobile (80% vertex savings)
+  const segments = isMobile ? 64 : 144;
+  const sphereGeo = useMemo(() => new THREE.SphereGeometry(2.0, segments, segments), [segments]);
+  const cloudsGeo = useMemo(() => new THREE.SphereGeometry(2.008, segments, segments), [segments]);
+  const atmosphereGeo = useMemo(() => new THREE.SphereGeometry(2.016, segments, segments), [segments]);
 
   // Shader Materials
   const earthMat = useMemo(() => {

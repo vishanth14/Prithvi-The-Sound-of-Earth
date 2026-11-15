@@ -164,8 +164,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenShortcuts }) => {
                 cursorLabel="AUDIO"
                 variant="primary"
                 size="sm"
-                className="gap-2 px-3.5 py-1.5"
+                className="gap-2 px-3.5 py-2 min-h-[44px] flex items-center justify-center"
                 title="Activate Real-Time Scientific Sonification Engine"
+                aria-label="Activate Real-Time Scientific Sonification Engine"
               >
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full bg-white opacity-75" />
@@ -174,13 +175,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenShortcuts }) => {
                 <span className="font-bold text-xs tracking-wider text-[#070B10]">LISTEN</span>
               </MagneticButton>
             ) : (
-              <div className="inline-flex items-center border border-[#252D36] bg-[#0E141D] px-3 py-1 gap-2.5">
+              <div className="inline-flex items-center border border-[#252D36] bg-[#0E141D] px-2 py-0.5 gap-2">
                 <button
                   onClick={handleAudioAction}
                   data-cursor-label={transportState === 'PLAYING' ? 'PAUSE' : 'PLAY'}
                   data-cursor-magnetic="true"
-                  className="flex items-center gap-2 text-xs font-mono tracking-wide text-[#E9EDF0] hover:text-[#83BBD5] transition-colors cursor-pointer"
+                  className="flex items-center gap-2 text-xs font-mono tracking-wide text-[#E9EDF0] hover:text-[#83BBD5] transition-colors cursor-pointer min-h-[44px] px-2"
                   title={transportState === 'PLAYING' ? 'Pause Sonification' : 'Play Sonification'}
+                  aria-label={transportState === 'PLAYING' ? 'Pause Sonification' : 'Play Sonification'}
                 >
                   <span
                     className={`w-2 h-2 ${
@@ -196,18 +198,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenShortcuts }) => {
                   </span>
                 </button>
 
-                <div className="w-[1px] h-3 bg-[#252D36]" />
+                <div className="w-[1px] h-4 bg-[#252D36]" />
 
                 <button
                   onClick={handleToggleMute}
                   data-cursor-label={isMuted ? 'UNMUTE' : 'MUTE'}
-                  className="text-[#7E8B98] hover:text-[#E9EDF0] transition-colors cursor-pointer"
+                  className="text-[#7E8B98] hover:text-[#E9EDF0] transition-colors cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center"
                   title={isMuted ? 'Unmute Audio' : 'Mute Audio'}
+                  aria-label={isMuted ? 'Unmute Audio' : 'Mute Audio'}
                 >
                   {isMuted ? (
-                    <VolumeX className="w-3.5 h-3.5 text-[#FF5938]" />
+                    <VolumeX className="w-4 h-4 text-[#FF5938]" />
                   ) : (
-                    <Volume2 className="w-3.5 h-3.5 text-[#83BBD5]" />
+                    <Volume2 className="w-4 h-4 text-[#83BBD5]" />
                   )}
                 </button>
               </div>
@@ -218,10 +221,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenShortcuts }) => {
               <button
                 onClick={onOpenShortcuts}
                 data-cursor-label="KEYMAP"
-                className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono tracking-wider text-[#7E8B98] hover:text-[#E9EDF0] border border-[#252D36] hover:border-[#83BBD5] transition-all cursor-pointer"
+                className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[44px] text-[11px] font-mono tracking-wider text-[#7E8B98] hover:text-[#E9EDF0] border border-[#252D36] hover:border-[#83BBD5] transition-all cursor-pointer"
                 title="Keyboard Shortcuts (?)"
+                aria-label="Open Keyboard Shortcuts Dialog"
               >
-                <Command className="w-3 h-3 text-[#FF5938]" />
+                <Command className="w-3.5 h-3.5 text-[#FF5938]" />
                 <span>?</span>
               </button>
             )}
@@ -230,8 +234,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenShortcuts }) => {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               data-cursor-label="MENU"
-              className="md:hidden p-2 text-[#E9EDF0] hover:text-white border border-[#252D36] cursor-pointer"
+              className="md:hidden min-w-[44px] min-h-[44px] flex items-center justify-center text-[#E9EDF0] hover:text-white border border-[#252D36] cursor-pointer"
               aria-label="Toggle Navigation Menu"
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-navigation-drawer"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -251,7 +257,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenShortcuts }) => {
 
       {/* Mobile Minimal Drawer */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-[#070B10]/98 backdrop-blur-2xl pt-24 px-8 pb-10 flex flex-col justify-between border-b border-[#252D36] md:hidden animate-in fade-in duration-300">
+        <div
+          id="mobile-navigation-drawer"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation Menu"
+          className="fixed inset-0 z-40 bg-[#070B10]/98 backdrop-blur-2xl pt-24 px-8 pb-10 flex flex-col justify-between border-b border-[#252D36] md:hidden animate-in fade-in duration-300"
+        >
           <div className="flex flex-col gap-3">
             <span className="text-[10px] font-mono text-[#83BBD5] tracking-widest uppercase pb-2 border-b border-[#252D36]">
               OBSERVATORY DIRECTORY

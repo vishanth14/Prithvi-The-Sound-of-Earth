@@ -28,6 +28,9 @@ export const App: React.FC = () => {
     seekToIndex,
     selectedObservationIndex,
     setActiveEicKey,
+    activeEicKey,
+    currentObservation,
+    currentSonificationParams,
     isAudioUnlocked,
     unlockAudio,
   } = useObservatoryStore();
@@ -120,6 +123,34 @@ export const App: React.FC = () => {
 
   return (
     <div className="relative min-h-screen w-full bg-[#070B10] text-[#E9EDF0] overflow-x-hidden selection:bg-[#FF5938] selection:text-white">
+      {/* Accessible Skip Link (WCAG 2.4.1) */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[#FF5938] focus:text-[#070B10] focus:font-mono focus:font-bold focus:text-xs focus:shadow-lg focus:outline-none"
+      >
+        Skip to scientific content
+      </a>
+
+      {/* Screen Reader Live Region for Empirical Observation Announcements (WCAG 4.1.3) */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {currentObservation
+          ? `Observation ${activeEicKey.toUpperCase()} date ${currentObservation.dateString}: measurement ${
+              currentObservation.originalValue !== null
+                ? `${currentObservation.originalValue} ${currentObservation.unit}`
+                : 'Sensor gap'
+            }, quality flag ${currentObservation.qualityFlag}. Sonification: ${
+              currentSonificationParams
+                ? `${currentSonificationParams.frequencyHz} Hertz, note ${currentSonificationParams.noteName}`
+                : 'Off'
+            }.`
+          : 'Observatory ready.'}
+      </div>
+
       {/* 0. Custom Space-Inspired Aerospace Cursor */}
       <CustomCursor />
 
@@ -140,7 +171,11 @@ export const App: React.FC = () => {
       <ShortcutsModal isOpen={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
 
       {/* 4. Main Continuous Scrollytelling Sequence */}
-      <main className="relative z-10 w-full flex flex-col pointer-events-none">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="relative z-10 w-full flex flex-col pointer-events-none focus:outline-none"
+      >
         {/* CHAPTER 01 — ORBITAL ENTRY */}
         <HeroSection />
 

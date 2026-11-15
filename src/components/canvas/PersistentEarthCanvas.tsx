@@ -166,6 +166,38 @@ const DynamicSceneLighting: React.FC = () => {
   );
 };
 
+function isWebGLAvailable(): boolean {
+  if (typeof window === 'undefined') return true;
+  try {
+    const canvas = document.createElement('canvas');
+    return Boolean(
+      window.WebGLRenderingContext &&
+        (canvas.getContext('webgl2') ||
+          canvas.getContext('webgl') ||
+          canvas.getContext('experimental-webgl'))
+    );
+  } catch {
+    return false;
+  }
+}
+
+const WebGLMetricsProbe: React.FC = () => {
+  useFrame((state) => {
+    if (typeof window !== 'undefined') {
+      (window as any).__threeMetrics = {
+        drawCalls: state.gl.info.render.calls,
+        triangles: state.gl.info.render.triangles,
+        points: state.gl.info.render.points,
+        lines: state.gl.info.render.lines,
+        geometries: state.gl.info.memory.geometries,
+        textures: state.gl.info.memory.textures,
+        dpr: state.gl.getPixelRatio(),
+      };
+    }
+  });
+  return null;
+};
+
 // WebGL Fallback Error Boundary
 interface FallbackProps {
   children: React.ReactNode;
@@ -220,6 +252,7 @@ class WebGLErrorBoundary extends Component<FallbackProps, FallbackState> {
 export const PersistentEarthCanvas: React.FC = () => {
   const { globeRotating } = useObservatoryStore();
   const [isMobile, setIsMobile] = useState(false);
+  const [isWebGLSupported, setIsWebGLSupported] = useState<boolean>(() => isWebGLAvailable());
   const controlsRef = useRef<OrbitControlsImpl | null>(null);
   const isInteractingRef = useRef<boolean>(false);
 
@@ -231,6 +264,55 @@ export const PersistentEarthCanvas: React.FC = () => {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  useEffect(() => {
+    const handleContextLost = (e: Event) => {
+      e.preventDefault();
+      console.warn('[WebGL] Context lost event captured.');
+      setIsWebGLSupported(false);
+    };
+    const handleContextRestored = () => {
+      console.info('[WebGL] Context restored.');
+      setIsWebGLSupported(true);
+    };
+    window.addEventListener('webglcontextlost', handleContextLost);
+    window.addEventListener('webglcontextrestored', handleContextRestored);
+
+    // Also attach directly to any existing canvas element
+    const canvas = document.querySelector('canvas');
+    if (canvas) {
+      canvas.addEventListener('webglcontextlost', handleContextLost);
+      canvas.addEventListener('webglcontextrestored', handleContextRestored);
+    }
+
+    return () => {
+      window.removeEventListener('webglcontextlost', handleContextLost);
+      window.removeEventListener('webglcontextrestored', handleContextRestored);
+      if (canvas) {
+        canvas.removeEventListener('webglcontextlost', handleContextLost);
+        canvas.removeEventListener('webglcontextrestored', handleContextRestored);
+      }
+    };
+  }, []);
+
+  if (!isWebGLSupported) {
+    return (
+      <div className="w-full h-full min-h-[360px] flex flex-col items-center justify-center p-6 bg-[#070B10] border border-[#252D36] text-center">
+        <Globe className="w-12 h-12 text-[#FF5938] mb-3 animate-pulse" />
+        <h3 className="font-display text-lg font-bold text-[#E9EDF0] mb-2 uppercase">
+          3D Planetary Viewport Standby
+        </h3>
+        <p className="font-sans text-xs text-[#E9EDF0]/70 max-w-sm mb-4">
+          Hardware acceleration is unavailable or WebGL context was reset. Telemetry,
+          sonification, and scientific datasets remain fully operational.
+        </p>
+        <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#FF5938] border border-[#FF5938]/30 px-3 py-1 bg-[#FF5938]/10">
+          <AlertCircle className="w-3.5 h-3.5" />
+          <span>FALLBACK TELEMETRY MODE ACTIVE</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <WebGLErrorBoundary>
@@ -244,6 +326,17 @@ export const PersistentEarthCanvas: React.FC = () => {
             powerPreference: 'high-performance',
             toneMapping: THREE.ACESFilmicToneMapping,
             toneMappingExposure: 0.88,
+          }}
+          onCreated={({ gl }) => {
+            gl.domElement.addEventListener('webglcontextlost', (e) => {
+              e.preventDefault();
+              console.warn('[WebGL] Context lost on gl.domElement');
+              setIsWebGLSupported(false);
+            });
+            gl.domElement.addEventListener('webglcontextrestored', () => {
+              console.info('[WebGL] Context restored on gl.domElement');
+              setIsWebGLSupported(true);
+            });
           }}
         >
           <Suspense fallback={null}>
@@ -272,6 +365,9 @@ export const PersistentEarthCanvas: React.FC = () => {
 
             {/* 3D Photorealistic Planetary Mesh */}
             <EarthGlobe />
+
+            {/* Real-time WebGL Metrics Telemetry Probe */}
+            <WebGLMetricsProbe />
 
             {/* Orbit Controls with User Interaction Hooks */}
             <OrbitControls
