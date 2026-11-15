@@ -531,4 +531,25 @@ Verified across the 5 canonical device profiles with **zero horizontal overflow*
 
 ---
 
+## 16. Critical Bug Audit, Diagnostics & Production Stabilization
+
+Following the comprehensive Layer 15 production audit, a forensic defect inspection was performed across all six chapters to reproduce, isolate, and repair four visible operational anomalies:
+
+### 16.1. Defect Matrix & Applied Remediations
+
+| Bug ID | Visible Defect | Root Cause Mechanism | Architectural Remediation | Live Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **BUG 1** | 3D Earth becomes unstable, shakes, or zooms unexpectedly when scrolling upwards | Full-screen `OrbitControls` had `enableZoom={true}`, intercepting wheel events (`defaultPrevented: true`) and dollying the camera while Lenis smooth scroll moved the page; `OrbitControls.update()` and `easing.damp3` executed simultaneously every frame, causing high-frequency oscillation. | Set `enableZoom={false}` on the full-page persistent canvas so wheel events are dedicated 100% to Lenis. Decoupled damping from drag updates by only invoking `OrbitControls.update()` when dragging (`isInteractingRef.current === true`). Smoothly lerped lookAt targets on sentinel exit. | **RESOLVED** |
+| **BUG 2** | Interactive Earth globe missing from designated exploration visual section | `.lg:col-span-7` container inside `EarthExplorerSection` was rendered empty with `pointer-events-none` and `bg-transparent`, assuming the full-screen background canvas would align within it. Across variable viewports, the globe was clipped, displaced, and non-interactive. | Created dedicated `ExplorerGlobeCanvas.tsx` R3F canvas mounted directly within the 7-column grid with local OrbitControls, auto-rotation, sentinel pins, and aerospace HUD controls. | **RESOLVED** |
+| **BUG 3** | "THE EARTH OBSERVING CONSTELLATION" has a large empty white space | Section background was solid opaque `bg-[#E9EDF0]` blocking the background canvas. Concurrently, `gsap.from('.fleet-card', { opacity: 0, y: 40 })` froze cards 1–5 at `opacity: 0`, and no dedicated 3D constellation visual was rendered. | Created dedicated `ConstellationGlobeCanvas.tsx` 3D radar viewport displaying Earth and 5 active satellite orbits (Terra, Aqua, GRACE-FO, Landsat 9, Sentinel-6). Removed frozen GSAP `from()` state to ensure all 6 cards render with 100% opacity. | **RESOLVED** |
+| **BUG 4** | "OFFICIAL SCIENTIFIC DATA REPOSITORIES" is blank beneath its heading | `gsap.from('.source-card', { opacity: 0, y: 30 })` injected inline `opacity: 0` on mount. Document height changes from lazy textures caused ScrollTrigger's cached trigger positions to become stale, leaving all 5 repository cards stuck at `opacity: 0`. | Removed fragile `gsap.from()`, restored CSS-first visibility (`opacity: 1`), and verified that all 5 scientific repositories (NASA GISTEMP v4, Mauna Loa CO2, PO.DAAC Sea Level, GEOS Aerosols, VIIRS) render immediately with active citations and download buttons. | **RESOLVED** |
+
+### 16.2. Production Audit Artifacts & Empirical Evidence
+- Full technical defect report: [critical-bug-audit.md](file:///v:/Prithvi-The-Sound-of-Earth/docs/critical-bug-audit.md)
+- Bug 2 Explorer Globe verified render: [audit_repair_bug2_explorer_globe.png](file:///v:/Prithvi-The-Sound-of-Earth/docs/verification-screenshots/audit_repair_bug2_explorer_globe.png)
+- Bug 3 Constellation Radar verified render: [audit_repair_bug3_fleet_constellation.png](file:///v:/Prithvi-The-Sound-of-Earth/docs/verification-screenshots/audit_repair_bug3_fleet_constellation.png)
+- Bug 4 Open Science Repositories verified render: [audit_repair_bug4_repositories.png](file:///v:/Prithvi-The-Sound-of-Earth/docs/verification-screenshots/audit_repair_bug4_repositories.png)
+
+---
+
 **Submission Status: READY FOR OFFICIAL NASA SPACE APPS 2026 SUBMISSION.**
