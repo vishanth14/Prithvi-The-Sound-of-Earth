@@ -127,7 +127,7 @@ export const MethodologySection: React.FC = () => {
       <div className="max-w-7xl mx-auto space-y-12">
         <SectionHeader
           number="06"
-          category="SOURCES, ACCESSIBILITY & CREDITS"
+          category="BEYOND // OPEN SCIENCE ARCHIVE"
           title="OPEN SCIENCE"
           subtitle="PRITHVI is built upon open NASA Earth observation data architectures, honoring rigorous open-science principles, WCAG 2.2 AA accessibility, and transparent telemetry verification."
           badge="OPEN SCIENCE"

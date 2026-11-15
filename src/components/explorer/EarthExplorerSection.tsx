@@ -253,7 +253,7 @@ export const EarthExplorerSection: React.FC = () => {
           <div className="mb-8">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-3 border-b border-[#252D36]/20 pb-3">
               <span className="font-mono text-xs uppercase tracking-[0.25em] text-[#FF5938] font-bold">
-                CHAPTER 02 // EARTH OBSERVATION JOURNEY
+                CHAPTER 02 // ORBIT
               </span>
               <span className="font-mono text-xs uppercase tracking-widest text-[#252D36] font-semibold">
                 NASA EIC OBSERVATION FLEET

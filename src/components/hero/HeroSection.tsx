@@ -1,11 +1,13 @@
 import React, { useRef } from 'react';
 import { useObservatoryStore } from '../../store/useObservatoryStore';
+import { useExperienceStore } from '../../orchestrator/experienceStore';
 import { gsap, ScrollTrigger, useGSAP } from '../../lib/gsap';
 import { ArrowDown, Compass, Headphones } from 'lucide-react';
 
 export const HeroSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { isAudioUnlocked, unlockAudio, startPlayback } = useObservatoryStore();
+  const { navigateToChapter } = useExperienceStore();
 
   useGSAP(
     () => {
@@ -100,10 +102,7 @@ export const HeroSection: React.FC = () => {
   );
 
   const handleBeginJourney = () => {
-    const explorerEl = document.getElementById('explorer');
-    if (explorerEl) {
-      explorerEl.scrollIntoView({ behavior: 'smooth' });
-    }
+    navigateToChapter('ch2-orbit');
   };
 
   const handleListenToEarth = async () => {
@@ -111,13 +110,7 @@ export const HeroSection: React.FC = () => {
       await unlockAudio();
       await startPlayback();
     }
-    const listenEl =
-      document.getElementById('jukebox') ||
-      document.getElementById('sonification') ||
-      document.getElementById('eic-jukebox');
-    if (listenEl) {
-      listenEl.scrollIntoView({ behavior: 'smooth' });
-    }
+    navigateToChapter('ch4-frequency');
   };
 
   return (
@@ -139,7 +132,7 @@ export const HeroSection: React.FC = () => {
           </span>
           <span className="text-[#252D36]">/</span>
           <span className="font-display font-bold text-sm tracking-wider text-[#E9EDF0] uppercase">
-            ORBITAL ENTRY
+            ORIGIN
           </span>
         </div>
         <div className="flex items-center gap-3 text-right">

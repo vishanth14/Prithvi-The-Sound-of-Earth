@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useObservatoryStore } from '../../store/useObservatoryStore';
+import { useExperienceStore } from '../../orchestrator/experienceStore';
+import type { ChapterId } from '../../orchestrator/experienceTypes';
 import { PrithviWordmark } from '../common/PrithviWordmark';
 import { Volume2, VolumeX, Menu, X, Command } from 'lucide-react';
 
@@ -18,6 +20,19 @@ const MINIMAL_CHAPTERS: NavChapter[] = [
   { id: 'signal', label: 'SCIENCE', number: '05', targetId: 'signal' },
 ];
 
+const CHAPTER_NAV_MAP: Record<string, ChapterId> = {
+  hero: 'ch1-origin',
+  explorer: 'ch2-orbit',
+  fleet: 'ch2-orbit',
+  stories: 'ch3-signals',
+  jukebox: 'ch4-frequency',
+  listen: 'ch4-frequency',
+  signal: 'ch5-decoding',
+  science: 'ch5-decoding',
+  'open-science': 'ch6-beyond',
+  methodology: 'ch6-beyond',
+};
+
 interface NavbarProps {
   onOpenShortcuts?: () => void;
 }
@@ -28,13 +43,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenShortcuts }) => {
     isMuted,
     toggleMute,
     unlockAudio,
-    activeSection,
-    setActiveSection,
     transportState,
     startPlayback,
     pausePlayback,
     currentSonificationParams,
   } = useObservatoryStore();
+
+  const { currentChapter, navigateToChapter } = useExperienceStore();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -76,41 +91,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenShortcuts }) => {
   }, []);
 
   const scrollToChapter = (id: string) => {
-    setActiveSection(id);
     setMobileMenuOpen(false);
-
-    let targetId = id;
-    if (id === 'listen') targetId = 'jukebox';
-    if (id === 'science') targetId = 'signal';
-    if (id === 'methodology') targetId = 'open-science';
-
-    const element = document.getElementById(targetId) || document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    const targetChapter = CHAPTER_NAV_MAP[id] || 'ch1-origin';
+    navigateToChapter(targetChapter);
   };
 
   const isChapterActive = (chapterId: string) => {
-    if (chapterId === 'hero' && activeSection === 'hero') return true;
-    if (chapterId === 'explorer' && (activeSection === 'explorer' || activeSection === 'fleet')) return true;
-    if (chapterId === 'stories' && (activeSection === 'stories' || activeSection === 'eic-jukebox')) return true;
-    if (
-      chapterId === 'jukebox' &&
-      (activeSection === 'jukebox' ||
-        activeSection === 'sonification' ||
-        activeSection === 'timeline' ||
-        activeSection === 'listen')
-    )
-      return true;
-    if (
-      chapterId === 'signal' &&
-      (activeSection === 'signal' ||
-        activeSection === 'science' ||
-        activeSection === 'open-science' ||
-        activeSection === 'methodology')
-    )
-      return true;
-    return false;
+    const targetChapter = CHAPTER_NAV_MAP[chapterId];
+    return currentChapter === targetChapter;
   };
 
   return (

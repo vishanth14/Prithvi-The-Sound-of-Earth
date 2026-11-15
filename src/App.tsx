@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import Lenis from 'lenis';
-import { gsap, ScrollTrigger } from './lib/gsap';
 import { useObservatoryStore } from './store/useObservatoryStore';
+import { useExperienceStore } from './orchestrator/experienceStore';
+import { experienceOrchestrator } from './orchestrator/experienceOrchestrator';
+import { CHAPTER_CONFIGS } from './orchestrator/chapterConfig';
 import { PersistentEarthCanvas } from './components/canvas/PersistentEarthCanvas';
 import { CustomCursor } from './components/common/CustomCursor';
 import { Navbar } from './components/navigation/Navbar';
@@ -20,7 +21,6 @@ export const App: React.FC = () => {
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const {
     setActiveSection,
-    setActiveCameraTarget,
     transportState,
     startPlayback,
     pausePlayback,
@@ -32,90 +32,35 @@ export const App: React.FC = () => {
     unlockAudio,
   } = useObservatoryStore();
 
-  // Unified Lenis + GSAP ScrollTrigger Synchronization Loop
+  // Central Cinematic Experience Orchestration Lifecycle
   useEffect(() => {
-    // Check user preference for reduced motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    scrollState.prefersReducedMotion = prefersReducedMotion;
+    experienceOrchestrator.init();
 
-    const lenis = new Lenis({
-      duration: prefersReducedMotion ? 0.1 : 1.15,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 0.95,
-    });
-    (window as any).__lenis = lenis;
-    (window as any).__scrollState = scrollState;
-
-    // Continuous scroll synchronization with shared scrollState and ScrollTrigger
-    lenis.on('scroll', (e: { progress: number; velocity: number; scroll: number }) => {
-      scrollState.progress = Math.max(0, Math.min(1, e.progress));
-      scrollState.velocity = e.velocity;
-      scrollState.scrollY = e.scroll;
-      ScrollTrigger.update();
+    // Synchronize Experience Store with Observatory Store
+    const unsub = useExperienceStore.subscribe((state) => {
+      const config = CHAPTER_CONFIGS[state.currentChapter];
+      if (config) {
+        setActiveSection(config.domId);
+        scrollState.activeChapter = config.domId as any;
+      }
     });
 
-    // Single unified animation frame ticker
-    const tickerUpdate = (time: number) => {
-      lenis.raf(time * 1000);
-    };
-    gsap.ticker.add(tickerUpdate);
-    gsap.ticker.lagSmoothing(0);
-
-    // Section scroll trackers linking viewport to 3D Camera coordinates and chapter progress
-    const sections: {
-      id: string;
-      target: 'hero' | 'explorer' | 'fleet' | 'timeline' | 'sonification' | 'science';
-    }[] = [
-      { id: 'hero', target: 'hero' },
-      { id: 'explorer', target: 'explorer' },
-      { id: 'fleet', target: 'fleet' },
-      { id: 'stories', target: 'fleet' },
-      { id: 'jukebox', target: 'sonification' },
-      { id: 'signal', target: 'science' },
-      { id: 'open-science', target: 'science' },
-    ];
-
-    const triggers: ScrollTrigger[] = [];
-
-    sections.forEach(({ id, target }) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-
-      const trigger = ScrollTrigger.create({
-        trigger: el,
-        start: 'top 55%',
-        end: 'bottom 45%',
-        onUpdate: (self) => {
-          if (id === 'hero') scrollState.chapterProgress.hero = self.progress;
-          if (id === 'explorer') scrollState.chapterProgress.explorer = self.progress;
-          if (id === 'fleet') scrollState.chapterProgress.fleet = self.progress;
-          if (id === 'stories') scrollState.chapterProgress.stories = self.progress;
-          if (id === 'jukebox') scrollState.chapterProgress.jukebox = self.progress;
-          if (id === 'signal') scrollState.chapterProgress.signal = self.progress;
-          if (id === 'open-science') scrollState.chapterProgress.openScience = self.progress;
-        },
-        onEnter: () => {
-          setActiveSection(id);
-          setActiveCameraTarget(target);
-          scrollState.activeChapter = id as any;
-        },
-        onEnterBack: () => {
-          setActiveSection(id);
-          setActiveCameraTarget(target);
-          scrollState.activeChapter = id as any;
-        },
-      });
-      triggers.push(trigger);
-    });
+    // Handle deep link hash on page entry (#hero, #explorer, #stories, #jukebox, #signal, #open-science)
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      const matched = Object.values(CHAPTER_CONFIGS).find((c) => c.domId === hash);
+      if (matched) {
+        setTimeout(() => {
+          useExperienceStore.getState().navigateToChapter(matched.id, { duration: 0.1 });
+        }, 180);
+      }
+    }
 
     return () => {
-      gsap.ticker.remove(tickerUpdate);
-      lenis.destroy();
-      triggers.forEach((t) => t.kill());
+      unsub();
+      experienceOrchestrator.dispose();
     };
-  }, [setActiveSection, setActiveCameraTarget]);
+  }, [setActiveSection]);
 
   // Global Observatory Keyboard Accessibility Listener
   useEffect(() => {

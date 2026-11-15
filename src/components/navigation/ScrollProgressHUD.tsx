@@ -1,30 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { scrollState } from '../../lib/scrollState';
 import { uiAudioFeedback } from '../../audio/uiAudioFeedback';
+import { useExperienceStore } from '../../orchestrator/experienceStore';
+import type { ChapterId } from '../../orchestrator/experienceTypes';
 
 interface ChapterMilestone {
-  id: string;
+  chapterId: ChapterId;
+  domId: string;
   number: string;
   label: string;
   progress: number;
 }
 
 const CHAPTER_MILESTONES: ChapterMilestone[] = [
-  { id: 'hero', number: '01', label: 'ORBITAL ENTRY', progress: 0.05 },
-  { id: 'explorer', number: '02', label: 'THE PLANET', progress: 0.18 },
-  { id: 'fleet', number: '02.5', label: 'CONSTELLATION', progress: 0.31 },
-  { id: 'stories', number: '03', label: 'SIGNALS', progress: 0.43 },
-  { id: 'jukebox', number: '04', label: 'EARTH IN SOUND', progress: 0.60 },
-  { id: 'signal', number: '05', label: 'SIGNAL LOGIC', progress: 0.78 },
-  { id: 'open-science', number: '06', label: 'OPEN SCIENCE', progress: 0.95 },
+  { chapterId: 'ch1-origin', domId: 'hero', number: '01', label: 'ORIGIN', progress: 0.05 },
+  { chapterId: 'ch2-orbit', domId: 'explorer', number: '02', label: 'ORBIT', progress: 0.22 },
+  { chapterId: 'ch3-signals', domId: 'stories', number: '03', label: 'SIGNALS', progress: 0.44 },
+  { chapterId: 'ch4-frequency', domId: 'jukebox', number: '04', label: 'FREQUENCY', progress: 0.62 },
+  { chapterId: 'ch5-decoding', domId: 'signal', number: '05', label: 'DECODING', progress: 0.80 },
+  { chapterId: 'ch6-beyond', domId: 'open-science', number: '06', label: 'BEYOND', progress: 0.95 },
 ];
 
 export const ScrollProgressHUD: React.FC = () => {
   const [currentProgress, setCurrentProgress] = useState(0);
   const [activeChapter, setActiveChapter] = useState(CHAPTER_MILESTONES[0]);
+  const { navigateToChapter } = useExperienceStore();
 
   useEffect(() => {
-    let prevChapterId = CHAPTER_MILESTONES[0].id;
+    let prevChapterId = CHAPTER_MILESTONES[0].chapterId;
     let animId: number;
 
     const updateHUD = () => {
@@ -33,16 +36,15 @@ export const ScrollProgressHUD: React.FC = () => {
 
       // Determine active chapter milestone
       let current = CHAPTER_MILESTONES[0];
-      if (p >= 0.88) current = CHAPTER_MILESTONES[6];
-      else if (p >= 0.69) current = CHAPTER_MILESTONES[5];
-      else if (p >= 0.51) current = CHAPTER_MILESTONES[4];
-      else if (p >= 0.36) current = CHAPTER_MILESTONES[3];
-      else if (p >= 0.26) current = CHAPTER_MILESTONES[2];
-      else if (p >= 0.11) current = CHAPTER_MILESTONES[1];
+      if (p >= 0.88) current = CHAPTER_MILESTONES[5];
+      else if (p >= 0.72) current = CHAPTER_MILESTONES[4];
+      else if (p >= 0.52) current = CHAPTER_MILESTONES[3];
+      else if (p >= 0.36) current = CHAPTER_MILESTONES[2];
+      else if (p >= 0.12) current = CHAPTER_MILESTONES[1];
       else current = CHAPTER_MILESTONES[0];
 
-      if (current.id !== prevChapterId) {
-        prevChapterId = current.id;
+      if (current.chapterId !== prevChapterId) {
+        prevChapterId = current.chapterId;
         setActiveChapter(current);
         uiAudioFeedback.play('chapter');
       }
@@ -54,16 +56,9 @@ export const ScrollProgressHUD: React.FC = () => {
     return () => cancelAnimationFrame(animId);
   }, []);
 
-  const handleNavigateToChapter = (id: string) => {
+  const handleNavigateToChapter = (chapterId: ChapterId) => {
     uiAudioFeedback.play('click');
-    const targetEl = document.getElementById(id);
-    if (targetEl) {
-      if ((window as any).__lenis) {
-        (window as any).__lenis.scrollTo(targetEl, { duration: 1.2 });
-      } else {
-        targetEl.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+    navigateToChapter(chapterId);
   };
 
   return (
@@ -113,11 +108,11 @@ export const ScrollProgressHUD: React.FC = () => {
 
         {/* Milestone Notches */}
         {CHAPTER_MILESTONES.map((milestone) => {
-          const isActive = activeChapter.id === milestone.id;
+          const isActive = activeChapter.chapterId === milestone.chapterId;
           return (
             <button
-              key={milestone.id}
-              onClick={() => handleNavigateToChapter(milestone.id)}
+              key={milestone.chapterId}
+              onClick={() => handleNavigateToChapter(milestone.chapterId)}
               data-cursor-label="EXPLORE"
               title={`Jump to Chapter ${milestone.number}: ${milestone.label}`}
               className="group relative flex items-center justify-end w-8 h-5 cursor-pointer focus-visible:outline-none"

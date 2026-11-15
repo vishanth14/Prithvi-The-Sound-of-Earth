@@ -168,7 +168,7 @@ export const SoundToScienceSection: React.FC = () => {
       <div className="max-w-7xl mx-auto space-y-12">
         <SectionHeader
           number="05"
-          category="MATHEMATICAL SONIFICATION"
+          category="DECODING // MATHEMATICAL MAPPING"
           title="UNDERSTAND THE SIGNAL"
           subtitle="The mathematical mapping, transfer equations, psychoacoustic logic, and scientific limitations converting empirical NASA measurements into deterministic sound. Every frequency, harmonic ratio, and rhythmic pulse exists for a verifiable physical reason."
           badge="MATHEMATICAL RIGOR"

@@ -438,7 +438,7 @@ export const EarthJukeboxSection: React.FC = () => {
         <div className="jukebox-reveal">
           <SectionHeader
             number="04"
-            category="PRIMARY CHALLENGE EXPERIENCE"
+            category="FREQUENCY // SONIC LABORATORY"
             title="THE EARTH JUKEBOX"
             subtitle="The centerpiece of PRITHVI: empirical NASA Earth Information Center telemetry married to real-time deterministic sonification. Audition the planet across space and time through an integrated visual and acoustic display driven by an authoritative master audio clock."
             badge="TONE.JS + WEB AUDIO ENGINE"

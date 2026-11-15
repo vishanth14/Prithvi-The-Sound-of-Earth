@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { X, Command, Volume2, Play, FastForward, RotateCcw } from 'lucide-react';
+import { ReticleCorner } from './AerospaceMark';
 
 interface ShortcutsModalProps {
   isOpen: boolean;
@@ -70,6 +71,8 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
         className="relative w-full max-w-lg bg-[#0E141D] border border-[#252D36] p-6 sm:p-7 shadow-[0_16px_50px_rgba(0,0,0,0.9)] rounded-none"
         onClick={(e) => e.stopPropagation()}
       >
+        <ReticleCorner size={10} color="#FF5938" />
+
         {/* Header */}
         <div className="flex items-center justify-between pb-4 mb-6 border-b border-[#252D36]">
           <div className="flex items-center gap-2.5">

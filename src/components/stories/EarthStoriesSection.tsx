@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useObservatoryStore } from '../../store/useObservatoryStore';
+import { useExperienceStore } from '../../orchestrator/experienceStore';
 import type { EicDatasetKey } from '../../data/eicSchemas';
 import { gsap, useGSAP } from '../../lib/gsap';
 import {
@@ -919,12 +920,14 @@ export const EarthStoriesSection: React.FC = () => {
     { scope: sectionRef }
   );
 
+  const { setSelectedScientificStory, navigateToChapter } = useExperienceStore();
   const activeStory = EDITORIAL_STORIES[activeStoryIdx];
 
   const handleSelectStory = async (idx: number) => {
     setActiveStoryIdx(idx);
     const story = EDITORIAL_STORIES[idx];
     setTimelineYear(story.timeline[story.timeline.length - 1].year);
+    setSelectedScientificStory(story.id);
     await setActiveEicKey(story.eicKey);
   };
 
@@ -934,18 +937,7 @@ export const EarthStoriesSection: React.FC = () => {
     }
     await setActiveEicKey(activeStory.eicKey);
     await startPlayback();
-
-    const jukeboxEl =
-      document.getElementById('jukebox') ||
-      document.getElementById('eic-jukebox') ||
-      document.getElementById('sonification');
-    if (jukeboxEl) {
-      if ((window as any).__lenis) {
-        (window as any).__lenis.scrollTo(jukeboxEl, { duration: 1.2 });
-      } else {
-        jukeboxEl.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+    navigateToChapter('ch4-frequency');
   };
 
   const activeTimelinePoint = useMemo(() => {
@@ -966,12 +958,12 @@ export const EarthStoriesSection: React.FC = () => {
         <div className="story-reveal border-b border-[#252D36] pb-6">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
             <span className="font-mono text-xs uppercase tracking-[0.25em] text-[#FF5938] font-bold">
-              CHAPTER 03 // SCIENTIFIC STORIES
+              CHAPTER 03 // SIGNALS
             </span>
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-[#FF5938] animate-pulse" />
               <span className="font-mono text-xs text-[#83BBD5] uppercase tracking-widest font-semibold">
-                NASA EARTH INFORMATION CENTER
+                ORBITAL VIEWPOINT & PLANETARY NARRATIVES
               </span>
             </div>
           </div>

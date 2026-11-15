@@ -37,7 +37,7 @@ export const FleetSection: React.FC = () => {
         <div className="border-b border-[#252D36]/20 pb-4">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
             <span className="font-mono text-xs uppercase tracking-[0.25em] text-[#FF5938] font-bold">
-              CHAPTER 02.5 // ORBITAL TELEMETRY
+              CHAPTER 02 // SATELLITE CONSTELLATION
             </span>
             <span className="font-mono text-xs uppercase tracking-widest text-[#252D36] font-semibold">
               5 ACTIVE MISSIONS

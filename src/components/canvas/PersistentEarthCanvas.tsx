@@ -8,7 +8,8 @@ import { easing } from 'maath';
 import { EarthGlobe } from './EarthGlobe';
 import { CosmicParticles } from './CosmicParticles';
 import { useObservatoryStore } from '../../store/useObservatoryStore';
-import { scrollState, smoothstep, lerp } from '../../lib/scrollState';
+import { scrollState } from '../../lib/scrollState';
+import { experienceOrchestrator } from '../../orchestrator/experienceOrchestrator';
 import { AlertCircle, Globe } from 'lucide-react';
 
 // Converts Latitude & Longitude to 3D Cartesian coordinates on sphere (Radius 2.0)
@@ -22,14 +23,15 @@ function latLngToVector3(lat: number, lng: number, radius = 2.016): [number, num
 }
 
 /**
- * Continuous 3D Scroll-Driven Camera Controller
+ * Continuous 6-Chapter Cinematic Camera Controller
  * 
- * Maps continuous Lenis / GSAP scroll progress directly to 3D camera trajectory:
- * - Chapter 1 (0.00 - 0.20): Orbital Entry in deep space.
- * - Chapter 2 (0.20 - 0.42): The Planet approaches, shifts left for editorial aperture.
- * - Chapter 3 (0.42 - 0.65): Planetary Signals, atmospheric perspective & satellite tracks.
- * - Chapter 4 (0.65 - 0.84): Earth in Sound, transitions to sonification split layout.
- * - Chapter 5 (0.84 - 1.00): Understanding the Data, settles into scientific viewing position.
+ * Synchronized with the Central Experience Orchestrator:
+ * - 01 ORIGIN: Earth appears from darkness in deep space.
+ * - 02 ORBIT: Camera approaches Earth, Rayleigh atmosphere becomes visible.
+ * - 03 SIGNALS: Camera moves through orbital viewpoint, editorial imagery takes over.
+ * - 04 FREQUENCY: Scene transitions into sonic laboratory.
+ * - 05 DECODING: Settles into technical editorial composition.
+ * - 06 BEYOND: Final scene reveals the open-science story.
  */
 const ContinuousScrollCameraController: React.FC<{
   controlsRef: React.RefObject<OrbitControlsImpl | null>;
@@ -55,11 +57,10 @@ const ContinuousScrollCameraController: React.FC<{
       distanceScale = 1.06;
     }
 
-    // Continuous 5-Chapter Flight Path Coordinates synchronized to exact DOM section offsets
     const p = scrollState.progress;
 
     // Climate Sentinel Station Focus (Active when exploring inside Chapter 2)
-    if (activeSentinelId && p >= 0.08 && p <= 0.30) {
+    if (activeSentinelId && p >= 0.08 && p <= 0.36) {
       const coords: Record<string, { lat: number; lng: number }> = {
         'mauna-loa': { lat: 19.5362, lng: -155.5763 },
         'svalbard': { lat: 78.2232, lng: 15.6267 },
@@ -97,102 +98,56 @@ const ContinuousScrollCameraController: React.FC<{
       return;
     }
 
-    let targetPos: [number, number, number] = [0.0, 0.45, 7.5 * distanceScale];
-    let targetLookAt: [number, number, number] = [0.0, 0.32, 0.0];
-
-    if (p <= 0.11) {
-      // CHAPTER 1 — ORBITAL ENTRY (Hero Section: p = 0.00 to 0.11)
-      const t = smoothstep(0.0, 0.11, p);
-      const startPos: [number, number, number] = [0.0, 0.45, 7.5 * distanceScale];
-      const endPos: [number, number, number] = isMobile
-        ? [0.0, 0.32, 7.8 * distanceScale]
-        : [1.62, -0.08, 8.4 * distanceScale];
-
-      targetPos = [
-        lerp(startPos[0], endPos[0], t),
-        lerp(startPos[1], endPos[1], t),
-        lerp(startPos[2], endPos[2], t),
-      ];
-      targetLookAt = isMobile
-        ? [0.0, lerp(0.32, 0.0, t), 0.0]
-        : [lerp(0.0, 1.62, t), lerp(0.32, -0.08, t), 0.0];
-    } else if (p <= 0.24) {
-      // CHAPTER 2 — THE PLANET / APERTURE (Explorer Section: p = 0.11 to 0.24)
-      // Holds stable, unclipped aperture framing across the interactive exploration section
-      targetPos = isMobile
-        ? [0.0, 0.32, 7.8 * distanceScale]
-        : [1.62, -0.08, 8.4 * distanceScale];
-      targetLookAt = isMobile
-        ? [0.0, 0.0, 0.0]
-        : [1.62, -0.08, 0.0];
-    } else if (p <= 0.36) {
-      // CHAPTER 2.5 — FLEET CONSTELLATION (Fleet Section: p = 0.24 to 0.36)
-      const t = smoothstep(0.24, 0.36, p);
-      const startPos: [number, number, number] = isMobile
-        ? [0.0, 0.32, 7.8 * distanceScale]
-        : [1.62, -0.08, 8.4 * distanceScale];
-      const endPos: [number, number, number] = isMobile
-        ? [0.0, 0.85, 7.0 * distanceScale]
-        : [0.65, 1.80, 5.8 * distanceScale];
-
-      targetPos = [
-        lerp(startPos[0], endPos[0], t),
-        lerp(startPos[1], endPos[1], t),
-        lerp(startPos[2], endPos[2], t),
-      ];
-      targetLookAt = isMobile
-        ? [0.0, 0.0, 0.0]
-        : [lerp(1.62, 0.0, t), lerp(-0.08, 0.20, t), 0.0];
-    } else if (p <= 0.51) {
-      // CHAPTER 3 — PLANETARY SIGNALS (Stories Section: p = 0.36 to 0.51)
-      const t = smoothstep(0.36, 0.51, p);
-      const startPos: [number, number, number] = isMobile
-        ? [0.0, 0.20, 7.8 * distanceScale]
-        : [-1.20, 0.00, 6.4 * distanceScale];
-      const endPos: [number, number, number] = isMobile
-        ? [0.0, 0.0, 8.2 * distanceScale]
-        : [1.70, -0.15, 6.2 * distanceScale];
-
-      targetPos = [
-        lerp(startPos[0], endPos[0], t),
-        lerp(startPos[1], endPos[1], t),
-        lerp(startPos[2], endPos[2], t),
-      ];
-      targetLookAt = isMobile
-        ? [0.0, 0.0, 0.0]
-        : [lerp(0.0, 0.15, t), 0.0, 0.0];
-    } else if (p <= 0.69) {
-      // CHAPTER 4 — EARTH IN SOUND (Jukebox Section: p = 0.51 to 0.69)
-      const t = smoothstep(0.51, 0.69, p);
-      const startPos: [number, number, number] = isMobile
-        ? [0.0, 0.0, 8.2 * distanceScale]
-        : [1.70, -0.15, 6.2 * distanceScale];
-      const endPos: [number, number, number] = [0.0, 0.05, 7.4 * distanceScale];
-
-      targetPos = [
-        lerp(startPos[0], endPos[0], t),
-        lerp(startPos[1], endPos[1], t),
-        lerp(startPos[2], endPos[2], t),
-      ];
-      targetLookAt = isMobile
-        ? [0.0, 0.0, 0.0]
-        : [lerp(0.15, 0.0, t), 0.0, 0.0];
-    } else {
-      // CHAPTER 5 — UNDERSTANDING THE DATA / OPEN SCIENCE (Science Section: p = 0.69 to 1.00)
-      targetPos = [0.0, 0.05, 7.4 * distanceScale];
-      targetLookAt = [0.0, 0.0, 0.0];
-    }
+    // Compute continuous interpolated camera transform from Experience Orchestrator
+    const transform = experienceOrchestrator.computeCameraTransform(p, isMobile, distanceScale);
+    experienceOrchestrator.currentCameraTransform = transform;
 
     // Smooth camera damping using maath (0.55s half-life for cinematic fluidity)
-    easing.damp3(state.camera.position, targetPos, 0.55, delta);
+    easing.damp3(state.camera.position, transform.position, 0.55, delta);
 
     if (controlsRef.current) {
-      easing.damp3(controlsRef.current.target, targetLookAt, 0.55, delta);
+      easing.damp3(controlsRef.current.target, transform.lookAt, 0.55, delta);
       controlsRef.current.update();
+    }
+
+    if ('fov' in state.camera) {
+      const persCam = state.camera as THREE.PerspectiveCamera;
+      easing.damp(persCam, 'fov', transform.fov, 0.55, delta);
+      persCam.updateProjectionMatrix();
     }
   });
 
   return null;
+};
+
+/**
+ * Dynamic Scene Lighting Controller
+ * Seamlessly lerps solar key light and earthshine intensities between chapters.
+ */
+const DynamicSceneLighting: React.FC = () => {
+  const dirLightRef = useRef<THREE.DirectionalLight>(null);
+  const ambLightRef = useRef<THREE.AmbientLight>(null);
+
+  useFrame((_, delta) => {
+    const transform = experienceOrchestrator.currentCameraTransform;
+    if (dirLightRef.current) {
+      easing.damp(dirLightRef.current, 'intensity', transform.sunIntensity, 0.45, delta);
+    }
+    if (ambLightRef.current) {
+      easing.damp(ambLightRef.current, 'intensity', transform.ambientIntensity, 0.45, delta);
+    }
+  });
+
+  return (
+    <>
+      {/* Solar Directional Illumination (Key Light aligned with shader uSunPosition [-5, 3, 4]) */}
+      <directionalLight ref={dirLightRef} position={[-5, 3, 4]} intensity={2.2} color="#fffcf5" />
+      {/* Deep Space Ambient Earthshine */}
+      <ambientLight ref={ambLightRef} intensity={0.14} color="#0c1730" />
+      {/* Deep Oceanic Earthshine Scatter */}
+      <pointLight position={[5, -2, -4]} intensity={0.12} color="#17465B" />
+    </>
+  );
 };
 
 // WebGL Fallback Error Boundary
@@ -282,12 +237,8 @@ export const PersistentEarthCanvas: React.FC = () => {
               isInteractingRef={isInteractingRef}
             />
 
-            {/* Solar Directional Illumination (Key Light aligned with shader uSunPosition [-5, 3, 4]) */}
-            <directionalLight position={[-5, 3, 4]} intensity={2.0} color="#fffcf5" />
-            {/* Deep Space Ambient Earthshine */}
-            <ambientLight intensity={0.15} color="#0c1730" />
-            {/* Deep Oceanic Earthshine Scatter */}
-            <pointLight position={[5, -2, -4]} intensity={0.12} color="#17465B" />
+            {/* Dynamic Cinematic Scene Lighting Lerped Between Chapters */}
+            <DynamicSceneLighting />
 
             {/* 3D Distant Starfield */}
             <Stars
