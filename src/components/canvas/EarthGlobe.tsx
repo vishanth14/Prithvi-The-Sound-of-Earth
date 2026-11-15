@@ -7,7 +7,7 @@ import { useObservatoryStore, CLIMATE_SENTINELS } from '../../store/useObservato
 import { SATELLITE_FLEET } from '../../data/earthDatasets';
 
 // Converts geographic Latitude & Longitude to 3D Cartesian coordinates on sphere (Radius 2.0)
-function latLngToVector3(lat: number, lng: number, radius = 2.016): [number, number, number] {
+function latLngToVector3(lat: number, lng: number, radius = 2.018): [number, number, number] {
   const phi = (lat * Math.PI) / 180;
   const theta = ((lng + 180) * Math.PI) / 180;
   const x = -radius * Math.cos(phi) * Math.cos(theta);
@@ -16,7 +16,7 @@ function latLngToVector3(lat: number, lng: number, radius = 2.016): [number, num
   return [x, y, z];
 }
 
-// Shader 1: Earth Surface Shader with Cotangent Frame Normal Perturbation, Specular, and Cloud Shadow
+// Shader 1: Photorealistic Earth Surface Shader with Lambertian Cosine Falloff, Water Fresnel Sunglint, and VIIRS Night Lights
 const EarthSurfaceShader = {
   uniforms: {
     uDayMap: { value: null as THREE.Texture | null },
@@ -55,12 +55,16 @@ const EarthSurfaceShader = {
     varying vec3 vNormal;
     varying vec3 vWorldPosition;
 
-    // Cotangent frame normal perturbation for bump relief without explicit tangents
+    // Seamless cotangent frame normal perturbation for bump relief without antimeridian seams
     vec3 perturbNormal2Arb(vec3 eye_pos, vec3 surf_norm, vec3 mapN, vec2 uv) {
-      vec3 q0 = dFdx(eye_pos.xyz);
-      vec3 q1 = dFdy(eye_pos.xyz);
-      vec2 st0 = dFdx(uv.st);
-      vec2 st1 = dFdy(uv.st);
+      vec3 q0 = dFdx(eye_pos);
+      vec3 q1 = dFdy(eye_pos);
+      vec2 st0 = dFdx(uv);
+      vec2 st1 = dFdy(uv);
+
+      // Prevent seam derivative jump at UV wrapping boundary
+      if (abs(st0.x) > 0.5) st0.x = 0.0;
+      if (abs(st1.x) > 0.5) st1.x = 0.0;
 
       vec3 N = surf_norm;
       vec3 S = normalize(q0 * st1.t - q1 * st0.t);
@@ -77,52 +81,73 @@ const EarthSurfaceShader = {
       vec3 viewDir = normalize(cameraPosition - vWorldPosition);
       vec3 sunDir = normalize(uSunPosition - vWorldPosition);
 
-      // Perturb normal using NASA SRTM topography normal map
+      // Perturb normal using NASA SRTM topography (relief on land, smooth on oceans)
+      vec4 specMask = texture2D(uSpecularMap, vUv); // 1.0 = ocean, 0.0 = land
       vec3 mapN = texture2D(uNormalMap, vUv).xyz * 2.0 - 1.0;
-      mapN.xy *= 0.55; // Subtle natural relief
+      mapN.xy *= 0.42 * (1.0 - specMask.r * 0.70);
       vec3 normal = perturbNormal2Arb(vWorldPosition - cameraPosition, normalGeo, mapN, vUv);
 
-      // Solar lighting angle on perturbed terrain
+      // Solar lighting angle on perturbed surface
       float NdotL = dot(normal, sunDir);
+
+      // Atmospheric twilight wrap (subtle Rayleigh refraction past physical horizon)
+      float twilight = smoothstep(-0.08, 0.08, NdotL);
+
+      // Physically-based Lambertian diffuse curvature falloff (prevents washed-out flat disc)
+      float diffuseLambert = clamp(NdotL, 0.0, 1.0);
+      float diffuse = pow(diffuseLambert, 0.92) * twilight;
 
       // Texture samples from NASA Blue Marble & Black Marble
       vec4 dayColor = texture2D(uDayMap, vUv);
       vec4 nightColor = texture2D(uNightMap, vUv);
-      vec4 specMask = texture2D(uSpecularMap, vUv);
 
-      // Real-time Cloud Shadow Cast onto Ground (Cloud density is in alpha channel)
-      vec2 cloudUv = vec2(fract(vUv.x + uCloudOffset + 0.0015), vUv.y);
-      vec4 clouds = texture2D(uCloudMap, cloudUv);
-      float cloudShadow = mix(1.0, 0.55, clouds.a);
+      // Ocean water albedo calibration: deep ocean absorbs light, displaying rich sapphire/navy
+      vec3 oceanAlbedo = dayColor.rgb * vec3(0.68, 0.80, 0.96);
+      vec3 surfaceAlbedo = mix(dayColor.rgb, oceanAlbedo, specMask.r * 0.48);
 
-      // Natural Planetary Terminator (smooth atmospheric transition zone)
-      float dayFactor = smoothstep(-0.06, 0.12, NdotL);
-      float nightFactor = 1.0 - smoothstep(-0.12, 0.04, NdotL);
+      // Real-time Cloud Shadow Cast onto Ground (Projected along solar direction)
+      vec2 shadowShift = vec2(-sunDir.x, -sunDir.y) * 0.0032;
+      vec2 cloudShadowUv = vec2(fract(vUv.x + uCloudOffset + shadowShift.x), clamp(vUv.y + shadowShift.y, 0.001, 0.999));
+      vec4 shadowClouds = texture2D(uCloudMap, cloudShadowUv);
+      float cloudShadow = mix(1.0, 0.40, smoothstep(0.08, 0.82, shadowClouds.a));
 
-      // Realistic Ocean Specular Shimmer (calibrated to prevent white blowout)
+      // Direct solar spectrum shifts warmer near grazing angles (Rayleigh extinction of blue light)
+      float sunsetFactor = smoothstep(0.24, -0.02, NdotL) * twilight;
+      vec3 solarLightColor = mix(vec3(1.0, 0.99, 0.96), vec3(1.0, 0.68, 0.35), pow(sunsetFactor, 2.2) * 0.72);
+
+      // Realistic Ocean Specular Sunglint with Water Fresnel (n = 1.333, F0 = 0.025)
       vec3 halfVector = normalize(sunDir + viewDir);
       float NdotH = max(dot(normal, halfVector), 0.0);
-      float specular = pow(NdotH, 48.0) * specMask.r * 0.65 * dayFactor;
-      vec3 specularColor = vec3(0.65, 0.82, 1.0) * specular;
+      float VdotH = clamp(dot(viewDir, halfVector), 0.0, 1.0);
+      float fresnelWater = 0.025 + 0.975 * pow(1.0 - VdotH, 5.0);
 
-      // Lit Day Surface with ground cloud shadow and ocean specular reflection
-      vec3 daySurface = (dayColor.rgb * cloudShadow * dayFactor) + specularColor;
+      // Sharp orbital sunglint core + ocean microfacet sheen
+      float sunglintCore = pow(NdotH, 180.0) * 2.4;
+      float sunglintSheen = pow(NdotH, 28.0) * 0.22;
+      float totalSunglint = (sunglintCore + sunglintSheen) * fresnelWater * specMask.r * twilight;
+      vec3 sunglintColor = vec3(1.0, 0.98, 0.92) * totalSunglint;
 
-      // Night Surface with Suomi NPP VIIRS city lights emerging smoothly on unlit hemisphere
-      vec3 nightSurface = nightColor.rgb * nightFactor * (1.35 * uNightLightBoost);
+      // Lit Day Surface with ground cloud shadow, warm solar twilight, and crisp ocean sunglint
+      vec3 daySurface = (surfaceAlbedo * diffuse * cloudShadow * solarLightColor) + sunglintColor;
+
+      // Suomi NPP VIIRS Night Lights: strictly active on unlit hemisphere & deep twilight (no daylight bleed)
+      float nightFactor = smoothstep(0.02, -0.12, NdotL);
+      vec4 overheadClouds = texture2D(uCloudMap, vec2(fract(vUv.x + uCloudOffset), vUv.y));
+      float cloudCityOcclusion = mix(1.0, 0.28, smoothstep(0.1, 0.8, overheadClouds.a));
+      vec3 nightSurface = nightColor.rgb * nightFactor * cloudCityOcclusion * (1.60 * uNightLightBoost);
 
       // Subtle thermal anomaly infrared response for GISTEMP analysis
-      vec3 thermalGlow = vec3(1.0, 0.42, 0.12) * uThermalAnomaly * 0.22 * (1.0 - specMask.r) * dayFactor;
+      vec3 thermalGlow = vec3(1.0, 0.38, 0.10) * uThermalAnomaly * 0.28 * (1.0 - specMask.r) * twilight;
 
-      // Deep Space Earthshine Ambient
-      vec3 ambient = dayColor.rgb * 0.022;
+      // Deep Space Earthshine Ambient (faint starlight illumination)
+      vec3 ambient = dayColor.rgb * 0.008 + vec3(0.001, 0.002, 0.005);
 
       gl_FragColor = vec4(daySurface + nightSurface + thermalGlow + ambient, 1.0);
     }
   `,
 };
 
-// Shader 2: 3D Volumetric Cloud Sphere Shader (Radius 2.012)
+// Shader 2: 3D Volumetric Cloud Sphere Shader (Radius 2.008)
 const CloudSphereShader = {
   uniforms: {
     uCloudMap: { value: null as THREE.Texture | null },
@@ -152,38 +177,51 @@ const CloudSphereShader = {
     void main() {
       vec2 cloudUv = vec2(fract(vUv.x + uCloudOffset), vUv.y);
       vec4 cloudSample = texture2D(uCloudMap, cloudUv);
-      float cloudAlpha = cloudSample.a;
+      float cloudDensity = cloudSample.a;
 
-      // Early discard clear sky
-      if (cloudAlpha < 0.04) discard;
+      // Early discard clear sky to optimize fillrate
+      if (cloudDensity < 0.03) discard;
 
       vec3 normal = normalize(vNormal);
       vec3 sunDir = normalize(uSunPosition - vWorldPosition);
       vec3 viewDir = normalize(cameraPosition - vWorldPosition);
 
       float NdotL = dot(normal, sunDir);
-      float sunFactor = smoothstep(-0.12, 0.22, NdotL);
+      float cloudTwilight = smoothstep(-0.06, 0.10, NdotL);
+      float cloudLambert = clamp(NdotL, 0.0, 1.0);
+      float cloudSun = pow(cloudLambert, 0.88);
 
-      // Forward sunlight scattering through cloud water droplets (delicate silver lining)
-      float forwardScatter = pow(max(dot(viewDir, -sunDir), 0.0), 3.5) * 0.25 * sunFactor;
+      // Forward Mie scattering (delicate silver lining when viewing toward the sun through clouds)
+      float forwardScatter = pow(max(dot(viewDir, -sunDir), 0.0), 4.5) * 0.32 * cloudTwilight;
 
-      vec3 dayCloudColor = vec3(0.96, 0.98, 1.0) * (0.85 + forwardScatter);
-      vec3 nightCloudColor = vec3(0.015, 0.02, 0.03);
-      vec3 finalCloudColor = mix(nightCloudColor, dayCloudColor, sunFactor);
+      // Sunset golden-orange glow along cloud tops at the terminator
+      float cloudSunsetFactor = smoothstep(0.20, -0.02, NdotL) * cloudTwilight;
+      vec3 cloudSunColor = mix(vec3(0.96, 0.98, 1.0), vec3(1.0, 0.68, 0.38), pow(cloudSunsetFactor, 2.0) * 0.70);
 
-      // Natural cloud transparency
-      gl_FragColor = vec4(finalCloudColor, cloudAlpha * (0.1 + 0.75 * sunFactor));
+      // Sunlit daytime cloud color
+      vec3 dayCloudColor = cloudSunColor * (0.45 + 0.55 * cloudSun) + forwardScatter;
+
+      // Night-side dark clouds
+      vec3 nightCloudColor = vec3(0.003, 0.005, 0.008);
+      vec3 finalCloudColor = mix(nightCloudColor, dayCloudColor, cloudTwilight);
+
+      // Cloud alpha modulation: soft transparent wisps, full opacity for storm centers
+      float cloudAlpha = smoothstep(0.05, 0.85, cloudDensity);
+      // Reduce alpha on night side so dark clouds don't wash out space
+      float finalAlpha = cloudAlpha * mix(0.10, 0.82, cloudTwilight);
+
+      gl_FragColor = vec4(finalCloudColor, finalAlpha);
     }
   `,
 };
 
-// Shader 3: Rayleigh Scattering Atmospheric Limb Shader (Radius 2.028)
+// Shader 3: Rayleigh Scattering Atmospheric Limb Shader (Radius 2.016, FrontSide, Zero Night Halo)
 const AtmosphereRimShader = {
   uniforms: {
     uSunPosition: { value: new THREE.Vector3(-5, 3, 4) },
     uColor: { value: new THREE.Color('#1E5A7A') },
-    uCoefficient: { value: 0.35 },
-    uPower: { value: 3.8 },
+    uCoefficient: { value: 0.42 },
+    uPower: { value: 4.2 },
   },
   vertexShader: `
     varying vec3 vNormal;
@@ -208,19 +246,29 @@ const AtmosphereRimShader = {
       vec3 viewDir = normalize(cameraPosition - vWorldPosition);
       vec3 sunDir = normalize(uSunPosition - vWorldPosition);
 
-      // Fresnel limb falloff
-      float fresnel = 1.0 - max(dot(viewDir, normal), 0.0);
-      float atmosphere = pow(fresnel, uPower) * uCoefficient;
+      // Fresnel limb falloff on FrontSide (grazing angle at planetary silhouette)
+      float VdotN = max(dot(viewDir, normal), 0.0);
+      float fresnel = 1.0 - VdotN;
+      float limb = pow(fresnel, uPower);
 
-      // Rayleigh sun-phase scattering (gentle forward and back scattering)
-      float cosTheta = dot(normal, sunDir);
-      float sunFactor = smoothstep(-0.20, 0.30, cosTheta);
-      float phase = 0.75 * (1.0 + 0.5 * cosTheta * cosTheta);
+      // Strict Solar Phase Scattering: atmosphere ONLY scatters light when illuminated by the Sun!
+      float cosSun = dot(normal, sunDir);
+      float sunFactor = smoothstep(-0.04, 0.25, cosSun);
 
-      vec3 finalColor = uColor * atmosphere * phase * (0.15 + 0.85 * sunFactor);
-      float alpha = clamp(atmosphere * (0.18 + 0.82 * sunFactor), 0.0, 0.85);
+      // If unlit hemisphere, zero atmospheric glow (completely transparent on night side, NO halo)
+      if (sunFactor <= 0.001) discard;
 
-      gl_FragColor = vec4(finalColor, alpha);
+      // Rayleigh scattering phase function
+      float phase = 0.75 * (1.0 + 0.5 * cosSun * cosSun);
+
+      // Sunset reddening along the terminator limb
+      float terminatorSunset = smoothstep(0.25, -0.02, cosSun) * sunFactor;
+      vec3 limbColor = mix(uColor, vec3(1.0, 0.55, 0.25), pow(terminatorSunset, 2.5) * 0.80);
+
+      vec3 finalColor = limbColor * limb * phase * sunFactor * (uCoefficient * 1.5);
+      float finalAlpha = clamp(limb * sunFactor * 0.92, 0.0, 1.0);
+
+      gl_FragColor = vec4(finalColor, finalAlpha);
     }
   `,
 };
@@ -275,10 +323,10 @@ export const EarthGlobe: React.FC = () => {
     return { day, night, clouds, specular, normal };
   }, []);
 
-  // Shared Geometries (Tuned for precise radii)
-  const sphereGeo = useMemo(() => new THREE.SphereGeometry(2.0, 96, 96), []);
-  const cloudsGeo = useMemo(() => new THREE.SphereGeometry(2.012, 96, 96), []);
-  const atmosphereGeo = useMemo(() => new THREE.SphereGeometry(2.028, 96, 96), []);
+  // Shared Geometries (High-resolution 144-segment spheres eliminate polygonal silhouette faceting)
+  const sphereGeo = useMemo(() => new THREE.SphereGeometry(2.0, 144, 144), []);
+  const cloudsGeo = useMemo(() => new THREE.SphereGeometry(2.008, 144, 144), []);
+  const atmosphereGeo = useMemo(() => new THREE.SphereGeometry(2.016, 144, 144), []);
 
   // Shader Materials
   const earthMat = useMemo(() => {
@@ -319,13 +367,13 @@ export const EarthGlobe: React.FC = () => {
       uniforms: {
         uSunPosition: { value: new THREE.Vector3(-5, 3, 4) },
         uColor: { value: new THREE.Color('#1E5A7A') },
-        uCoefficient: { value: 0.58 },
+        uCoefficient: { value: 0.42 },
         uPower: { value: 4.2 },
       },
       vertexShader: AtmosphereRimShader.vertexShader,
       fragmentShader: AtmosphereRimShader.fragmentShader,
       blending: THREE.AdditiveBlending,
-      side: THREE.BackSide,
+      side: THREE.FrontSide,
       transparent: true,
       depthWrite: false,
     });

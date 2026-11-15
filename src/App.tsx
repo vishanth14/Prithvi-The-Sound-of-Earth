@@ -44,6 +44,8 @@ export const App: React.FC = () => {
       smoothWheel: true,
       wheelMultiplier: 0.95,
     });
+    (window as any).__lenis = lenis;
+    (window as any).__scrollState = scrollState;
 
     // Continuous scroll synchronization with shared scrollState and ScrollTrigger
     lenis.on('scroll', (e: { progress: number; velocity: number; scroll: number }) => {

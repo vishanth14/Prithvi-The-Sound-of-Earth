@@ -168,6 +168,9 @@ interface ObservatoryState {
 }
 
 export const useObservatoryStore = create<ObservatoryState>((set, get) => {
+  if (typeof window !== 'undefined') {
+    (window as any).__observatoryStore = { getState: get, setState: set };
+  }
   // Wire AudioTransport ticker callback directly into store
   audioTransport.onTick(({ observation, params, index }) => {
     const eicKey = observation.datasetId as EicDatasetKey;
