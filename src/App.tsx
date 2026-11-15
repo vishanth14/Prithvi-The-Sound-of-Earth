@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Lenis from 'lenis';
 import { gsap, ScrollTrigger } from './lib/gsap';
 import { useObservatoryStore } from './store/useObservatoryStore';
-import { StarfieldCanvas } from './components/canvas/StarfieldCanvas';
+import { PersistentEarthCanvas } from './components/canvas/PersistentEarthCanvas';
 import { CustomCursor } from './components/common/CustomCursor';
 import { Navbar } from './components/navigation/Navbar';
 import { HeroSection } from './components/hero/HeroSection';
@@ -13,6 +13,7 @@ import { EarthJukeboxSection } from './components/jukebox/EarthJukeboxSection';
 import { SoundToScienceSection } from './components/science/SoundToScienceSection';
 import { MethodologySection } from './components/methodology/MethodologySection';
 import { ShortcutsModal } from './components/common/ShortcutsModal';
+import { scrollState } from './lib/scrollState';
 
 export const App: React.FC = () => {
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
@@ -34,6 +35,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     // Check user preference for reduced motion
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    scrollState.prefersReducedMotion = prefersReducedMotion;
 
     const lenis = new Lenis({
       duration: prefersReducedMotion ? 0.1 : 1.15,
@@ -43,8 +45,13 @@ export const App: React.FC = () => {
       wheelMultiplier: 0.95,
     });
 
-    // Synchronize Lenis scroll with GSAP ScrollTrigger
-    lenis.on('scroll', ScrollTrigger.update);
+    // Continuous scroll synchronization with shared scrollState and ScrollTrigger
+    lenis.on('scroll', (e: { progress: number; velocity: number; scroll: number }) => {
+      scrollState.progress = Math.max(0, Math.min(1, e.progress));
+      scrollState.velocity = e.velocity;
+      scrollState.scrollY = e.scroll;
+      ScrollTrigger.update();
+    });
 
     // Single unified animation frame ticker
     const tickerUpdate = (time: number) => {
@@ -53,8 +60,11 @@ export const App: React.FC = () => {
     gsap.ticker.add(tickerUpdate);
     gsap.ticker.lagSmoothing(0);
 
-    // Section scroll trackers linking viewport to 3D Camera coordinates
-    const sections: { id: string; target: 'hero' | 'explorer' | 'fleet' | 'timeline' | 'sonification' | 'science' }[] = [
+    // Section scroll trackers linking viewport to 3D Camera coordinates and chapter progress
+    const sections: {
+      id: string;
+      target: 'hero' | 'explorer' | 'fleet' | 'timeline' | 'sonification' | 'science';
+    }[] = [
       { id: 'hero', target: 'hero' },
       { id: 'explorer', target: 'explorer' },
       { id: 'fleet', target: 'fleet' },
@@ -74,13 +84,24 @@ export const App: React.FC = () => {
         trigger: el,
         start: 'top 55%',
         end: 'bottom 45%',
+        onUpdate: (self) => {
+          if (id === 'hero') scrollState.chapterProgress.hero = self.progress;
+          if (id === 'explorer') scrollState.chapterProgress.explorer = self.progress;
+          if (id === 'fleet') scrollState.chapterProgress.fleet = self.progress;
+          if (id === 'stories') scrollState.chapterProgress.stories = self.progress;
+          if (id === 'jukebox') scrollState.chapterProgress.jukebox = self.progress;
+          if (id === 'signal') scrollState.chapterProgress.signal = self.progress;
+          if (id === 'open-science') scrollState.chapterProgress.openScience = self.progress;
+        },
         onEnter: () => {
           setActiveSection(id);
           setActiveCameraTarget(target);
+          scrollState.activeChapter = id as any;
         },
         onEnterBack: () => {
           setActiveSection(id);
           setActiveCameraTarget(target);
+          scrollState.activeChapter = id as any;
         },
       });
       triggers.push(trigger);
@@ -154,8 +175,14 @@ export const App: React.FC = () => {
       {/* 0. Custom Space-Inspired Aerospace Cursor */}
       <CustomCursor />
 
-      {/* 1. Restrained Animated Cosmos Background */}
-      <StarfieldCanvas />
+      {/* 1. Root Persistent 3D Planetary Environment (Single WebGL Canvas) */}
+      <div
+        id="persistent-earth-root"
+        className="fixed inset-0 w-full h-full z-0 pointer-events-auto"
+        aria-hidden="true"
+      >
+        <PersistentEarthCanvas />
+      </div>
 
       {/* 2. Global Observatory Navigation Bar */}
       <Navbar onOpenShortcuts={() => setShortcutsOpen(true)} />
@@ -163,22 +190,22 @@ export const App: React.FC = () => {
       {/* 3. Accessible Keyboard Navigation Guide Dialog */}
       <ShortcutsModal isOpen={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
 
-      {/* 4. Main Scrollytelling Sequence */}
-      <main className="relative z-10 w-full flex flex-col">
-        {/* CHAPTER 01 — THE LIVING PLANET */}
+      {/* 4. Main Continuous Scrollytelling Sequence */}
+      <main className="relative z-10 w-full flex flex-col pointer-events-none">
+        {/* CHAPTER 01 — ORBITAL ENTRY */}
         <HeroSection />
 
-        {/* CHAPTER 02 — A PLANET IN MOTION */}
+        {/* CHAPTER 02 — THE PLANET */}
         <EarthExplorerSection />
         <FleetSection />
 
-        {/* CHAPTER 03 — WHAT EARTH IS TELLING US */}
+        {/* CHAPTER 03 — PLANETARY SIGNALS */}
         <EarthStoriesSection />
 
-        {/* CHAPTER 04 — THE EARTH JUKEBOX */}
+        {/* CHAPTER 04 — EARTH IN SOUND */}
         <EarthJukeboxSection />
 
-        {/* CHAPTER 05 — UNDERSTAND THE SIGNAL */}
+        {/* CHAPTER 05 — UNDERSTANDING THE DATA */}
         <SoundToScienceSection />
 
         {/* CHAPTER 06 — OPEN SCIENCE */}

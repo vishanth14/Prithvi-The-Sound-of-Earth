@@ -467,7 +467,7 @@ export const EarthJukeboxSection: React.FC = () => {
     <section
       ref={sectionRef}
       id="jukebox"
-      className="relative w-full py-28 px-6 sm:px-10 lg:px-16 border-t border-[#252D36] z-10 bg-[#070B10]"
+      className="relative w-full py-28 px-6 sm:px-10 lg:px-16 border-t border-[#252D36] z-10 bg-[#070B10]/85 backdrop-blur-md pointer-events-auto"
     >
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Section Header */}

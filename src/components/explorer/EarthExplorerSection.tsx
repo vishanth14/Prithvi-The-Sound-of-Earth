@@ -4,7 +4,7 @@ import { EARTH_DATASETS } from '../../data/earthDatasets';
 import { gsap, useGSAP } from '../../lib/gsap';
 import type { DatasetKey } from '../../data/types';
 import type { EicDatasetKey } from '../../data/eicSchemas';
-import { EarthCanvas } from '../canvas/EarthCanvas';
+import { scrollState } from '../../lib/scrollState';
 import {
   Thermometer,
   CloudRain,
@@ -230,98 +230,101 @@ export const EarthExplorerSection: React.FC = () => {
     <section
       ref={sectionRef}
       id="explorer"
-      className="relative w-full py-24 px-6 sm:px-10 lg:px-16 border-t border-[#252D36]/20 z-10 bg-[#E9EDF0] text-[#070B10] selection:bg-[#FF5938]/30 selection:text-[#070B10]"
+      className="relative w-full py-24 px-6 sm:px-10 lg:px-16 border-t border-[#252D36]/20 z-10 bg-transparent text-[#070B10] selection:bg-[#FF5938]/30 selection:text-[#070B10]"
     >
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <div className="explorer-reveal mb-10">
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-3 border-b border-[#252D36]/20 pb-3">
-            <span className="font-mono text-xs uppercase tracking-[0.25em] text-[#FF5938] font-bold">
-              CHAPTER 02 // EARTH OBSERVATION JOURNEY
-            </span>
-            <span className="font-mono text-xs uppercase tracking-widest text-[#252D36] font-semibold">
-              NASA EIC OBSERVATION FLEET
-            </span>
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Editorial Top Paper Header & Layer Navigation */}
+        <div className="explorer-reveal bg-[#E9EDF0] text-[#070B10] p-6 sm:p-8 border border-[#252D36] shadow-xl pointer-events-auto">
+          {/* Section Header */}
+          <div className="mb-8">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-3 border-b border-[#252D36]/20 pb-3">
+              <span className="font-mono text-xs uppercase tracking-[0.25em] text-[#FF5938] font-bold">
+                CHAPTER 02 // EARTH OBSERVATION JOURNEY
+              </span>
+              <span className="font-mono text-xs uppercase tracking-widest text-[#252D36] font-semibold">
+                NASA EIC OBSERVATION FLEET
+              </span>
+            </div>
+            <h2 className="font-display font-extrabold text-5xl sm:text-7xl text-[#070B10] tracking-tight uppercase leading-[0.9] mb-4">
+              A PLANET IN MOTION
+            </h2>
+            <p className="font-sans text-sm sm:text-base text-[#252D36]/80 font-normal leading-relaxed max-w-3xl">
+              A full-width scientific visualization introducing the Earth observation journey, powered by genuine NASA Earth Information Center imagery, physical ground sentinels, and the low-Earth orbit satellite fleet.
+            </p>
           </div>
-          <h2 className="font-display font-extrabold text-5xl sm:text-7xl text-[#070B10] tracking-tight uppercase leading-[0.9] mb-4">
-            A PLANET IN MOTION
-          </h2>
-          <p className="font-sans text-sm sm:text-base text-[#252D36]/80 font-normal leading-relaxed max-w-3xl">
-            A full-width scientific visualization introducing the Earth observation journey, powered by genuine NASA Earth Information Center imagery, physical ground sentinels, and the low-Earth orbit satellite fleet.
-          </p>
-        </div>
 
-        {/* Dataset Editorial Layer Switcher Bar */}
-        <div className="explorer-reveal flex flex-wrap items-center gap-2.5 sm:gap-3 mb-4 pb-4 border-b border-[#252D36]/20">
-          <span className="font-mono text-xs text-[#252D36] uppercase tracking-[0.2em] mr-2 flex items-center gap-1.5 font-bold">
-            <Compass className="w-3.5 h-3.5 text-[#FF5938]" />
-            DATA LAYERS:
-          </span>
-          {layerNavList.map((item) => {
-            const layer = SCIENTIFIC_LAYERS[item.id];
-            const isActive = activeDataset === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleSelectLayer(item.id)}
-                className={`inline-flex items-center gap-2 px-4 py-2 text-xs font-display font-bold tracking-wider uppercase transition-all duration-200 cursor-pointer ${
-                  isActive
-                    ? 'bg-[#070B10] text-[#E9EDF0] border-2 border-[#070B10]'
-                    : 'bg-white text-[#070B10] border border-[#252D36]/30 hover:border-[#FF5938]'
-                }`}
-              >
-                <span
-                  className={`font-mono text-[10px] ${
-                    isActive ? 'text-[#FF5938]' : 'text-[#252D36]/60'
+          {/* Dataset Editorial Layer Switcher Bar */}
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 mb-4 pb-4 border-b border-[#252D36]/20">
+            <span className="font-mono text-xs text-[#252D36] uppercase tracking-[0.2em] mr-2 flex items-center gap-1.5 font-bold">
+              <Compass className="w-3.5 h-3.5 text-[#FF5938]" />
+              DATA LAYERS:
+            </span>
+            {layerNavList.map((item) => {
+              const layer = SCIENTIFIC_LAYERS[item.id];
+              const isActive = activeDataset === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleSelectLayer(item.id)}
+                  className={`inline-flex items-center gap-2 px-4 py-2 text-xs font-display font-bold tracking-wider uppercase transition-all duration-200 cursor-pointer ${
+                    isActive
+                      ? 'bg-[#070B10] text-[#E9EDF0] border-2 border-[#070B10]'
+                      : 'bg-white text-[#070B10] border border-[#252D36]/30 hover:border-[#FF5938]'
                   }`}
                 >
-                  {layer.number}
-                </span>
-                <span style={{ color: isActive ? '#FF5938' : layer.color }}>{item.icon}</span>
-                <span>{layer.shortLabel}</span>
-              </button>
-            );
-          })}
-        </div>
+                  <span
+                    className={`font-mono text-[10px] ${
+                      isActive ? 'text-[#FF5938]' : 'text-[#252D36]/60'
+                    }`}
+                  >
+                    {layer.number}
+                  </span>
+                  <span style={{ color: isActive ? '#FF5938' : layer.color }}>{item.icon}</span>
+                  <span>{layer.shortLabel}</span>
+                </button>
+              );
+            })}
+          </div>
 
-        {/* Verified Climate Sentinels Quick Nav */}
-        <div className="explorer-reveal flex flex-wrap items-center gap-2 sm:gap-2.5 mb-10 pb-4 border-b border-[#252D36]/20 text-xs">
-          <span className="font-mono text-xs text-[#252D36] uppercase tracking-[0.2em] mr-2 flex items-center gap-1.5 font-bold">
-            <MapPin className="w-3.5 h-3.5 text-[#FF5938]" />
-            CLIMATE SENTINELS:
-          </span>
-          {CLIMATE_SENTINELS.map((s) => {
-            const isSelected = activeSentinelId === s.id;
-            return (
+          {/* Verified Climate Sentinels Quick Nav */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 text-xs">
+            <span className="font-mono text-xs text-[#252D36] uppercase tracking-[0.2em] mr-2 flex items-center gap-1.5 font-bold">
+              <MapPin className="w-3.5 h-3.5 text-[#FF5938]" />
+              CLIMATE SENTINELS:
+            </span>
+            {CLIMATE_SENTINELS.map((s) => {
+              const isSelected = activeSentinelId === s.id;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => selectSentinel(isSelected ? null : s.id)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono transition-all duration-200 cursor-pointer ${
+                    isSelected
+                      ? 'bg-[#FF5938] text-[#070B10] font-bold border border-[#FF5938]'
+                      : 'bg-white text-[#252D36] border border-[#252D36]/30 hover:border-[#FF5938]'
+                  }`}
+                >
+                  <span className="w-2 h-2" style={{ backgroundColor: s.color }} />
+                  <span className="font-semibold">{s.name}</span>
+                  <span className="text-[10px] text-[#252D36]/60">({s.stationCode})</span>
+                </button>
+              );
+            })}
+            {activeSentinelId && (
               <button
-                key={s.id}
-                onClick={() => selectSentinel(isSelected ? null : s.id)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono transition-all duration-200 cursor-pointer ${
-                  isSelected
-                    ? 'bg-[#FF5938] text-[#070B10] font-bold border border-[#FF5938]'
-                    : 'bg-white text-[#252D36] border border-[#252D36]/30 hover:border-[#FF5938]'
-                }`}
+                onClick={handleBackToOverview}
+                className="px-3 py-1.5 text-xs font-mono text-[#070B10] font-bold underline cursor-pointer ml-auto hover:text-[#FF5938]"
               >
-                <span className="w-2 h-2" style={{ backgroundColor: s.color }} />
-                <span className="font-semibold">{s.name}</span>
-                <span className="text-[10px] text-[#252D36]/60">({s.stationCode})</span>
+                RESET TO GLOBAL OVERVIEW
               </button>
-            );
-          })}
-          {activeSentinelId && (
-            <button
-              onClick={handleBackToOverview}
-              className="px-3 py-1.5 text-xs font-mono text-[#070B10] font-bold underline cursor-pointer ml-auto hover:text-[#FF5938]"
-            >
-              RESET TO GLOBAL OVERVIEW
-            </button>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Main 3D Canvas Viewport & Comprehensive Scientific Detail Panel */}
         <div className="explorer-reveal grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* Left Column: 3D Earth Globe Canvas Viewport */}
-          <div className="lg:col-span-7 relative min-h-[520px] sm:min-h-[660px] bg-[#070B10] border-2 border-[#252D36] overflow-hidden flex flex-col justify-between p-6 sm:p-8 shadow-sm">
+          <div className="lg:col-span-7 relative min-h-[520px] sm:min-h-[660px] bg-[#070B10]/40 border-2 border-[#252D36] overflow-hidden flex flex-col justify-between p-6 sm:p-8 shadow-sm backdrop-blur-xs pointer-events-auto">
             {/* Viewport Top Header */}
             <div className="relative z-20 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -358,9 +361,22 @@ export const EarthExplorerSection: React.FC = () => {
               </div>
             </div>
 
-            {/* 3D Canvas Layer */}
-            <div className="absolute inset-0 z-10">
-              <EarthCanvas interactive={true} />
+            {/* 3D Interactive Aperture Viewport (Persistent Earth shines through) */}
+            <div
+              className="absolute inset-0 z-10 pointer-events-auto cursor-grab active:cursor-grabbing"
+              data-cursor-label="ORBIT 3D"
+              onPointerDown={() => {
+                scrollState.isInteractingWithGlobe = true;
+              }}
+              onPointerUp={() => {
+                scrollState.isInteractingWithGlobe = false;
+              }}
+            >
+              {/* Corner HUD crosshairs for precision scientific aperture */}
+              <div className="absolute top-2 left-2 w-3.5 h-3.5 border-t-2 border-l-2 border-[#FF5938]/60 pointer-events-none" />
+              <div className="absolute top-2 right-2 w-3.5 h-3.5 border-t-2 border-r-2 border-[#FF5938]/60 pointer-events-none" />
+              <div className="absolute bottom-2 left-2 w-3.5 h-3.5 border-b-2 border-l-2 border-[#FF5938]/60 pointer-events-none" />
+              <div className="absolute bottom-2 right-2 w-3.5 h-3.5 border-b-2 border-r-2 border-[#FF5938]/60 pointer-events-none" />
             </div>
 
             {/* Viewport Bottom Overlay: Interactive Instructions */}
@@ -382,7 +398,7 @@ export const EarthExplorerSection: React.FC = () => {
           </div>
 
           {/* Right Column: Editorial Scientific Detail Panel */}
-          <div className="lg:col-span-5 flex flex-col gap-6 justify-between">
+          <div className="lg:col-span-5 flex flex-col gap-6 justify-between pointer-events-auto">
             {/* Active Climate Sentinel Station Card (If Selected or Hovered) */}
             {currentSentinel ? (
               <div className="border-2 border-[#FF5938] bg-[#070B10] text-[#E9EDF0] p-6 sm:p-7 shadow-md flex flex-col justify-between">

@@ -30,7 +30,7 @@ export const FleetSection: React.FC = () => {
     <section
       ref={sectionRef}
       id="fleet"
-      className="relative w-full py-20 px-6 sm:px-10 lg:px-16 border-t border-[#252D36]/20 z-10 bg-[#E9EDF0] text-[#070B10]"
+      className="relative w-full py-20 px-6 sm:px-10 lg:px-16 border-t border-[#252D36]/20 z-10 bg-[#E9EDF0] text-[#070B10] pointer-events-auto"
     >
       <div className="max-w-7xl mx-auto space-y-10">
         <div className="border-b border-[#252D36]/20 pb-4">

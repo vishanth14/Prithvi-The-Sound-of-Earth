@@ -122,7 +122,7 @@ export const MethodologySection: React.FC = () => {
     <section
       ref={sectionRef}
       id="open-science"
-      className="relative w-full py-28 px-6 sm:px-10 lg:px-16 border-t border-[#252D36] z-10 bg-[#070B10]"
+      className="relative w-full py-28 px-6 sm:px-10 lg:px-16 border-t border-[#252D36] z-10 bg-[#070B10] pointer-events-auto"
     >
       <div className="max-w-7xl mx-auto space-y-12">
         <SectionHeader
