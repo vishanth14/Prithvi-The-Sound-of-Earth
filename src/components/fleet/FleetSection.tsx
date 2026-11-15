@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { SATELLITE_FLEET } from '../../data/earthDatasets';
 import { gsap, useGSAP } from '../../lib/gsap';
+import { ReticleCorner } from '../common/AerospaceMark';
 import { Radio } from 'lucide-react';
 
 export const FleetSection: React.FC = () => {
@@ -55,8 +56,11 @@ export const FleetSection: React.FC = () => {
             <div
               key={sat.id}
               data-cursor-label="DISCOVER"
-              className="fleet-card group flex flex-col justify-between bg-white border-2 border-[#252D36] p-7 shadow-sm hover:border-[#FF5938] hover:shadow-[0_12px_32px_rgba(255,89,56,0.14)] hover:scale-[1.015] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+              className="fleet-card relative group flex flex-col justify-between bg-white border-2 border-[#252D36] p-7 shadow-sm hover:border-[#FF5938] hover:shadow-[0_12px_32px_rgba(255,89,56,0.14)] hover:scale-[1.015] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
             >
+              <ReticleCorner position="top-left" color="#252D36" />
+              <ReticleCorner position="bottom-right" color="#252D36" />
+
               <div>
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#252D36]/20">
                   <div className="flex items-center gap-2">

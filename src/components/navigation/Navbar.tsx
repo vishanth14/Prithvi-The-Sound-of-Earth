@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useObservatoryStore } from '../../store/useObservatoryStore';
+import { PrithviWordmark } from '../common/PrithviWordmark';
 import { Volume2, VolumeX, Menu, X, Command } from 'lucide-react';
 
 export interface NavChapter {
@@ -122,21 +123,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenShortcuts }) => {
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 flex items-center justify-between">
-          {/* 1. Left Minimal Wordmark */}
+          {/* 1. Proprietary PRITHVI Aerospace Wordmark */}
           <button
             onClick={() => scrollToChapter('hero')}
             data-cursor-label="PRITHVI"
-            className="flex items-center gap-2 group cursor-pointer text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF5938]"
+            className="flex items-center group cursor-pointer text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF5938]"
           >
-            <div className="flex items-center gap-2">
-              <span className="font-display font-black text-2xl tracking-tight text-[#E9EDF0] group-hover:text-white transition-colors">
-                PRITHVI
-              </span>
-              <span className="w-1.5 h-1.5 bg-[#FF5938]" />
-            </div>
-            <span className="hidden sm:inline-block font-mono text-[9px] tracking-[0.22em] text-[#83BBD5] uppercase pl-2 border-l border-[#252D36]">
-              ORBITAL OBSERVATORY
-            </span>
+            <PrithviWordmark size="sm" showMissionTag={true} showSubtitle={false} />
           </button>
 
           {/* 2. Center Minimal Chapter Navigation (01 / HOME, 02 / EXPLORE, etc.) */}

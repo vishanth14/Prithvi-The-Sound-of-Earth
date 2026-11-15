@@ -105,16 +105,16 @@ export const MethodologySection: React.FC = () => {
       url: 'https://podaac.jpl.nasa.gov/',
     },
     {
-      title: 'Terra & Aqua MODIS NDVI Terrestrial Biosphere',
-      agency: 'NASA Land Processes DAAC (LP DAAC) / GSFC',
-      citation: 'Didan, K., 2026: MOD13A2 MODIS/Terra Vegetation Indices 16-Day L3 Global 1km SIN Grid V061.',
-      url: 'https://lpdaac.usgs.gov/',
+      title: 'GEOS-FP Atmospheric Aerosol & Particulate Simulation',
+      agency: 'NASA Global Modeling and Assimilation Office (GMAO)',
+      citation: 'Lucchesi, R., 2026: File Specification for GEOS-FP Forward Processing. GMAO Office Note No. 1 (Version 1.2), NASA GSFC.',
+      url: 'https://gmao.gsfc.nasa.gov/GEOS_systems/geos5_fp/',
     },
     {
-      title: 'Stratospheric Ozone Minimum (TOMS/OMI/OMPS)',
-      agency: 'NASA Ozone Watch / Goddard Space Flight Center',
-      citation: 'Newman, P. A., et al., 2026: NASA Ozone Watch Historical Antarctic Column Ozone Database.',
-      url: 'https://ozonewatch.gsfc.nasa.gov/',
+      title: 'VIIRS Black Marble Earth at Night Radiance',
+      agency: 'NASA Goddard Space Flight Center / Suomi-NPP / NOAA',
+      citation: 'Román, M. O., et al., 2026: NASA\'s Black Marble daily at-sensor TOA nighttime lights product suite. Remote Sensing of Environment, 210, 113-143.',
+      url: 'https://blackmarble.gsfc.nasa.gov/',
     },
   ];
 

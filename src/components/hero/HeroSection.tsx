@@ -144,22 +144,38 @@ export const HeroSection: React.FC = () => {
         </div>
         <div className="flex items-center gap-3 text-right">
           <span className="font-mono text-[11px] tracking-widest text-[#83BBD5] uppercase font-semibold">
-            EXPEDITION PRITHVI // NASA SPACE APPS 2026
+            MISSION EO-26 // NASA SPACE APPS 2026
           </span>
           <span className="text-[#252D36] hidden sm:inline">•</span>
           <span className="font-mono text-[11px] tracking-widest text-[#7E8B98] uppercase hidden sm:inline">
-            ALT 705 KM • INCL 98.2°
+            NASA EOS CONSTELLATION BASELINE (705 KM • 98.2°)
           </span>
         </div>
       </div>
 
       {/* 2. Center Monumental Editorial Typography (Scroll-exit scrubbed) */}
       <div className="hero-content-wrapper relative z-10 max-w-5xl mx-auto w-full my-auto text-center py-2 sm:py-4 flex flex-col items-center pointer-events-none">
-        {/* Main Title Reveal through Precision Mask */}
-        <div className="overflow-hidden py-1">
-          <h1 className="hero-char-title font-display text-6xl xs:text-7xl sm:text-8xl md:text-9xl lg:text-[10rem] xl:text-[11.5rem] font-extrabold tracking-tight text-[#E9EDF0] leading-[0.82] select-none uppercase drop-shadow-[0_4px_24px_rgba(7,11,16,0.95)]">
-            PRITHVI
-          </h1>
+        {/* Mission Index Identification */}
+        <div className="mb-3 flex items-center gap-2 font-mono text-[10px] tracking-[0.28em] text-[#7E8B98] uppercase">
+          <span className="w-1.5 h-1.5 bg-[#FF5938]" />
+          <span>EXPEDITION IDENTIFIER: PRITHVI-EO26</span>
+          <span className="text-[#252D36]">|</span>
+          <span className="text-[#83BBD5]">MULTIVERSE VENDHAN</span>
+        </div>
+
+        {/* Main Title Reveal through Precision Aerospace Mask */}
+        <div className="relative px-6 py-2">
+          {/* Subtle Technical Crop Marks */}
+          <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-[#FF5938]/40" />
+          <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-[#FF5938]/40" />
+          <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-[#FF5938]/40" />
+          <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-[#FF5938]/40" />
+
+          <div className="overflow-hidden py-1">
+            <h1 className="hero-char-title font-display text-6xl xs:text-7xl sm:text-8xl md:text-9xl lg:text-[10rem] xl:text-[11.5rem] font-extrabold tracking-tight text-[#E9EDF0] leading-[0.82] select-none uppercase drop-shadow-[0_4px_24px_rgba(7,11,16,0.95)]">
+              PRITHVI
+            </h1>
+          </div>
         </div>
 
         {/* Subtitle Reveal through Precision Mask */}

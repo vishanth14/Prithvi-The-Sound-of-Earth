@@ -72,7 +72,10 @@ export const ScrollProgressHUD: React.FC = () => {
       aria-label="Mission Chapter Progression"
     >
       {/* 1. Active Chapter Mission Callout */}
-      <div className="flex flex-col items-end gap-0.5 bg-[#070B10]/90 border border-[#252D36] px-3 py-1.5 shadow-[0_4px_24px_rgba(0,0,0,0.6)] backdrop-blur-md">
+      <div className="relative flex flex-col items-end gap-0.5 bg-[#070B10]/92 border border-[#252D36] px-3 py-1.5 shadow-[0_4px_24px_rgba(0,0,0,0.6)] backdrop-blur-md">
+        {/* Subtle corner mark */}
+        <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-[#FF5938]" />
+        
         <div className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 bg-[#FF5938] animate-pulse" />
           <span className="font-mono text-[9px] font-bold tracking-[0.25em] text-[#FF5938] uppercase">
@@ -83,10 +86,10 @@ export const ScrollProgressHUD: React.FC = () => {
           {activeChapter.label}
         </span>
         <div className="flex items-center gap-2 font-mono text-[8px] text-[#7E8B98] tracking-widest mt-0.5">
-          <span>ALT 705 KM</span>
+          <span>MISSION EO-26</span>
           <span>•</span>
           <span className="text-[#83BBD5]">
-            ORBIT {Math.round(currentProgress * 100)}%
+            PROGRESS {Math.round(currentProgress * 100)}%
           </span>
         </div>
       </div>
