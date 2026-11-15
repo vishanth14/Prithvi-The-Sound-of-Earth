@@ -56,8 +56,13 @@ const ContinuousScrollCameraController: React.FC<{
   }, [cameraResetTrigger, controlsRef, isInteractingRef]);
 
   useFrame((state, delta) => {
-    // If user is actively dragging the 3D globe, do not override their manual view
-    if (isInteractingRef.current || scrollState.isInteractingWithGlobe) return;
+    // If user is actively dragging the 3D globe, let OrbitControls handle it and update
+    if (isInteractingRef.current || scrollState.isInteractingWithGlobe) {
+      if (controlsRef.current) {
+        controlsRef.current.update();
+      }
+      return;
+    }
 
     // Viewport aspect ratio & mobile detection
     const aspect = state.size.width / state.size.height;
@@ -97,7 +102,7 @@ const ContinuousScrollCameraController: React.FC<{
         easing.damp3(state.camera.position, targetPos, 0.6, delta);
         if (controlsRef.current) {
           easing.damp3(controlsRef.current.target, [sx * 0.35, sy * 0.35, sz * 0.35], 0.6, delta);
-          controlsRef.current.update();
+          state.camera.lookAt(controlsRef.current.target);
         }
         return;
       }
@@ -109,7 +114,7 @@ const ContinuousScrollCameraController: React.FC<{
       easing.damp3(state.camera.position, calmPos, 0.5, delta);
       if (controlsRef.current) {
         easing.damp3(controlsRef.current.target, [0, 0.1, 0], 0.5, delta);
-        controlsRef.current.update();
+        state.camera.lookAt(controlsRef.current.target);
       }
       return;
     }
@@ -123,7 +128,9 @@ const ContinuousScrollCameraController: React.FC<{
 
     if (controlsRef.current) {
       easing.damp3(controlsRef.current.target, transform.lookAt, 0.55, delta);
-      controlsRef.current.update();
+      state.camera.lookAt(controlsRef.current.target);
+    } else {
+      state.camera.lookAt(new THREE.Vector3(...transform.lookAt));
     }
 
     if ('fov' in state.camera) {
@@ -373,7 +380,7 @@ export const PersistentEarthCanvas: React.FC = () => {
             <OrbitControls
               ref={controlsRef}
               enablePan={false}
-              enableZoom={true}
+              enableZoom={false}
               minDistance={3.2}
               maxDistance={12.0}
               autoRotate={globeRotating}

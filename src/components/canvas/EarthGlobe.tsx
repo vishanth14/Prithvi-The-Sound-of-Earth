@@ -275,7 +275,21 @@ const AtmosphereRimShader = {
   `,
 };
 
-export const EarthGlobe: React.FC = () => {
+export interface EarthGlobeProps {
+  showSatellites?: boolean;
+  showSentinels?: boolean;
+  activeSatelliteId?: string | null;
+  onSelectSatellite?: (id: string) => void;
+  scale?: number;
+}
+
+export const EarthGlobe: React.FC<EarthGlobeProps> = ({
+  showSatellites = true,
+  showSentinels = true,
+  activeSatelliteId = null,
+  onSelectSatellite,
+  scale = 1.0,
+}) => {
   const earthMeshRef = useRef<THREE.Mesh>(null!);
   const cloudsMeshRef = useRef<THREE.Mesh>(null!);
   const atmosphereMeshRef = useRef<THREE.Mesh>(null!);
@@ -542,7 +556,7 @@ export const EarthGlobe: React.FC = () => {
   };
 
   return (
-    <group ref={earthGroupRef} rotation={[0.41, 0, 0]}>
+    <group ref={earthGroupRef} rotation={[0.41, 0, 0]} scale={[scale, scale, scale]}>
       {/* 1. Photorealistic 4K Earth Surface (Day/Night/Normal/Specular/Thermal) */}
       <mesh ref={earthMeshRef} geometry={sphereGeo} material={earthMat} />
 
@@ -553,79 +567,96 @@ export const EarthGlobe: React.FC = () => {
       <mesh ref={atmosphereMeshRef} geometry={atmosphereGeo} material={atmosphereMat} />
 
       {/* 4. Fine Keplerian Orbital Paths for NASA Fleet */}
-      {satelliteRings.map((sat) => (
-        <group key={sat.id} rotation={[sat.inclinationRad, 0, 0]}>
-          <line>
-            <ringGeometry args={[sat.radius - 0.0018, sat.radius + 0.0018, 96]} />
-            <lineBasicMaterial color="#D1B77D" opacity={0.12} transparent />
-          </line>
-          {/* Satellite Node Pin */}
-          <mesh position={[sat.radius * Math.cos(sat.angle), sat.radius * Math.sin(sat.angle), 0]}>
-            <sphereGeometry args={[0.024, 16, 16]} />
-            <meshBasicMaterial color={sat.color} />
-          </mesh>
-        </group>
-      ))}
+      {showSatellites &&
+        satelliteRings.map((sat) => {
+          const isSatActive = activeSatelliteId === sat.id;
+          return (
+            <group key={sat.id} rotation={[sat.inclinationRad, 0, 0]}>
+              <line>
+                <ringGeometry args={[sat.radius - 0.002, sat.radius + 0.002, 96]} />
+                <lineBasicMaterial
+                  color={isSatActive ? sat.color : '#D1B77D'}
+                  opacity={isSatActive ? 0.85 : 0.22}
+                  transparent
+                />
+              </line>
+              {/* Satellite Node Pin */}
+              <mesh
+                position={[sat.radius * Math.cos(sat.angle), sat.radius * Math.sin(sat.angle), 0]}
+                onClick={(e) => {
+                  if (onSelectSatellite) {
+                    e.stopPropagation();
+                    onSelectSatellite(sat.id);
+                  }
+                }}
+              >
+                <sphereGeometry args={[isSatActive ? 0.045 : 0.028, 16, 16]} />
+                <meshBasicMaterial color={sat.color} />
+              </mesh>
+            </group>
+          );
+        })}
 
       {/* 5. Interactive Climate Sentinel Geographic Pins & Editorial Tooltips */}
-      {sentinelNodes.map((s) => {
-        const isSelected = activeSentinelId === s.id;
-        const isHovered = hoveredSentinelId === s.id;
-        return (
-          <group
-            key={s.id}
-            position={s.pos}
-            onPointerDown={handleSentinelPointerDown}
-            onClick={(e) => handleSentinelClick(e, s.id)}
-            onPointerOver={(e) => {
-              e.stopPropagation();
-              setHoveredSentinelId(s.id);
-              document.body.style.cursor = 'pointer';
-            }}
-            onPointerOut={() => {
-              setHoveredSentinelId(null);
-              document.body.style.cursor = 'auto';
-            }}
-          >
-            {/* Core Sentinel Sphere Pin */}
-            <mesh>
-              <sphereGeometry args={[isSelected ? 0.042 : 0.028, 16, 16]} />
-              <meshBasicMaterial color={s.color} />
-            </mesh>
+      {showSentinels &&
+        sentinelNodes.map((s) => {
+          const isSelected = activeSentinelId === s.id;
+          const isHovered = hoveredSentinelId === s.id;
+          return (
+            <group
+              key={s.id}
+              position={s.pos}
+              onPointerDown={handleSentinelPointerDown}
+              onClick={(e) => handleSentinelClick(e, s.id)}
+              onPointerOver={(e) => {
+                e.stopPropagation();
+                setHoveredSentinelId(s.id);
+                document.body.style.cursor = 'pointer';
+              }}
+              onPointerOut={() => {
+                setHoveredSentinelId(null);
+                document.body.style.cursor = 'auto';
+              }}
+            >
+              {/* Core Sentinel Sphere Pin */}
+              <mesh>
+                <sphereGeometry args={[isSelected ? 0.042 : 0.028, 16, 16]} />
+                <meshBasicMaterial color={s.color} />
+              </mesh>
 
-            {/* Pulsating Outer Beacon Ring */}
-            <mesh rotation={[Math.PI / 2, 0, 0]}>
-              <ringGeometry args={[0.038, 0.052, 24]} />
-              <meshBasicMaterial
-                color={s.color}
-                opacity={isSelected ? 0.95 : 0.55}
-                transparent
-                side={THREE.DoubleSide}
-              />
-            </mesh>
+              {/* Pulsating Outer Beacon Ring */}
+              <mesh rotation={[Math.PI / 2, 0, 0]}>
+                <ringGeometry args={[0.038, 0.052, 24]} />
+                <meshBasicMaterial
+                  color={s.color}
+                  opacity={isSelected ? 0.95 : 0.55}
+                  transparent
+                  side={THREE.DoubleSide}
+                />
+              </mesh>
 
-            {/* Editorial Hover Tooltip Label */}
-            {isHovered && !isSelected && (
-              <Html
-                position={[0, 0.08, 0]}
-                center
-                distanceFactor={7.5}
-                pointerEvents="none"
-              >
-                <div className="bg-[#070B10]/95 text-[#E9EDF0] border border-[#FF5938]/60 px-2.5 py-1 shadow-lg whitespace-nowrap flex flex-col items-center gap-0.5 pointer-events-none select-none text-[11px] font-mono">
-                  <span className="font-display font-bold text-xs tracking-wide text-[#E9EDF0]">
-                    {s.name}
-                  </span>
-                  <span className="text-[10px] text-[#FF5938] tracking-widest uppercase">
-                    {s.stationCode} • {s.lat > 0 ? `${s.lat}°N` : `${Math.abs(s.lat)}°S`},{' '}
-                    {s.lng > 0 ? `${s.lng}°E` : `${Math.abs(s.lng)}°W`}
-                  </span>
-                </div>
-              </Html>
-            )}
-          </group>
-        );
-      })}
+              {/* Editorial Hover Tooltip Label */}
+              {isHovered && !isSelected && (
+                <Html
+                  position={[0, 0.08, 0]}
+                  center
+                  distanceFactor={7.5}
+                  pointerEvents="none"
+                >
+                  <div className="bg-[#070B10]/95 text-[#E9EDF0] border border-[#FF5938]/60 px-2.5 py-1 shadow-lg whitespace-nowrap flex flex-col items-center gap-0.5 pointer-events-none select-none text-[11px] font-mono">
+                    <span className="font-display font-bold text-xs tracking-wide text-[#E9EDF0]">
+                      {s.name}
+                    </span>
+                    <span className="text-[10px] text-[#FF5938] tracking-widest uppercase">
+                      {s.stationCode} • {s.lat > 0 ? `${s.lat}°N` : `${Math.abs(s.lat)}°S`},{' '}
+                      {s.lng > 0 ? `${s.lng}°E` : `${Math.abs(s.lng)}°W`}
+                    </span>
+                  </div>
+                </Html>
+              )}
+            </group>
+          );
+        })}
     </group>
   );
 };

@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import { SectionHeader } from '../common/SectionHeader';
 import { Panel } from '../common/Panel';
 import { MagneticButton } from '../common/MagneticButton';
-import { gsap, useGSAP } from '../../lib/gsap';
 import {
   Database,
   ShieldCheck,
@@ -21,26 +20,6 @@ export const MethodologySection: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const [copiedCitationIdx, setCopiedCitationIdx] = useState<number | null>(null);
   const [isExporting, setIsExporting] = useState<boolean>(false);
-
-  useGSAP(
-    () => {
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (prefersReducedMotion || !sectionRef.current) return;
-
-      gsap.from('.source-card', {
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 75%',
-        },
-        y: 30,
-        opacity: 0,
-        stagger: 0.08,
-        duration: 0.75,
-        ease: 'power2.out',
-      });
-    },
-    { scope: sectionRef }
-  );
 
   const handleCopyCitation = (citation: string, idx: number) => {
     navigator.clipboard.writeText(citation);

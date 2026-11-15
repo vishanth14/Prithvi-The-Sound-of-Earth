@@ -23,6 +23,8 @@ import {
   Globe,
 } from 'lucide-react';
 
+import { ExplorerGlobeCanvas } from './ExplorerGlobeCanvas';
+
 interface ScientificLayerDetail {
   id: DatasetKey;
   eicKey: EicDatasetKey;
@@ -349,7 +351,10 @@ export const EarthExplorerSection: React.FC = () => {
         {/* Main 3D Canvas Viewport & Comprehensive Scientific Detail Panel */}
         <div className="explorer-reveal grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* Left Column: 3D Earth Globe Canvas Viewport */}
-          <div className="lg:col-span-7 relative min-h-[520px] sm:min-h-[660px] bg-transparent border-2 border-[#252D36] overflow-hidden flex flex-col justify-between p-6 sm:p-8 shadow-sm pointer-events-none">
+          <div className="lg:col-span-7 relative min-h-[520px] sm:min-h-[660px] bg-[#070B10] border-2 border-[#252D36] overflow-hidden flex flex-col justify-between p-6 sm:p-8 shadow-2xl pointer-events-auto group">
+            {/* Interactive 3D Earth Globe Canvas */}
+            <ExplorerGlobeCanvas />
+
             {/* Viewport Top Header */}
             <div className="relative z-20 flex items-center justify-between pointer-events-auto">
               <div className="flex items-center gap-3">
