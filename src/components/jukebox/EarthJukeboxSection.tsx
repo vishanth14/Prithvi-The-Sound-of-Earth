@@ -12,7 +12,7 @@ import type {
 import { gsap, useGSAP } from '../../lib/gsap';
 import { SectionHeader } from '../common/SectionHeader';
 import { Panel } from '../common/Panel';
-import { Button } from '../common/Button';
+import { MagneticButton } from '../common/MagneticButton';
 import { Badge } from '../common/Badge';
 import {
   Volume2,
@@ -460,9 +460,15 @@ export const EarthJukeboxSection: React.FC = () => {
                 </p>
               </div>
             </div>
-            <Button variant="primary" size="sm" onClick={unlockAudio}>
+            <MagneticButton
+              variant="primary"
+              size="sm"
+              onClick={unlockAudio}
+              cursorLabel="AUDIO"
+              className="px-4 py-2 font-bold tracking-wider"
+            >
               UNLOCK OBSERVATORY AUDIO
-            </Button>
+            </MagneticButton>
           </div>
         )}
 
@@ -1083,9 +1089,9 @@ export const EarthJukeboxSection: React.FC = () => {
                   max={Math.max(0, observations.length - 1)}
                   value={currentObservationIndex || 0}
                   onChange={(e) => handleScrub(parseInt(e.target.value, 10))}
-                  data-cursor-label="SEEK"
+                  data-cursor-label="DRAG"
                   aria-label="Seek timeline observation"
-                  className="w-full h-2 bg-[#070B10] rounded-none appearance-none cursor-pointer accent-[#FF5938] border border-[#252D36]"
+                  className="w-full h-2 bg-[#070B10] rounded-none appearance-none cursor-grab active:cursor-grabbing accent-[#FF5938] border border-[#252D36]"
                 />
 
                 <div className="flex items-center justify-between text-[10px] font-mono text-[#E9EDF0]/50">
@@ -1106,7 +1112,7 @@ export const EarthJukeboxSection: React.FC = () => {
                       if (idx !== -1) handleScrub(idx);
                     }}
                     data-cursor-label="SEEK"
-                    className="px-2 py-0.5 text-[10px] font-mono border border-[#252D36] bg-[#070B10] hover:border-[#FF5938] text-[#E9EDF0]/60 hover:text-[#FF5938] rounded-none transition-colors cursor-pointer"
+                    className="px-2 py-0.5 text-[10px] font-mono border border-[#252D36] bg-[#070B10] hover:border-[#FF5938] text-[#E9EDF0]/60 hover:text-[#FF5938] rounded-none transition-all cursor-pointer hover:scale-105 active:scale-95"
                   >
                     {m.year}
                   </button>
@@ -1116,22 +1122,29 @@ export const EarthJukeboxSection: React.FC = () => {
               {/* Master Transport Action Buttons */}
               <div className="pt-3 border-t border-[#252D36] flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <Button
+                  <MagneticButton
                     variant="primary"
                     size="sm"
                     onClick={handleTogglePlay}
-                    data-cursor-label={playbackState === 'PLAYING' ? 'PAUSE' : 'PLAY'}
-                    data-cursor-magnetic="true"
-                    icon={
-                      playbackState === 'PLAYING' ? (
-                        <Pause className="w-4 h-4 text-white" />
-                      ) : (
-                        <Play className="w-4 h-4 text-white" />
-                      )
-                    }
+                    cursorLabel={playbackState === 'PLAYING' ? 'PAUSE' : 'PLAY'}
+                    className="relative gap-2 px-4 py-2 font-bold tracking-wider"
                   >
-                    {playbackState === 'PLAYING' ? 'PAUSE' : 'PLAY'}
-                  </Button>
+                    {playbackState === 'PLAYING' ? (
+                      <>
+                        <span className="relative flex h-2.5 w-2.5 mr-0.5">
+                          <span className="animate-ping absolute inline-flex h-full w-full bg-white opacity-75" />
+                          <span className="relative inline-flex h-2.5 w-2.5 bg-white" />
+                        </span>
+                        <Pause className="w-3.5 h-3.5 text-[#070B10]" />
+                        <span className="text-[#070B10]">PAUSE</span>
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-3.5 h-3.5 text-[#070B10]" />
+                        <span className="text-[#070B10]">PLAY</span>
+                      </>
+                    )}
+                  </MagneticButton>
 
                   <button
                     onClick={handleStop}

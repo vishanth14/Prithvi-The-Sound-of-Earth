@@ -98,18 +98,55 @@ export const CustomCursor: React.FC = () => {
           const ariaLabel = (interactiveEl.getAttribute('aria-label') || '').toLowerCase();
           const combined = `${text} ${href} ${title} ${ariaLabel}`;
 
-          if (combined.includes('listen') || combined.includes('audio') || combined.includes('play') || combined.includes('sound') || combined.includes('mute')) {
+          if (
+            interactiveEl.getAttribute('type') === 'range' ||
+            combined.includes('scrub') ||
+            combined.includes('timeline') ||
+            combined.includes('slider') ||
+            combined.includes('drag')
+          ) {
+            nextLabel = 'DRAG';
+          } else if (
+            combined.includes('listen') ||
+            combined.includes('audio') ||
+            combined.includes('play') ||
+            combined.includes('pause') ||
+            combined.includes('sound') ||
+            combined.includes('mute') ||
+            combined.includes('speed') ||
+            combined.includes('replay') ||
+            combined.includes('loop')
+          ) {
             nextLabel = 'LISTEN';
-          } else if (combined.includes('explore') || combined.includes('journey') || combined.includes('layer') || combined.includes('sentinel') || combined.includes('station')) {
+          } else if (
+            combined.includes('explore') ||
+            combined.includes('journey') ||
+            combined.includes('layer') ||
+            combined.includes('sentinel') ||
+            combined.includes('station')
+          ) {
             nextLabel = 'EXPLORE';
-          } else if (combined.includes('discover') || combined.includes('story') || combined.includes('fleet') || combined.includes('mission')) {
+          } else if (
+            combined.includes('discover') ||
+            combined.includes('story') ||
+            combined.includes('fleet') ||
+            combined.includes('mission')
+          ) {
             nextLabel = 'DISCOVER';
-          } else if (combined.includes('open') || combined.includes('http') || combined.includes('github') || combined.includes('svs') || combined.includes('external')) {
+          } else if (
+            combined.includes('open') ||
+            combined.includes('http') ||
+            combined.includes('github') ||
+            combined.includes('svs') ||
+            combined.includes('external') ||
+            combined.includes('export') ||
+            combined.includes('download')
+          ) {
             nextLabel = 'OPEN';
           } else if (combined.includes('rotate') || combined.includes('orbit')) {
             nextLabel = 'ROTATE';
           } else if (interactiveEl.tagName.toLowerCase() === 'a' || interactiveEl.tagName.toLowerCase() === 'button') {
-            nextLabel = 'SELECT';
+            nextLabel = 'EXPLORE';
           }
         }
       }

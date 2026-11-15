@@ -3,7 +3,8 @@ import { useObservatoryStore } from '../../store/useObservatoryStore';
 import { useExperienceStore } from '../../orchestrator/experienceStore';
 import type { ChapterId } from '../../orchestrator/experienceTypes';
 import { PrithviWordmark } from '../common/PrithviWordmark';
-import { Volume2, VolumeX, Menu, X, Command } from 'lucide-react';
+import { MagneticButton } from '../common/MagneticButton';
+import { Volume2, VolumeX, Menu, X, Command, ArrowRight } from 'lucide-react';
 
 export interface NavChapter {
   id: string;
@@ -129,7 +130,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenShortcuts }) => {
                   key={chapter.id}
                   onClick={() => scrollToChapter(chapter.id)}
                   data-cursor-label={chapter.label}
-                  className={`group flex items-baseline gap-1.5 text-xs uppercase tracking-widest font-display font-bold transition-all duration-200 cursor-pointer ${
+                  className={`group relative flex items-center gap-1.5 py-1 text-xs uppercase tracking-widest font-display font-bold transition-all duration-300 cursor-pointer hover:tracking-[0.22em] ${
                     active ? 'text-[#E9EDF0]' : 'text-[#7E8B98] hover:text-[#E9EDF0]'
                   }`}
                 >
@@ -141,10 +142,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenShortcuts }) => {
                     {chapter.number}
                   </span>
                   <span className="text-[#252D36] text-[10px] font-mono">/</span>
-                  <span className="relative">
-                    {chapter.label}
+                  <span className="relative inline-flex items-center">
+                    <span>{chapter.label}</span>
+                    <span className="inline-block overflow-hidden w-0 group-hover:w-3 transition-all duration-300 opacity-0 group-hover:opacity-100 text-[#FF5938] text-[9px] font-mono ml-0.5 translate-x-[-2px] group-hover:translate-x-0">
+                      →
+                    </span>
                     {active && (
-                      <span className="absolute -bottom-1.5 left-0 w-full h-[2px] bg-[#FF5938]" />
+                      <span className="absolute -bottom-1.5 left-0 w-full h-[2px] bg-[#FF5938] shadow-[0_0_8px_rgba(255,89,56,0.6)] animate-in fade-in duration-300" />
                     )}
                   </span>
                 </button>
@@ -155,19 +159,20 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenShortcuts }) => {
           {/* 3. Right Minimalist Audio Status & Keymap */}
           <div className="flex items-center gap-3 sm:gap-4">
             {!isAudioUnlocked ? (
-              <button
+              <MagneticButton
                 onClick={handleAudioAction}
-                data-cursor-label="AUDIO"
-                data-cursor-magnetic="true"
-                className="inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-display font-bold tracking-wider uppercase border border-[#FF5938] bg-[#FF5938]/15 hover:bg-[#FF5938] text-[#E9EDF0] hover:text-[#070B10] transition-all duration-200 cursor-pointer"
+                cursorLabel="AUDIO"
+                variant="primary"
+                size="sm"
+                className="gap-2 px-3.5 py-1.5"
                 title="Activate Real-Time Scientific Sonification Engine"
               >
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full bg-[#FF5938] opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 bg-[#FF5938]" />
+                  <span className="animate-ping absolute inline-flex h-full w-full bg-white opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 bg-white" />
                 </span>
-                <span className="font-bold text-xs tracking-wider">LISTEN</span>
-              </button>
+                <span className="font-bold text-xs tracking-wider text-[#070B10]">LISTEN</span>
+              </MagneticButton>
             ) : (
               <div className="inline-flex items-center border border-[#252D36] bg-[#0E141D] px-3 py-1 gap-2.5">
                 <button
@@ -246,7 +251,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenShortcuts }) => {
 
       {/* Mobile Minimal Drawer */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-[#070B10]/98 backdrop-blur-2xl pt-24 px-8 pb-10 flex flex-col justify-between border-b border-[#252D36] md:hidden">
+        <div className="fixed inset-0 z-40 bg-[#070B10]/98 backdrop-blur-2xl pt-24 px-8 pb-10 flex flex-col justify-between border-b border-[#252D36] md:hidden animate-in fade-in duration-300">
           <div className="flex flex-col gap-3">
             <span className="text-[10px] font-mono text-[#83BBD5] tracking-widest uppercase pb-2 border-b border-[#252D36]">
               OBSERVATORY DIRECTORY
@@ -257,38 +262,47 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenShortcuts }) => {
                 <button
                   key={chapter.id}
                   onClick={() => scrollToChapter(chapter.id)}
-                  className="flex items-center justify-between py-3 border-b border-[#252D36]/60 text-left transition-colors cursor-pointer"
+                  className="group flex items-center justify-between py-3.5 border-b border-[#252D36]/60 text-left transition-colors cursor-pointer"
                 >
                   <div className="flex items-baseline gap-3">
                     <span className="font-mono text-xs text-[#FF5938]">{chapter.number}</span>
                     <span
-                      className={`font-display text-2xl tracking-wide uppercase ${
-                        active ? 'text-[#FF5938] font-bold' : 'text-[#E9EDF0]'
+                      className={`font-display text-2xl tracking-wide uppercase transition-all duration-200 group-hover:tracking-wider ${
+                        active ? 'text-[#FF5938] font-bold' : 'text-[#E9EDF0] group-hover:text-white'
                       }`}
                     >
                       {chapter.label}
                     </span>
                   </div>
-                  {active && <span className="w-2 h-2 bg-[#FF5938]" />}
+                  <div className="flex items-center gap-2">
+                    {active ? (
+                      <span className="w-2 h-2 bg-[#FF5938]" />
+                    ) : (
+                      <ArrowRight className="w-4 h-4 text-[#7E8B98] opacity-0 group-hover:opacity-100 transition-all duration-200 -translate-x-1 group-hover:translate-x-0" />
+                    )}
+                  </div>
                 </button>
               );
             })}
           </div>
 
           <div className="pt-6 border-t border-[#252D36] flex flex-col gap-4">
-            <button
+            <MagneticButton
               onClick={() => {
                 handleAudioAction();
                 setMobileMenuOpen(false);
               }}
-              className="w-full py-3.5 bg-[#FF5938] text-[#070B10] font-display font-bold text-xs tracking-widest uppercase text-center cursor-pointer"
+              cursorLabel="LISTEN"
+              variant="primary"
+              size="lg"
+              className="w-full py-4 text-center justify-center font-bold tracking-widest"
             >
               {!isAudioUnlocked
                 ? 'LISTEN TO EARTH'
                 : transportState === 'PLAYING'
                 ? 'PAUSE SONIFICATION'
                 : 'RESUME SONIFICATION'}
-            </button>
+            </MagneticButton>
           </div>
         </div>
       )}

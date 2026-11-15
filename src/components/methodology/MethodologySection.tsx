@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { SectionHeader } from '../common/SectionHeader';
 import { Panel } from '../common/Panel';
-import { Button } from '../common/Button';
+import { MagneticButton } from '../common/MagneticButton';
 import { gsap, useGSAP } from '../../lib/gsap';
 import {
   Database,
@@ -150,18 +150,17 @@ export const MethodologySection: React.FC = () => {
             </div>
           </div>
 
-          <Button
+          <MagneticButton
             variant="primary"
             size="md"
             onClick={handleExportCsv}
             disabled={isExporting}
-            data-cursor-label="EXPORT"
-            data-cursor-magnetic="true"
-            icon={<Download className="w-4 h-4 text-white" />}
-            className="shrink-0 w-full sm:w-auto hover:tracking-widest transition-all duration-300"
+            cursorLabel="EXPORT"
+            className="shrink-0 w-full sm:w-auto px-6 py-3 font-bold tracking-wider hover:tracking-widest flex items-center justify-center gap-2"
           >
-            {isExporting ? 'GENERATING CSV...' : 'EXPORT OBSERVATIONS (CSV)'}
-          </Button>
+            <Download className="w-4 h-4 text-[#070B10]" />
+            <span>{isExporting ? 'GENERATING CSV...' : 'EXPORT OBSERVATIONS (CSV)'}</span>
+          </MagneticButton>
         </Panel>
 
         {/* Scientific Sources Grid */}
@@ -211,10 +210,10 @@ export const MethodologySection: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   data-cursor-label="OPEN"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-mono border border-[#252D36] bg-[#070B10] hover:border-[#FF5938] text-[#E9EDF0] hover:text-[#FF5938] transition-colors rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5938]"
+                  className="group inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-mono border border-[#252D36] bg-[#070B10] hover:border-[#FF5938] text-[#E9EDF0] hover:text-[#FF5938] transition-colors rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5938]"
                 >
                   <span>DATA ARCHIVE</span>
-                  <ExternalLink className="w-3 h-3" />
+                  <ExternalLink className="w-3 h-3 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </a>
               </div>
             </Panel>

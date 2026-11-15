@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useObservatoryStore } from '../../store/useObservatoryStore';
 import { useExperienceStore } from '../../orchestrator/experienceStore';
+import { MagneticButton } from '../common/MagneticButton';
+import { InteractiveVisualFrame } from '../common/InteractiveVisualFrame';
 import type { EicDatasetKey } from '../../data/eicSchemas';
 import { gsap, useGSAP } from '../../lib/gsap';
 import {
@@ -1104,24 +1106,31 @@ export const EarthStoriesSection: React.FC = () => {
                   </span>
                 </div>
               ) : (
-                <button
+                <MagneticButton
                   onClick={handleListenToData}
-                  data-cursor-label="LISTEN"
-                  data-cursor-magnetic="true"
-                  className="flex items-center justify-center gap-3 px-8 py-4 bg-[#FF5938] hover:bg-[#E84C2C] text-[#070B10] font-display font-black text-sm tracking-widest uppercase transition-all duration-300 cursor-pointer shadow-[0_4px_24px_rgba(255,89,56,0.3)] hover:shadow-[0_6px_32px_rgba(255,89,56,0.5)] hover:scale-[1.02] active:scale-[0.98]"
+                  cursorLabel="LISTEN"
+                  variant="primary"
+                  size="lg"
+                  className="w-full sm:w-auto px-8 py-4 font-black tracking-widest"
                 >
                   <Headphones className="w-4 h-4 text-[#070B10]" />
                   <span>LISTEN TO THIS DATA IN THE JUKEBOX</span>
                   <ArrowRight className="w-4 h-4 text-[#070B10]" />
-                </button>
+                </MagneticButton>
               )}
             </div>
           </div>
 
           {/* RIGHT COLUMN: Original NASA Visualization, Interactive Timeline & Telemetry (5 COLS) */}
           <div className="lg:col-span-5 relative z-10 flex flex-col space-y-6">
-            {/* Visualizer Showcase Panel */}
-            <div className="bg-[#0E141D] border-2 border-[#252D36] p-5 sm:p-6 space-y-4 shadow-xl">
+            {/* Visualizer Showcase Panel with 3D Parallax & Telemetry Caption Reveal */}
+            <InteractiveVisualFrame
+              captionTitle={activeStory.headline.split(':')[0]}
+              captionSubtitle={`${activeStory.primaryInstrument} • Epoch ${activeTimelinePoint.year}`}
+              officialId={activeStory.officialId}
+              officialUrl={activeStory.officialIdUrl}
+              className="p-5 sm:p-6 space-y-4"
+            >
               <div className="flex items-center justify-between border-b border-[#252D36] pb-3">
                 <span className="font-mono text-xs text-[#83BBD5] uppercase tracking-widest font-bold flex items-center gap-2">
                   <Activity className="w-3.5 h-3.5 text-[#FF5938]" />
@@ -1170,7 +1179,7 @@ export const EarthStoriesSection: React.FC = () => {
                   EPOCH {activeTimelinePoint.year}
                 </span>
               </div>
-            </div>
+            </InteractiveVisualFrame>
 
             {/* Interactive Timeline Scrubber Card */}
             <div className="bg-[#0E141D] border border-[#252D36] p-5 sm:p-6 space-y-4">

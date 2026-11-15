@@ -2,6 +2,7 @@ import React, { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
+import { easing } from 'maath';
 import { gsap } from '../../lib/gsap';
 import { useObservatoryStore, CLIMATE_SENTINELS } from '../../store/useObservatoryStore';
 import { SATELLITE_FLEET } from '../../data/earthDatasets';
@@ -439,32 +440,20 @@ export const EarthGlobe: React.FC = () => {
       earthGroupRef.current.rotation.y += delta * 0.038;
     }
 
-    // Gentle, restrained aerospace pointer parallax in Hero chapter (observer vantage response)
+    // Heavy physical planetary inertia and damped tilt in response to pointer movement
+    // Planetary body feels massive, grounded, and dignified — never follows cursor aggressively
     if (earthGroupRef.current && !scrollState.isInteractingWithGlobe) {
-      if (scrollState.progress <= 0.12 && !scrollState.prefersReducedMotion) {
-        const targetTiltX = 0.41 - state.pointer.y * 0.038; // subtle orbital pitch (max ~2.2 deg)
-        const targetRollZ = state.pointer.x * 0.028;        // subtle orbital roll (max ~1.6 deg)
-        earthGroupRef.current.rotation.x = THREE.MathUtils.lerp(
-          earthGroupRef.current.rotation.x,
-          targetTiltX,
-          delta * 2.2
-        );
-        earthGroupRef.current.rotation.z = THREE.MathUtils.lerp(
-          earthGroupRef.current.rotation.z,
-          targetRollZ,
-          delta * 2.2
-        );
+      if (!scrollState.prefersReducedMotion && scrollState.progress <= 0.55) {
+        // Observer vantage tilt response: subtle orbital pitch and roll (max ~2.5 deg)
+        // Damped with 0.65s half-life so the planetary mass has physical weight and momentum
+        const targetTiltX = 0.41 - state.pointer.y * 0.042;
+        const targetRollZ = state.pointer.x * 0.032;
+        easing.damp(earthGroupRef.current.rotation, 'x', targetTiltX, 0.65, delta);
+        easing.damp(earthGroupRef.current.rotation, 'z', targetRollZ, 0.65, delta);
       } else {
-        earthGroupRef.current.rotation.x = THREE.MathUtils.lerp(
-          earthGroupRef.current.rotation.x,
-          0.41,
-          delta * 2.5
-        );
-        earthGroupRef.current.rotation.z = THREE.MathUtils.lerp(
-          earthGroupRef.current.rotation.z,
-          0.0,
-          delta * 2.5
-        );
+        // Return smoothly to baseline axial inclination
+        easing.damp(earthGroupRef.current.rotation, 'x', 0.41, 0.65, delta);
+        easing.damp(earthGroupRef.current.rotation, 'z', 0.0, 0.65, delta);
       }
     }
 

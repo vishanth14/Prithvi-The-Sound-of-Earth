@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { useObservatoryStore, CLIMATE_SENTINELS } from '../../store/useObservatoryStore';
 import { EARTH_DATASETS } from '../../data/earthDatasets';
 import { gsap, useGSAP } from '../../lib/gsap';
+import { MagneticButton } from '../common/MagneticButton';
 import type { DatasetKey } from '../../data/types';
 import type { EicDatasetKey } from '../../data/eicSchemas';
 import { scrollState } from '../../lib/scrollState';
@@ -478,25 +479,27 @@ export const EarthExplorerSection: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-2.5">
-                  <button
+                  <MagneticButton
                     onClick={() => handleOpenStory(currentSentinel.eicKey)}
-                    data-cursor-label="STORY"
-                    data-cursor-magnetic="true"
-                    className="flex-1 py-3 px-4 text-xs font-display font-bold tracking-wider uppercase bg-[#FF5938] hover:bg-[#E84C2C] text-[#070B10] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+                    cursorLabel="STORY"
+                    variant="primary"
+                    size="sm"
+                    className="flex-1 py-3 px-4 font-bold tracking-wider"
                   >
                     <BookOpen className="w-3.5 h-3.5 text-[#070B10]" />
                     <span>EXPLORE STORY</span>
-                  </button>
+                  </MagneticButton>
 
-                  <button
+                  <MagneticButton
                     onClick={handleListenToData}
-                    data-cursor-label="LISTEN"
-                    data-cursor-magnetic="true"
-                    className="flex-1 py-3 px-4 text-xs font-display font-bold tracking-wider uppercase border border-[#252D36] hover:border-[#83BBD5] bg-[#0E141D] text-[#E9EDF0] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                    cursorLabel="LISTEN"
+                    variant="secondary"
+                    size="sm"
+                    className="flex-1 py-3 px-4 font-bold tracking-wider"
                   >
                     <Headphones className="w-3.5 h-3.5 text-[#83BBD5]" />
                     <span>LISTEN</span>
-                  </button>
+                  </MagneticButton>
 
                   <button
                     onClick={handleBackToOverview}
@@ -595,37 +598,40 @@ export const EarthExplorerSection: React.FC = () => {
 
               {/* Action Buttons: Listen & Jukebox Navigation */}
               <div className="pt-4 border-t border-[#252D36]/20 flex flex-col sm:flex-row gap-3">
-                <button
+                <MagneticButton
                   onClick={() => handleOpenStory()}
-                  data-cursor-label="STORY"
-                  data-cursor-magnetic="true"
-                  className="flex-1 py-3.5 px-5 text-xs font-display font-extrabold tracking-widest uppercase bg-[#FF5938] hover:bg-[#E84C2C] text-[#070B10] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:scale-[1.02] hover:tracking-[0.16em] active:scale-[0.98]"
+                  cursorLabel="STORY"
+                  variant="primary"
+                  size="md"
+                  className="flex-1 py-3.5 px-5 font-black tracking-widest gap-2"
                 >
                   <BookOpen className="w-4 h-4 text-[#070B10]" />
                   <span>EXPLORE SCIENTIFIC STORY</span>
                   <ArrowRight className="w-3.5 h-3.5 text-[#070B10]" />
-                </button>
+                </MagneticButton>
 
-                <button
+                <MagneticButton
                   onClick={handleListenToData}
-                  data-cursor-label="LISTEN"
-                  data-cursor-magnetic="true"
-                  className="py-3.5 px-5 text-xs font-display font-extrabold tracking-wider uppercase border-2 border-[#252D36] hover:bg-[#070B10] hover:text-[#E9EDF0] text-[#070B10] transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 hover:scale-[1.02] hover:border-[#070B10] active:scale-[0.98]"
+                  cursorLabel="LISTEN"
+                  variant="custom"
+                  size="md"
+                  className="py-3.5 px-5 font-bold tracking-wider uppercase border-2 border-[#252D36] hover:bg-[#070B10] hover:text-[#E9EDF0] text-[#070B10] transition-all duration-300 cursor-pointer flex items-center justify-center gap-2"
                 >
                   <Headphones className="w-4 h-4" />
                   <span>LISTEN TO DATA</span>
-                </button>
+                </MagneticButton>
 
-                <button
+                <MagneticButton
                   onClick={handleViewInJukebox}
-                  data-cursor-label="JUKEBOX"
-                  data-cursor-magnetic="true"
-                  className="py-3.5 px-4 text-xs font-display font-bold tracking-wider uppercase border border-[#252D36]/40 hover:bg-[#070B10] hover:text-[#E9EDF0] text-[#7E8B98] transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5 hover:scale-[1.02]"
+                  cursorLabel="JUKEBOX"
+                  variant="custom"
+                  size="md"
+                  className="py-3.5 px-4 font-bold tracking-wider uppercase border border-[#252D36]/40 hover:bg-[#070B10] hover:text-[#E9EDF0] text-[#7E8B98] transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5"
                   title="Open Jukebox Laboratory"
                 >
                   <span>JUKEBOX</span>
                   <ExternalLink className="w-3.5 h-3.5" />
-                </button>
+                </MagneticButton>
               </div>
             </div>
           </div>

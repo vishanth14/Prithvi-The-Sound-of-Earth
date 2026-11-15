@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { useObservatoryStore } from '../../store/useObservatoryStore';
 import { useExperienceStore } from '../../orchestrator/experienceStore';
+import { MagneticButton } from '../common/MagneticButton';
 import { gsap, ScrollTrigger, useGSAP } from '../../lib/gsap';
 import { ArrowDown, Compass, Headphones } from 'lucide-react';
 
@@ -188,26 +189,28 @@ export const HeroSection: React.FC = () => {
         {/* Primary and Secondary Editorial CTAs */}
         <div className="hero-actions flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 mt-6 sm:mt-8 pointer-events-auto w-full max-w-md sm:max-w-none px-4 sm:px-0">
           {/* Primary CTA */}
-          <button
+          <MagneticButton
             onClick={handleBeginJourney}
-            data-cursor-label="JOURNEY"
-            data-cursor-magnetic="true"
-            className="group flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-3.5 bg-[#FF5938] hover:bg-[#E84C2C] text-[#070B10] font-display font-extrabold text-sm tracking-wider hover:tracking-widest uppercase transition-all duration-300 cursor-pointer shadow-[0_4px_24px_rgba(255,89,56,0.3)] hover:shadow-[0_6px_32px_rgba(255,89,56,0.5)] hover:scale-[1.02] active:scale-[0.98]"
+            cursorLabel="EXPLORE"
+            variant="primary"
+            size="lg"
+            className="w-full sm:w-auto px-8 py-3.5 hover:tracking-widest transition-all duration-300"
           >
             <Compass className="w-4 h-4 text-[#070B10] group-hover:rotate-45 transition-transform duration-300" />
             <span>BEGIN THE JOURNEY</span>
-          </button>
+          </MagneticButton>
 
           {/* Secondary CTA */}
-          <button
+          <MagneticButton
             onClick={handleListenToEarth}
-            data-cursor-label="LISTEN"
-            data-cursor-magnetic="true"
-            className="group flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-3.5 border border-[#252D36] hover:border-[#83BBD5] bg-[#070B10]/85 backdrop-blur-md text-[#E9EDF0] font-display font-extrabold text-sm tracking-wider hover:tracking-widest uppercase transition-all duration-300 cursor-pointer hover:bg-[#0E141D] hover:scale-[1.02] active:scale-[0.98]"
+            cursorLabel="LISTEN"
+            variant="secondary"
+            size="lg"
+            className="w-full sm:w-auto px-8 py-3.5 bg-[#070B10]/85 backdrop-blur-md hover:tracking-widest transition-all duration-300"
           >
             <Headphones className="w-4 h-4 text-[#83BBD5] group-hover:scale-110 transition-transform duration-200" />
             <span>LISTEN TO EARTH</span>
-          </button>
+          </MagneticButton>
         </div>
       </div>
 

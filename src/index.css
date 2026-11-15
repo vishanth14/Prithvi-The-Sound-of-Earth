@@ -144,3 +144,66 @@ section {
 .editorial-card-light:hover {
   border-color: #FF5938;
 }
+
+/* Aerospace Custom Range Slider Styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #070B10;
+  border: 1px solid #252D36;
+  height: 6px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+input[type="range"]:hover,
+input[type="range"]:focus-visible {
+  border-color: #83BBD5;
+}
+
+/* WebKit (Chrome, Safari, Edge) */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 18px;
+  background: #FF5938;
+  border: 1px solid #FFFFFF;
+  border-radius: 0;
+  cursor: grab;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 10px rgba(255, 89, 56, 0.6);
+  background: #E84C2C;
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  cursor: grabbing;
+  transform: scale(1.25);
+  box-shadow: 0 0 16px rgba(255, 89, 56, 0.9);
+}
+
+/* Firefox */
+input[type="range"]::-moz-range-thumb {
+  width: 10px;
+  height: 18px;
+  background: #FF5938;
+  border: 1px solid #FFFFFF;
+  border-radius: 0;
+  cursor: grab;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 10px rgba(255, 89, 56, 0.6);
+}
+
+input[type="range"]:active::-moz-range-thumb {
+  cursor: grabbing;
+  transform: scale(1.25);
+  box-shadow: 0 0 16px rgba(255, 89, 56, 0.9);
+}

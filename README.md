@@ -115,6 +115,42 @@ PRITHVI orchestrates its six editorial chapters as a continuous, unified planeta
 
 ---
 
+## 🎯 Advanced Cursor & Tactile Interaction System (Layer 10)
+
+PRITHVI features an aerospace-grade interaction language designed to feel precise, physical, and restrained:
+
+1. **Custom Minimal Orbital Cursor (`CustomCursor.tsx`):**
+   - **Desktop Only:** Strictly active for fine pointer devices (`@media (pointer: fine)`); completely unmounted on touch devices (`isTouchDevice === true`) to guarantee zero ghost tap lags and preserve native touch behavior.
+   - **Precision Point & Orbital Ring:** Features a starlight central pointer that shifts to Launch Orange on interactive hover, surrounded by a subtle trailing ring with cardinal calibration ticks and a rotating satellite node.
+   - **Contextual Action Badges:** Displays restrained technical action pills: `EXPLORE`, `ROTATE`, `LISTEN`, `OPEN`, `DISCOVER`, `DRAG`.
+   - **Prose Preservation:** Automatically dims and hides over readable body paragraphs, ensuring editorial text selection and readability are never obstructed.
+   - **Zero-Rerender Loop:** Coordinates interpolate smoothly at 60 FPS using direct DOM transforms in `requestAnimationFrame`.
+
+2. **Magnetic Proximity Buttons (`MagneticButton.tsx`):**
+   - Implements a restrained physical magnetic pull capped at $\pm 9\text{ px}$ with a spring pull strength of $0.24$.
+   - **Dual-Layer Parallax:** The outer button boundary translates toward the cursor while inner typography and icons translate with secondary forward depth ($45\%$ of container pull).
+   - Smooth cubic-bezier spring return on pointer exit (`0.45s cubic-bezier(0.25, 1, 0.5, 1)`).
+   - Applied across primary CTAs ("BEGIN THE JOURNEY", "LISTEN TO EARTH", "LISTEN TO THIS DATA IN THE JUKEBOX", "EXPORT OBSERVATIONS (CSV)").
+
+3. **Interactive Visual Frames (`InteractiveVisualFrame.tsx`):**
+   - **3D Cursor-Following Parallax:** Cards calculate normalized pointer coordinates to apply dynamic `perspective(1000px) rotateX(...) rotateY(...) scale3d(...)` tilt.
+   - **Aerospace Chamfered Geometry:** Technical reticle corners and precision clip-path edges.
+   - **Secondary Depth Movement:** Visuals translate forward along the Z-axis (`translate3d(nx, ny, 16px)`).
+   - **Animated Telemetry Caption Reveal:** Sliding HUD overlay revealing official NASA SVS identifiers, instrument citations, and calibrated epoch timestamps on hover.
+
+4. **Physical 3D Earth Inertia & Damped Tilt (`EarthGlobe.tsx`):**
+   - Rather than aggressive, twitchy mouse following, the planetary body responds with heavy physical inertia and dignified mass ($0.65\text{s}$ half-life damping via `maath.easing.damp`).
+   - Active across viewing chapters (up to $55\%$ scroll progress) with subtle $\pm 2.5^\circ$ observer vantage tilt.
+   - Yields cleanly when the user initiates manual orbital drag (`onStart`), smoothly recovering its astronomical axial tilt on release.
+
+5. **Tactile Micro-Interactions:**
+   - **Aerospace Range Slider:** Precision sharp thumb ($10\text{px} \times 18\text{px}$) that scales $1.15\times$ on hover with starlight border and blooms with a glowing orange aura and grabbing cursor when dragged.
+   - **Rhythmic Audio Pulse Rings:** Animated ping indicators when Tone.js synthesis is actively outputting harmonic frequencies.
+   - **Navigation Directional Indicators:** Desktop and mobile navigation links smoothly reveal animated directional arrows (`→`) and subtle letter-spacing expansion on hover.
+   - **Keyboard Navigability:** Full WCAG 2.2 AA conformance with clear `focus-visible:ring-2` focus rings across all 80+ interactive controls.
+
+---
+
 ## ♿ Multimodal Accessibility & WCAG 2.2 AA Compliance
 
 - **Visual-to-Audio Equivalence:** Every acoustic parameter is simultaneously represented by live numeric readouts, musical note identifiers with cents offset, and a dedicated visual amplitude activity meter for users who are deaf or hard of hearing.
