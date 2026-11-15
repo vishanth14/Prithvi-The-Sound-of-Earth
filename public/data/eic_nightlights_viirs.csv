@@ -1,0 +1,13 @@
+year,month,global_radiance_nw,urban_expansion_index,quality_flag,milestone
+2012,1,18.4,100.0,VALID,Suomi-NPP VIIRS Day-Night Band (DNB) establishes high-sensitivity night lights baseline
+2013,1,18.9,102.7,VALID,Electrification of rural South Asia and Southeast Asia visible from orbit
+2015,1,19.8,107.6,VALID,Global urban growth and energy infrastructure expansion
+2017,1,20.6,112.0,VALID,NOAA-20 launched to ensure continuous night light observation
+2019,1,21.5,116.8,VALID,Sub-kilometer resolution Black Marble processing pipeline operational
+2020,1,19.2,104.3,VALID,COVID-19 lockdowns reduce commercial and transportation illumination worldwide
+2021,1,21.8,118.5,VALID,Post-pandemic industrial activity recovery detected globally
+2022,1,22.4,121.7,VALID,Regional conflicts and energy disruptions mapped via localized blackouts
+2023,1,23.1,125.5,VALID,Global nighttime radiance continues upward expansion in emerging littoral zones
+2024,1,23.8,129.3,VALID,LED transition alters spectral emission signatures across global megacities
+2025,1,24.4,132.6,VALID,High-density infrastructure illumination tracked by VIIRS
+2026,1,25.0,135.9,VALID,Current operational datum for NASA Space Apps 2026

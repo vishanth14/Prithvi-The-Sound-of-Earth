@@ -1,0 +1,140 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Space Grotesk", system-ui, -apple-system, sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* Editorial Planetary Color Palette */
+  --color-paper: #F0EEE5;
+  --color-paper-muted: #E4E0D2;
+  --color-paper-card: #F7F5EE;
+  
+  --color-ink: #111820;
+  --color-ink-light: #1A232E;
+  --color-ink-muted: #6B7280;
+  
+  --color-ocean: #17465B;
+  --color-ocean-light: #256685;
+  --color-ocean-deep: #0D2633;
+  
+  --color-sand: #D1B77D;
+  --color-sand-light: #E2CE9F;
+  --color-sand-muted: #B89E62;
+  
+  --color-signal: #E16D54;
+  --color-signal-hover: #D05940;
+  --color-signal-dark: #B3442D;
+}
+
+:root {
+  color-scheme: dark;
+  --bg-primary: #111820;
+  --bg-paper: #F0EEE5;
+  --text-primary: #F0EEE5;
+  --text-ink: #111820;
+  --text-muted: #9CA3AF;
+  --border-subtle: rgba(240, 238, 229, 0.12);
+  --border-editorial: rgba(17, 24, 32, 0.15);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
+/* Subtle, refined editorial scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #111820;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(209, 183, 125, 0.3);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(209, 183, 125, 0.6);
+}
+
+/* Editorial layout utility classes */
+.editorial-container {
+  max-width: 1360px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1.25rem, 4vw, 3.5rem);
+  padding-right: clamp(1.25rem, 4vw, 3.5rem);
+}
+
+.editorial-divider {
+  width: 100%;
+  height: 1px;
+  background-color: var(--border-subtle);
+}
+
+.editorial-divider-ink {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(17, 24, 32, 0.12);
+}
+
+/* Backwards-compatible glass & panel surfaces refactored into editorial elegance */
+.glass-panel {
+  background: rgba(17, 24, 32, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(240, 238, 229, 0.1);
+}
+
+.glass-panel-glow {
+  background: rgba(17, 24, 32, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(209, 183, 125, 0.3);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.editorial-card {
+  background: rgba(26, 35, 46, 0.6);
+  border: 1px solid rgba(240, 238, 229, 0.1);
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+.editorial-card:hover {
+  border-color: rgba(209, 183, 125, 0.4);
+}
+
+.editorial-card-light {
+  background: #FFFFFF;
+  border: 1px solid rgba(17, 24, 32, 0.08);
+  box-shadow: 0 4px 24px -2px rgba(17, 24, 32, 0.04);
+}
+
+.editorial-card-light:hover {
+  border-color: rgba(23, 70, 91, 0.3);
+}
+
+/* Subtle corner styling without harsh sci-fi brackets */
+.hud-border {
+  position: relative;
+}

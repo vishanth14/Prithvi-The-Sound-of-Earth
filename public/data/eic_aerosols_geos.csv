@@ -1,0 +1,15 @@
+year,month,black_carbon_ug_m3,dust_ug_m3,sea_salt_ug_m3,sulfate_ug_m3,total_aod,quality_flag,milestone
+2000,1,0.42,12.5,8.4,2.8,0.14,VALID,Terra MODIS begins continuous multi-angle aerosol optical depth monitoring
+2002,1,0.45,13.1,8.6,2.9,0.15,VALID,Aqua satellite expands atmospheric soundings and aerosol retrieval
+2005,1,0.48,12.8,8.2,3.1,0.16,VALID,Global industrial sulfate aerosol emissions peak in western nations
+2008,1,0.46,14.2,8.9,3.0,0.15,VALID,Trans-Atlantic Saharan dust plume transport mapped by CALIPSO lidar
+2010,1,0.51,13.8,8.5,2.7,0.16,VALID,Russian boreal forest wildfires cause northern hemispheric smoke haze
+2012,1,0.47,12.2,8.7,2.5,0.14,VALID,Clean Air regulations reduce sulfate aerosols across North America and Europe
+2015,1,0.58,13.5,8.3,2.4,0.17,VALID,Indonesian peat fires release massive regional black carbon smoke blankets
+2018,1,0.54,14.0,8.8,2.3,0.16,VALID,California Camp Fire generates extreme PM2.5 smoke plumes
+2020,1,0.68,13.2,8.5,2.1,0.18,VALID,Australian 'Black Summer' megafires inject smoke into stratosphere
+2022,1,0.52,14.8,9.1,2.0,0.16,VALID,Hunga Tonga submarine volcanic eruption injects water vapor and aerosols
+2023,1,0.74,13.6,8.6,1.9,0.19,VALID,Record Canadian wildfire season blankets North America and crosses Atlantic
+2024,1,0.62,14.1,8.9,1.8,0.17,VALID,South American Pantanal and Amazonian drought-driven wildfires
+2025,1,0.59,13.9,8.7,1.8,0.17,VALID,GEOS-FP real-time forward processing atmospheric assimilation
+2026,1,0.57,13.7,8.8,1.7,0.16,VALID,Current operational datum for NASA Space Apps 2026

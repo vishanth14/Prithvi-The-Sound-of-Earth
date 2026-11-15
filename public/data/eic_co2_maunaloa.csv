@@ -1,0 +1,22 @@
+year,month,ppm,growth_rate,baseline_ppm,quality_flag,milestone
+1958,3,315.71,0.94,280.0,VALID,Dr. Charles David Keeling commences continuous monitoring at Mauna Loa
+1960,1,316.91,0.54,280.0,VALID,Seasonal photosynthetic cycle documented in atmospheric trace data
+1965,1,320.04,1.10,280.0,VALID,Post-war fossil fuel emissions acceleration
+1970,1,325.68,1.06,280.0,VALID,First Earth Day; continuous baseline established
+1975,1,331.11,1.14,280.0,VALID,Global atmospheric circulation models integrate CO2 forcing
+1980,1,338.75,1.73,280.0,VALID,Atmospheric CO2 crosses 338 ppm
+1985,1,346.12,1.26,280.0,VALID,International consensus builds on radiative greenhouse effect
+1990,1,354.39,1.19,280.0,VALID,IPCC FAR confirms accelerating greenhouse forcing
+1995,1,360.82,1.99,280.0,VALID,CO2 crosses 360 ppm
+2000,1,369.55,1.24,280.0,VALID,New millennium baseline; growth rate reaches 1.5 ppm/yr
+2005,1,379.80,2.54,280.0,VALID,Rapid industrialization and fossil energy consumption
+2010,1,389.90,2.39,280.0,VALID,Approaching the 400 ppm threshold
+2013,5,400.02,2.41,280.0,VALID,Atmospheric CO2 surpasses 400 ppm for first time in human history
+2015,1,401.01,2.94,280.0,VALID,Paris Agreement adopted; global annual mean surpasses 400 ppm
+2018,1,408.52,2.87,280.0,VALID,NASA OCO-2 maps global regional carbon flux from orbit
+2020,1,414.24,2.56,280.0,VALID,COVID-19 economic slowdown causes temporary emission dip but no atmospheric drop
+2022,1,418.56,2.15,280.0,VALID,Atmospheric CO2 50 percent higher than pre-industrial 280 ppm
+2023,1,421.08,3.36,280.0,VALID,Record annual increase driven by tropical heat and wildfires
+2024,1,424.32,3.15,280.0,VALID,Highest atmospheric concentration in 3 million years (Pliocene Epoch)
+2025,1,426.80,2.48,280.0,VALID,Exceeds 426 ppm global background concentration
+2026,1,429.20,2.40,280.0,VALID,Current operational datum for NASA Space Apps 2026
