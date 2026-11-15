@@ -86,14 +86,32 @@ PRITHVI features a dedicated synthesizer graph built on **Tone.js v15** and the 
 
 ## 🌐 The 6 Editorial Chapters
 
-1. **CHAPTER 01 // THE LIVING PLANET (`#hero` — Dark `#070B10`):** Colossal Barlow Condensed title, mission metadata, real-time 3D Earth, and dual calls to action.
-2. **CHAPTER 02 // A PLANET IN MOTION (`#explorer` & `#fleet` — Light `#E9EDF0`):** Starlight white magazine layout with framed dark 3D Earth aperture, 5 NASA Climate Sentinels with fly-to camera controls, and active NASA Earth Fleet orbit tracking (Terra, Aqua, GRACE-FO, Landsat 9, Sentinel-6).
-3. **CHAPTER 03 // WHAT EARTH IS TELLING US (`#stories` — Dark `#070B10`):** Deep editorial scientific stories using verified NASA EIC visuals, investigator pull-quotes (Dr. Gavin Schmidt, Dr. Ralph Keeling, Dr. Josh Willis), timeline telemetry, and direct sonification audition links.
-4. **CHAPTER 04 // THE EARTH JUKEBOX (`#jukebox` — Dark Acoustic Studio `#070B10` / `#0E141D`):** Primary challenge split composition:
+1. **CHAPTER 01 // ORIGIN (`#hero` — Dark `#070B10`):** Colossal Barlow Condensed title, mission metadata, real-time 3D Earth emerging from deep space, and dual calls to action (`BEGIN THE JOURNEY` and `LISTEN TO EARTH`).
+2. **CHAPTER 02 // ORBIT (`#explorer` & `#fleet` — Light `#E9EDF0`):** Starlight white magazine layout with framed dark 3D Earth aperture, 5 NASA Climate Sentinels with fly-to camera controls, and active NASA Earth Fleet orbit tracking (Terra, Aqua, GRACE-FO, Landsat 9, Sentinel-6).
+3. **CHAPTER 03 // SIGNALS (`#stories` — Dark `#070B10`):** Deep editorial scientific stories using verified NASA EIC visuals, investigator pull-quotes (Dr. Gavin Schmidt, Dr. Ralph Keeling, Dr. Josh Willis), timeline telemetry, and direct sonification audition links.
+4. **CHAPTER 04 // FREQUENCY (`#jukebox` — Dark Acoustic Studio `#070B10` / `#0E141D`):** Primary challenge split composition:
    - *Left:* NASA SVS #5190 Climate Spiral polar canvas ($0.0^\circ\text{C}$, $+1.0^\circ\text{C}$, $+1.5^\circ\text{C}$ rings), multitrack time-series, Zod data audit table, and live 48-band FFT spectrum + oscilloscope.
    - *Right:* 5 EIC channel selector buttons (with quarantined aerosol stream disabled), live scientific readout, transfer formula HUD, and timeline scrubber bounded to empirical benchmarks (1880–2024).
-5. **CHAPTER 05 // UNDERSTAND THE SIGNAL (`#signal` — Light Laboratory `#E9EDF0`):** Mathematical equations, epistemological limitations, and interactive harmonic audition lab comparing 1880, 1975, and 2024.
-6. **CHAPTER 06 // OPEN SCIENCE ARCHIVE (`#open-science` — Dark `#070B10`):** Software Architecture blueprint card, 1-click CSV data export of all validated observations, official citations with copy buttons, WCAG 2.2 AA accessibility matrix, and NASA Space Apps team dossier.
+5. **CHAPTER 05 // DECODING (`#signal` — Light Laboratory `#E9EDF0`):** Mathematical equations, epistemological limitations, and interactive harmonic audition lab comparing 1880, 1975, and 2024.
+6. **CHAPTER 06 // BEYOND (`#open-science` — Dark `#070B10`):** Software Architecture blueprint card, 1-click CSV data export of all validated observations, official citations with copy buttons, WCAG 2.2 AA accessibility matrix, and NASA Space Apps team dossier.
+
+---
+
+## 🎬 Central Cinematic Experience Orchestrator (Layer 9)
+
+PRITHVI orchestrates its six editorial chapters as a continuous, unified planetary narrative inspired by the spatial continuity of *Igloo* and the cinematic chapter pacing of *Charles Leclerc*:
+
+- **Centralized Experience State (`useExperienceStore`):** Zustand-powered state engine tracking active chapter (`01 ORIGIN` through `06 BEYOND`), visual scene mode, camera interpolation state, active scientific story, and transition directions. High-frequency 60fps telemetry is decoupled from React renders to eliminate re-render overhead.
+- **Continuous Persistent 3D Canvas:** Rather than mounting and destroying WebGL contexts across sections, a single persistent React Three Fiber canvas spans the entire application viewport.
+- **6-Chapter Camera Trajectory Choreography:**
+  - `01 ORIGIN`: Earth appears from deep space ($[0.0, 0.45, 7.5]$) with high-contrast solar rim illumination.
+  - `02 ORBIT`: Camera sweeps into low-Earth orbit ($[1.62, -0.08, 6.8]$), activating Rayleigh atmospheric limb scattering and Ground Sentinel pin focus.
+  - `03 SIGNALS`: Dramatic orbital perspective ($[-1.45, 0.20, 6.1]$) framing the NASA Earth Information Center editorial narratives.
+  - `04 FREQUENCY`: Pulls into the dark sonic laboratory ($[0.0, 0.08, 7.3]$) with subdued ambient earthshine, letting the NASA SVS #5190 Polar Spiral and real-time FFT spectrum analyzer dominate visually.
+  - `05 DECODING`: Settles into technical editorial composition ($[1.75, 0.12, 7.2]$), revealing the mathematical transfer functions and psychoacoustic logic.
+  - `06 BEYOND`: Pulls out to monumental deep space ($[0.0, 0.05, 8.2]$), presenting the open-science dossier and verified citations.
+- **Dynamic Cinematic Lighting Transitions:** Solar key light ($2.5 \to 1.6\text{ intensity}$) and atmospheric scattering coefficients lerp smoothly between chapters via `DynamicSceneLighting`.
+- **Synchronized Conflict-Free Navigation:** Programmatic jumps through Navbar or ScrollProgressHUD coordinate directly with Lenis smooth scroll (`duration: 1.25s`), prevent ScrollTrigger race conditions, and preserve browser history via HTML5 `pushState` deep links (`#hero`, `#explorer`, `#stories`, `#jukebox`, `#signal`, `#open-science`).
 
 ---
 
