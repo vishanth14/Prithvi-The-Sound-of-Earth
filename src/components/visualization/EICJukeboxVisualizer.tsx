@@ -103,7 +103,7 @@ export const EICJukeboxVisualizer: React.FC = () => {
   };
 
   // ---------------------------------------------------------------------------
-  // D3 CLIMATE SPIRAL COMPUTATION (NASA SVS #4976)
+  // D3 CLIMATE SPIRAL COMPUTATION (NASA SVS #5190)
   // ---------------------------------------------------------------------------
   const spiralParams = useMemo(() => {
     const gistempData = allDatasets?.gistemp?.observations || [];
@@ -276,8 +276,8 @@ export const EICJukeboxVisualizer: React.FC = () => {
             number="03"
             category="NASA EARTH INFORMATION CENTER"
             title="THE EARTH INFORMATION JUKEBOX"
-            subtitle="Empirical Earth System Observatory telemetry translated directly from NASA's Earth Information Center exhibits and Scientific Visualization Studio (SVS #4976) into spatial geometry and deterministic auditory displays."
-            badge="SVS ARCHIVE #4976"
+            subtitle="Empirical Earth System Observatory telemetry translated directly from NASA's Earth Information Center exhibits and Scientific Visualization Studio (SVS #5190) into spatial geometry and deterministic auditory displays."
+            badge="SVS ARCHIVE #5190"
             badgeVariant="sand"
           />
 
@@ -292,7 +292,7 @@ export const EICJukeboxVisualizer: React.FC = () => {
               }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>CLIMATE SPIRAL (SVS #4976)</span>
+              <span>CLIMATE SPIRAL (SVS #5190)</span>
             </button>
 
             <button
@@ -332,7 +332,7 @@ export const EICJukeboxVisualizer: React.FC = () => {
             { key: 'gistemp', label: 'GISTEMP Surface Anomaly', unit: '°C Anomaly', color: '#D1B77D' },
             { key: 'co2_maunaloa', label: 'Mauna Loa CO₂', unit: 'ppm', color: '#E16D54' },
             { key: 'sealevel_podaac', label: 'PO.DAAC Sea Level', unit: 'mm', color: '#17465B' },
-            { key: 'aerosols_geos', label: 'GEOS-FP Aerosols', unit: 'AOD', color: '#8B5CF6' },
+            { key: 'aerosols_geos', label: 'GEOS-FP Aerosols [PROXY]', unit: 'AOD', color: '#8B5CF6' },
             { key: 'nightlights_viirs', label: 'VIIRS Black Marble', unit: 'nW·cm⁻²·sr⁻¹', color: '#10B981' },
           ].map((stream) => {
             const isSelected = activeEicKey === stream.key;
@@ -360,7 +360,7 @@ export const EICJukeboxVisualizer: React.FC = () => {
         </div>
 
         {/* =================================================================== */}
-        {/* VIEW 01: NASA CLIMATE SPIRAL (SVS #4976)                            */}
+        {/* VIEW 01: NASA CLIMATE SPIRAL (SVS #5190)                            */}
         {/* =================================================================== */}
         {activeTab === 'spiral' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -370,10 +370,10 @@ export const EICJukeboxVisualizer: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <Activity className="w-4 h-4 text-[#D1B77D] animate-pulse" />
                   <span className="text-[#F0EEE5] font-semibold tracking-wider">
-                    NASA SVS #4976 // GISTEMP CLIMATE SPIRAL
+                    NASA SVS #5190 // GISTEMP CLIMATE SPIRAL
                   </span>
                 </div>
-                <span className="text-[#D1B77D] tracking-widest">1880 — 2026 PROGRESSION</span>
+                <span className="text-[#D1B77D] tracking-widest">1880 — 2024 BENCHMARKS</span>
               </div>
 
               {/* D3 Polar SVG Canvas */}

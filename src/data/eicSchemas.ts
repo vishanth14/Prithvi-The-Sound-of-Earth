@@ -60,6 +60,7 @@ export const EicMetadataSchema = z.object({
   citation: z.string(),
   archiveUrl: z.string().url(),
   themeColor: z.string(),
+  verificationStatus: z.enum(['VERIFIED', 'PARTIALLY_VERIFIED', 'QUARANTINED']).default('VERIFIED'),
   normalizationDocumentation: z.string(),
   sonificationMapping: z.object({
     acousticParameter: z.string(),

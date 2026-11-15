@@ -25,17 +25,17 @@ function latLngToVector3(lat: number, lng: number, radius = 2.016): [number, num
   return [x, y, z];
 }
 
-// Section Camera Coordinates & Vantage Angles (Distance 5.2-5.6 ensures zero edge clipping)
+// Section Camera Coordinates & Vantage Angles (Distance 5.8-8.2 ensures dominant framing with zero edge clipping)
 const CAMERA_PRESETS: Record<
   'hero' | 'explorer' | 'fleet' | 'timeline' | 'sonification' | 'science',
   { pos: [number, number, number]; lookAt: [number, number, number] }
 > = {
-  hero: { pos: [0.0, -0.32, 5.6], lookAt: [0, -0.12, 0] },
-  explorer: { pos: [0.0, 0.0, 5.2], lookAt: [0, 0, 0] },
-  fleet: { pos: [0.25, 2.0, 4.8], lookAt: [0, 0.1, 0] }, // Polar tilt to highlight satellite rings
-  timeline: { pos: [-0.85, 0.12, 5.4], lookAt: [-0.1, 0, 0] }, // Offset to frame timeline
-  sonification: { pos: [0.85, -0.15, 5.4], lookAt: [0.1, 0, 0] },
-  science: { pos: [0.0, 0.22, 5.6], lookAt: [0, 0, 0] },
+  hero: { pos: [0.0, -0.15, 8.2], lookAt: [0, 0, 0] },
+  explorer: { pos: [0.0, 0.0, 5.8], lookAt: [0, 0, 0] },
+  fleet: { pos: [0.25, 2.2, 5.4], lookAt: [0, 0.1, 0] }, // Polar tilt to highlight satellite rings
+  timeline: { pos: [-0.85, 0.12, 6.0], lookAt: [-0.1, 0, 0] }, // Offset to frame timeline
+  sonification: { pos: [0.85, -0.15, 6.0], lookAt: [0.1, 0, 0] },
+  science: { pos: [0.0, 0.22, 6.2], lookAt: [0, 0, 0] },
 };
 
 // Smooth Camera Controller linked to Observatory Scrollytelling & Climate Sentinel Zoom Focus
@@ -48,6 +48,19 @@ const CinematicCameraController: React.FC<{
   useFrame((state, delta) => {
     // If user is actively dragging the 3D globe, do not override their manual view
     if (isInteractingRef.current) return;
+
+    // Calculate aspect ratio for responsive distance scaling
+    const aspect = state.size.width / state.size.height;
+    let distanceScale = 1.0;
+    if (aspect < 0.6) {
+      // Mobile portrait (e.g. 390x844 aspect ~0.46)
+      distanceScale = Math.max(1.0, 0.68 / aspect);
+    } else if (aspect < 1.0) {
+      // Tablet portrait (e.g. 768x1024 aspect ~0.75)
+      distanceScale = Math.max(1.0, 0.88 / aspect);
+    } else if (aspect < 1.3) {
+      distanceScale = 1.08;
+    }
 
     // If a verified Climate Sentinel is selected in Explorer, glide camera directly to that station!
     if (activeSentinelId && activeCameraTarget === 'explorer') {
@@ -65,7 +78,7 @@ const CinematicCameraController: React.FC<{
       if (c) {
         const [sx, sy, sz] = latLngToVector3(c.lat, c.lng, 2.0);
         const norm = Math.hypot(sx, sy, sz) || 2.0;
-        const camDistance = 3.9;
+        const camDistance = 3.9 * distanceScale;
         const targetPos: [number, number, number] = [
           (sx / norm) * camDistance,
           (sy / norm) * camDistance + 0.15,
@@ -81,9 +94,14 @@ const CinematicCameraController: React.FC<{
     }
 
     const preset = CAMERA_PRESETS[activeCameraTarget] || CAMERA_PRESETS.hero;
+    const targetPos: [number, number, number] = [
+      preset.pos[0],
+      preset.pos[1],
+      preset.pos[2] * distanceScale,
+    ];
 
     // Smooth camera position damping (0.55s half-life)
-    easing.damp3(state.camera.position, preset.pos, 0.55, delta);
+    easing.damp3(state.camera.position, targetPos, 0.55, delta);
 
     if (controlsRef.current) {
       easing.damp3(controlsRef.current.target, preset.lookAt, 0.55, delta);
@@ -164,7 +182,7 @@ export const EarthCanvas: React.FC<EarthCanvasProps> = ({
     <WebGLErrorBoundary>
       <div className={`relative w-full h-full min-h-[380px] sm:min-h-[500px] ${className}`}>
         <Canvas
-          camera={{ position: [0.0, -0.32, 5.6], fov: 42 }}
+          camera={{ position: [0.0, -0.15, 8.2], fov: 42 }}
           dpr={isMobile ? 1 : [1, 1.5]}
           gl={{
             antialias: true,
@@ -208,8 +226,8 @@ export const EarthCanvas: React.FC<EarthCanvasProps> = ({
                 ref={controlsRef}
                 enablePan={false}
                 enableZoom={true}
-                minDistance={3.0}
-                maxDistance={7.5}
+                minDistance={3.2}
+                maxDistance={12.0}
                 autoRotate={globeRotating}
                 autoRotateSpeed={0.35}
                 dampingFactor={0.05}

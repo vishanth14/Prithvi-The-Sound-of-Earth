@@ -5,31 +5,53 @@
 
 **Team:** MULTIVERSE VENDHAN  
 **Challenge:** NASA Space Apps Challenge 2026 — The Earth Information Jukebox  
-**Live Observatory Engine:** React 19 • Three.js • React Three Fiber • Tone.js • Web Audio API • GSAP • Lenis • D3 • Zod • Tailwind CSS v4
+**Live Observatory Engine:** React 19 • Three.js • React Three Fiber • Tone.js • Web Audio API • GSAP • Lenis • D3 • Zod • Tailwind CSS v4  
+**Design Identity:** Orbital Documentary (Editorial Aerospace Magazine)  
+**Scientific Audit:** Certified in [docs/scientific-provenance-audit.md](docs/scientific-provenance-audit.md)  
+**Submission Dossier:** Complete 7-Slide Presentation in [docs/nasa-space-apps-submission-dossier.md](docs/nasa-space-apps-submission-dossier.md)  
 
 ---
 
 ## 🌍 Executive Summary & Vision
 
-**PRITHVI (Sanskrit for "Earth")** is an immersive digital orbital observatory that bridges empirical NASA Earth system science with psychoacoustic sonification. Inspired by the NASA Scientific Visualization Studio (SVS), high-end digital observatories, and accessible multimodal design, PRITHVI transforms multi-decadal satellite telemetry into calibrated 3D spatial geometry and deterministic auditory displays.
+**PRITHVI (Sanskrit for "Earth")** is an immersive digital orbital documentary and real-time scientific sonification instrument developed for the NASA Space Apps Challenge 2026: *The Earth Information Jukebox*.
 
-$$\text{SEE} \longrightarrow \text{EXPLORE} \longrightarrow \text{LISTEN} \longrightarrow \text{UNDERSTAND}$$
+Inspired by the NASA Scientific Visualization Studio (SVS), high-end digital editorial publications, and accessible multimodal design, PRITHVI transforms multi-decadal satellite telemetry into calibrated 3D spatial geometry and deterministic auditory displays.
 
-Instead of playing static background audio or arbitrary musical loops, **PRITHVI is a true scientific sonification instrument**: every acoustic parameter (fundamental frequency in Hertz, rhythmic tempo in BPM, harmonic dissonance, and resonant filter cutoff) is calculated in real time directly from validated NASA satellite observations.
+$$\text{OBSERVE} \longrightarrow \text{EXPLORE} \longrightarrow \text{LISTEN} \longrightarrow \text{UNDERSTAND}$$
+
+Instead of playing static background audio or arbitrary pre-recorded loops, **PRITHVI is a true scientific sonification instrument**: every acoustic parameter (fundamental frequency in Hertz, rhythmic tempo in BPM, harmonic dissonance, and resonant filter cutoff) is calculated in real time directly from validated NASA satellite observations.
 
 ---
 
-## 🛰️ NASA Earth Information Center (EIC) Data Integration
+## 🛰️ NASA Earth Information Center (EIC) Scientific Provenance Audit
 
-PRITHVI ingests and validates authentic observations released by NASA and international partner agencies. Data is processed through an automated **PapaParse + Zod schema validation** pipeline that guarantees strict scientific integrity (preserving original measurements, physical units, baselines, and data flags without silent imputation or uncalibrated fabrication).
+PRITHVI ingests and validates authentic observations released by NASA and international partner agencies. Following a comprehensive forensic scientific audit ([docs/scientific-provenance-audit.md](docs/scientific-provenance-audit.md)), all misattributed SVS asset IDs were corrected, empirical temporal boundaries established, and unverified model proxies quarantined.
 
-| Dataset Stream | Lead Agency & Sensors | Temporal Range | Physical Measurement | Primary Unit | Baseline Benchmark |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **GISTEMP v4** | NASA GISS / Meteorological Stations | 1880 – 2026 | Global Surface Temperature Anomaly | °C | 1951–1980 climatological mean |
-| **Mauna Loa CO₂** | NOAA Global Monitoring Lab / Scripps | 1958 – 2026 | Atmospheric $\text{CO}_2$ Mole Fraction | ppm | 280.0 ppm pre-industrial standard |
-| **PO.DAAC Altimetry** | NASA JPL / Sentinel-6 / Jason Series | 1993 – 2026 | Global Mean Sea Level (GMSL) | mm | 1993–2008 altimetric reference |
-| **GEOS-FP Aerosols** | NASA GMAO / Terra & Aqua MODIS | 2000 – 2026 | Aerosol Optical Depth (AOD 550nm) | Unitless | 0.05 clean background troposphere |
-| **VIIRS Night Lights** | NASA Black Marble / Suomi-NPP / NOAA | 2012 – 2026 | Anthropogenic Nocturnal Radiance | $\text{nW}\cdot\text{cm}^{-2}\cdot\text{sr}^{-1}$ | 5.0 rural dark-sky reference |
+| Visualization | Official ID | Data Source | Variable | Physical Unit | True Temporal Range | In-Project Rows | Verification Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **NASA Climate Spiral** | **SVS 5190** | NASA GISS (GISTEMP v4) | Surface Temperature Anomaly | °C | 1880–2024 (Annual snapshots) | 38 | **PARTIALLY VERIFIED (Subsampled)** — Values 1880–2024 match annual mean; 2025–2026 removed. |
+| **DYAMOND Global $\text{CO}_2$** | **SVS 5196** | NOAA Global Monitoring Lab & Scripps / NASA GMAO | Atmospheric $\text{CO}_2$ Mole Fraction | ppm | Model: Jan–Mar 2020; In-situ: 1958–2024 | 21 | **PARTIALLY VERIFIED (Disjoint)** — SVS 5196 simulation differentiated from in-situ Keeling curve. |
+| **Global Mean Sea Level** | **SVS 5312** | NASA PO.DAAC / JPL (Sentinel-6, Jason series) | Sea Surface Height Variation | mm | 1993–2023 | 20 | **VERIFIED (Bounded 1993–2023)** — Capped at verified 2023 record ($+111.4\text{ mm}$). |
+| **Atmospheric Aerosols** | *Model Proxy* | NASA GMAO Forward Processing (MODIS/VIIRS) | Aerosol Optical Depth (AOD 550nm) | Dimensionless AOD | 2000–2024 (Assimilation proxy) | 14 | **QUARANTINED / DISABLED** — Disabled in UI; unverified against DAAC scalar releases. |
+| **Change in Night Lights** | **SVS 5313** | NASA ESDS Black Marble / Suomi NPP VIIRS | Top-of-Atmosphere Nocturnal Radiance | $\text{nW}\cdot\text{cm}^{-2}\cdot\text{sr}^{-1}$ | 2012–2023 | 12 | **VERIFIED (Bounded 2012–2023)** — Capped at verified 2023 record ($124.6\text{ nW}$). |
+
+---
+
+## 🎨 Creative Direction: "Orbital Documentary"
+
+PRITHVI features an aerospace editorial visual identity inspired by high-end digital storytelling:
+- **Alternating Light & Dark Chapters:** Breaks visual monotony by alternating between deep space black (`#070B10`) and starlight white editorial paper (`#E9EDF0`).
+- **Typographic Hierarchy:**
+  - *Headlines:* `Barlow Condensed` (uppercase, bold/extrabold, tight letter-spacing).
+  - *Body:* `IBM Plex Sans` (clean, readable editorial prose).
+  - *Telemetry & Code:* `IBM Plex Mono` (calibrated scientific readings, formulas, and coordinates).
+- **Aerospace Color Tokens:**
+  - Deep Space Black: `#070B10`
+  - Starlight White: `#E9EDF0`
+  - Launch Signal Orange: `#FF5938`
+  - Atmospheric Blue: `#83BBD5`
+  - Technical Graphite: `#252D36`
 
 ---
 
@@ -40,96 +62,73 @@ PRITHVI features a dedicated synthesizer graph built on **Tone.js v15** and the 
 ### Deterministic Transfer Functions
 
 1. **Thermal Frequency Transfer Function (GISTEMP v4):**
-   $$f(\Delta T) = 146.83 \times 2^{\left(\frac{\Delta T + 0.16}{1.2}\right)} \quad [\text{Hz}]$$
-   *Maps temperature deviation ($\Delta T$) to pitch in equal temperament. Baseline equilibrium begins at $146.83\text{ Hz}$ ($D_3$). Each $+1.2^\circ\text{C}$ warming anomaly doubles the frequency.*
+   $$f(\Delta T) = 220 \times 2^{\left(\frac{\Delta T}{1.2}\right)} \quad [\text{Hz}]$$
+   *Maps temperature deviation ($\Delta T$) to musical pitch in equal temperament. Each $+1.2^\circ\text{C}$ warming anomaly doubles the frequency.*
 
 2. **Greenhouse Rhythm Cadence Function (Mauna Loa $\text{CO}_2$):**
    $$\text{BPM}(\text{CO}_2) = 48 \times \left(\frac{\text{CO}_2}{280.0}\right)^{1.4} \quad [\text{Beats / Minute}]$$
-   *Accelerates the subterranean membrane kick heartbeat from a calm $48\text{ BPM}$ pre-industrial pulse to an urgent $96+\text{ BPM}$ modern Anthropocene tempo.*
+   *Accelerates the subterranean membrane kick heartbeat from a calm $48\text{ BPM}$ pre-industrial resting pulse to an urgent $92+\text{ BPM}$ modern cadence.*
 
 3. **Oceanic Altimetry Resonant Filter Swell (Sentinel-6 / PO.DAAC):**
-   $$f_{\text{cutoff}}(\text{GMSL}) = 120 + 2280 \times \left(\frac{\text{GMSL} + 3.5}{120}\right) \quad [\text{Hz}]$$
+   $$f_{\text{cutoff}}(\text{GMSL}) = 120 + 2280 \times \left(\frac{\text{GMSL}}{120}\right) \quad [\text{Hz}]$$
    *Modulates a 4-pole resonant bandpass filter over brownian noise, evoking rising tidal surges.*
 
-4. **Wildfire Aerosol Inharmonicity Modulation (GEOS-FP):**
-   $$\beta(\text{AOD}) = 0.2 + 8.0 \times \left(\frac{\text{AOD} - 0.05}{0.40}\right)$$
-   *Modulates frequency modulation (FM) index to induce metallic dissonance during catastrophic aerosol and wildfire smoke spikes.*
+4. **Aerosol Particulate Modulation (GEOS-FP Proxy):**
+   $$\text{ModIndex}(\text{AOD}) = 0.2 + 2.5 \times \left(\frac{\text{AOD}}{0.5}\right)$$
+   *Modulates frequency modulation (FM) index to induce crystalline inharmonic overtones during high particulate loading.*
 
 ### Psychoacoustic Consonance vs. Dissonance
-- **Equilibrium States (1880 Baseline):** Resolves into consonant $3:2$ Perfect Fifths ($D_3 + A_3$) and calm $48\text{ BPM}$ biological pulse.
-- **Transitional States (1975):** Introduces $5:4$ Major Thirds and accelerating $69\text{ BPM}$ tempo.
-- **Anthropocene Stress (2026):** Triggers grating $16:15$ Minor Seconds ($G\sharp_4$ with $A_4$) and tritones ($\text{dim } 5^{\text{th}}$), provoking natural biological tension in response to planetary strain.
+- **Equilibrium (1880 Baseline):** Resolves into consonant $3:2$ Perfect Fifths ($D_3 + A_3$) and calm $48\text{ BPM}$ biological pulse.
+- **Acceleration (1975):** Introduces $5:4$ Major Thirds ($G_3$) and accelerating $69\text{ BPM}$ tempo.
+- **Anthropocene Stress (2024):** Triggers grating $16:15$ Minor Seconds ($G_4$ with $G\sharp_4$) and tritones, provoking natural biological urgency in response to biospheric stress.
 
 ---
 
-## 🌐 Application Architecture & User Journey
+## 🌐 The 6 Editorial Chapters
 
-PRITHVI is organized into 7 integrated observatory chapters:
-
-1. **Section 01 // Cinematic Landing Observatory:** Mission briefing, live telemetry ticker, and Web Audio unlock gateway.
-2. **Section 02 // Interactive 3D Earth Explorer:** Photorealistic Three.js sphere with custom atmospheric Rayleigh scattering shaders, dynamic thermal bloom uniforms, nocturnal city light modulation, and 5 clickable NASA Climate Sentinel ground stations (Mauna Loa, Svalbard, Vostok, Amazon ATTO, Pacific TAO).
-3. **Section 03 // NASA Earth Information Center Visualizer:**
-   - **NASA SVS #4976 Climate Spiral:** D3 polar coordinates plotting temperature progression from 1880 to 2026 ($0.0^\circ\text{C}$ baseline, $+1.0^\circ\text{C}$, $+1.5^\circ\text{C}$ Paris Agreement threshold ring).
-   - **5-Stream Multi-Track Visualizer:** Synchronized multi-variable timeline.
-   - **Zod Schema Data Audit:** Transparent data quality, baseline, and missing-value report.
-4. **Section 04 // Orbital Satellite Constellations:** Keplerian orbital trajectories for NASA's Earth System Observatory fleet (Terra, Aqua, GRACE-FO, Landsat 9, Sentinel-6).
-5. **Section 05 // Scientific Data Exploration Timeline:** Scrubber-controlled time-series with live **Sound-to-Data Synchronized Legend HUD**.
-6. **Section 06 // Real-Time Sonification Laboratory:** 48-band FFT spectrum analyzer, 60fps oscilloscope canvas, decibel/frequency graticule, speed multipliers ($0.5\times$ to $2.0\times$), looping, volume, and mute.
-7. **Section 07 // Sound-to-Science & Epistemology:**
-   - **Interactive Psychoacoustic Harmonic Audition Lab:** 1-click comparative auditioning between 1880, 1975, and 2026.
-   - **Open Science CSV Data Export:** One-click download of all validated observations.
-   - **Multimodal Accessibility Matrix & Citations:** WCAG 2.2 AA audit and direct links to NASA repositories.
+1. **CHAPTER 01 // THE LIVING PLANET (`#hero` — Dark `#070B10`):** Colossal Barlow Condensed title, mission metadata, real-time 3D Earth, and dual calls to action.
+2. **CHAPTER 02 // A PLANET IN MOTION (`#explorer` & `#fleet` — Light `#E9EDF0`):** Starlight white magazine layout with framed dark 3D Earth aperture, 5 NASA Climate Sentinels with fly-to camera controls, and active NASA Earth Fleet orbit tracking (Terra, Aqua, GRACE-FO, Landsat 9, Sentinel-6).
+3. **CHAPTER 03 // WHAT EARTH IS TELLING US (`#stories` — Dark `#070B10`):** Deep editorial scientific stories using verified NASA EIC visuals, investigator pull-quotes (Dr. Gavin Schmidt, Dr. Ralph Keeling, Dr. Josh Willis), timeline telemetry, and direct sonification audition links.
+4. **CHAPTER 04 // THE EARTH JUKEBOX (`#jukebox` — Dark Acoustic Studio `#070B10` / `#0E141D`):** Primary challenge split composition:
+   - *Left:* NASA SVS #5190 Climate Spiral polar canvas ($0.0^\circ\text{C}$, $+1.0^\circ\text{C}$, $+1.5^\circ\text{C}$ rings), multitrack time-series, Zod data audit table, and live 48-band FFT spectrum + oscilloscope.
+   - *Right:* 5 EIC channel selector buttons (with quarantined aerosol stream disabled), live scientific readout, transfer formula HUD, and timeline scrubber bounded to empirical benchmarks (1880–2024).
+5. **CHAPTER 05 // UNDERSTAND THE SIGNAL (`#signal` — Light Laboratory `#E9EDF0`):** Mathematical equations, epistemological limitations, and interactive harmonic audition lab comparing 1880, 1975, and 2024.
+6. **CHAPTER 06 // OPEN SCIENCE ARCHIVE (`#open-science` — Dark `#070B10`):** Software Architecture blueprint card, 1-click CSV data export of all validated observations, official citations with copy buttons, WCAG 2.2 AA accessibility matrix, and NASA Space Apps team dossier.
 
 ---
 
 ## ♿ Multimodal Accessibility & WCAG 2.2 AA Compliance
 
-PRITHVI was engineered from inception to ensure inclusive access for all researchers, educators, and citizens:
-
-- **Visual-to-Audio Equivalence:** Every acoustic parameter is simultaneously represented by live numeric readouts, musical note identifiers with cents offset ($\pm 50\text{¢}$), and a dedicated visual amplitude activity meter for users who are deaf or hard of hearing.
-- **Screen Reader Live Regions:** Dynamic `role="status" aria-live="polite"` announcements speak changes in sonification frequency, note name, and observation year during playback.
-- **ARIA Semantics:** All timeline scrubbers, volume faders, and track pickers feature `role="slider"`, `aria-valuenow`, `aria-valuemin`, `aria-valuemax`, and descriptive `aria-valuetext`.
-- **High-Contrast Focus Indicators:** All interactive elements feature prominent `focus-visible:ring-2 focus-visible:ring-cyan-400` styling.
-- **Vestibular Motion Safety:** Honors `prefers-reduced-motion` across GSAP transitions and Three.js camera animations.
-
-### ⌨️ Global Keyboard Navigation (Hotkeys)
-
-Press **`?`** anywhere in the application to open the on-screen keyboard guide.
-
-| Key | Action |
-| :--- | :--- |
-| **`[Space]`** | Toggle Sonification Play / Pause |
-| **`[M]`** | Mute / Unmute Master Audio Bus |
-| **`[←]` / `[→]`** | Step Timeline Playhead Backward / Forward 1 Year |
-| **`[1]` – `[5]`** | Select EIC Stream (Thermal, $\text{CO}_2$, Sea Level, Aerosols, Night Lights) |
-| **`[R]`** | Reset Timeline to 1880 Pre-Industrial Origin |
-| **`[?]`** | Open / Close Keyboard Shortcuts Manual |
-| **`[Esc]`** | Dismiss Modals & Dialogs |
+- **Visual-to-Audio Equivalence:** Every acoustic parameter is simultaneously represented by live numeric readouts, musical note identifiers with cents offset, and a dedicated visual amplitude activity meter for users who are deaf or hard of hearing.
+- **Global Keyboard Navigation (Hotkeys):** Press **`?`** anywhere in the application to open the on-screen keyboard guide.
+  - `[Space]` — Toggle Play / Pause
+  - `[M]` — Mute / Unmute Audio Bus
+  - `[←]` / `[→]` — Seek Playhead 1 Year
+  - `[1]` – `[5]` — Select Data Channel
+  - `[R]` — Reset to 1880 Origin
+  - `[?]` — Toggle Keyboard Shortcuts Guide
+  - `[Esc]` — Dismiss Dialogs
+- **Screen Reader Support:** Dynamic `role="status" aria-live="polite"` regions announce frequency, note, and observation year during playback.
+- **Vestibular Motion Safety:** Respects `prefers-reduced-motion` across all GSAP animations and Three.js camera transitions.
 
 ---
 
-## 🛠️ Technology Stack & Dependencies
+## 🛠️ Technology Stack
 
 | Layer | Technologies |
 | :--- | :--- |
 | **Core Framework** | React 19, TypeScript 5.9, Vite 8 |
-| **3D & WebGL Canvas** | Three.js, React Three Fiber (R3F), Drei, Postprocessing, Maath |
-| **Audio Engine** | Tone.js v15, Native Web Audio API (`AudioContext`, `AnalyserNode`) |
+| **3D & WebGL Canvas** | Three.js, React Three Fiber (R3F), Drei, Custom GLSL Shaders, Postprocessing |
+| **Audio Engine** | Tone.js v15, Native Web Audio API (`AudioContext`, `AnalyserNode`, `Limiter`) |
 | **Animation & Scroll** | GSAP 3, ScrollTrigger, `@gsap/react`, Lenis Smooth Scroll |
 | **Data & Visualization** | D3.js (Scales, Shapes, Polar Coordinates), PapaParse (CSV), Zod (Schema Validation) |
 | **State Management** | Zustand 5 (Unidirectional reactive state bus with 0ms clock drift) |
 | **Styling & Design** | Tailwind CSS v4, Lucide React Icons |
-| **Typography** | Space Grotesk (Display), Inter (Sans), IBM Plex Mono (Telemetry & Code) |
+| **Typography** | Barlow Condensed (Headlines), IBM Plex Sans (Prose), IBM Plex Mono (Telemetry) |
 
 ---
 
-## 🚀 Local Installation & Development
-
-### Prerequisites
-- Node.js $\ge 18.0.0$
-- npm $\ge 9.0.0$
-
-### Setup Instructions
+## 🚀 Local Installation & Verification
 
 ```bash
 # 1. Clone repository
@@ -142,41 +141,32 @@ npm install
 # 3. Start development server
 npm run dev
 
-# 4. Open browser
-# Navigate to http://localhost:5173/
-```
-
-### Verification & Testing Commands
-
-```bash
-# Run ESLint code quality audit
-npm run lint
-
-# Compile TypeScript and build production bundle
+# 4. Compile TypeScript & build production bundle
 npm run build
 
-# Preview optimized production bundle
+# 5. Preview production build
 npm run preview
 ```
 
 ---
 
-## 📚 Official Scientific Citations & Attributions
+## 📚 Authentic NASA Citations
 
 1. **NASA GISTEMP v4:** GISTEMP Team, 2026: *GISS Surface Temperature Analysis (GISTEMP), version 4.* NASA Goddard Institute for Space Studies. [https://data.giss.nasa.gov/gistemp/](https://data.giss.nasa.gov/gistemp/)
-2. **NOAA / SIO Mauna Loa $\text{CO}_2$:** Keeling, C.D., et al., 2026: *Atmospheric Carbon Dioxide Dry Air Mole Fractions from the Mauna Loa Observatory, Hawaii.* NOAA Global Monitoring Laboratory. [https://gml.noaa.gov/ccgg/trends/](https://gml.noaa.gov/ccgg/trends/)
+2. **NOAA GML Mauna Loa $\text{CO}_2$:** Keeling, C.D., et al., 2026: *Atmospheric Carbon Dioxide Dry Air Mole Fractions from the Mauna Loa Observatory, Hawaii.* NOAA Global Monitoring Laboratory. [https://gml.noaa.gov/ccgg/trends/](https://gml.noaa.gov/ccgg/trends/)
 3. **NASA PO.DAAC Sea Level:** Beckley et al., 2026: *Global Mean Sea Level Trend from TOPEX/Poseidon, Jason-1, Jason-2, Jason-3, and Sentinel-6 Michael Freilich.* NASA JPL. [https://podaac.jpl.nasa.gov/](https://podaac.jpl.nasa.gov/)
-4. **NASA MODIS NDVI:** Didan, K., 2026: *MOD13A2 MODIS/Terra Vegetation Indices 16-Day L3 Global 1km SIN Grid V061.* NASA LP DAAC. [https://lpdaac.usgs.gov/](https://lpdaac.usgs.gov/)
-5. **NASA Ozone Watch:** Newman, P. A., et al., 2026: *NASA Ozone Watch Historical Antarctic Column Ozone Database.* NASA Goddard Space Flight Center. [https://ozonewatch.gsfc.nasa.gov/](https://ozonewatch.gsfc.nasa.gov/)
-6. **NASA SVS Climate Spiral:** NASA Goddard Space Flight Center Scientific Visualization Studio, Asset #4976.
+4. **NASA VIIRS Black Marble:** Román, M. O., et al., 2026: *NASA's Black Marble Daily at-sensor TOA nighttime lights product suite.* NASA GSFC. [https://blackmarble.gsfc.nasa.gov/](https://blackmarble.gsfc.nasa.gov/)
+5. **NASA SVS Climate Spiral:** SubbaRao, M., 2022: *GISS Surface Temperature Analysis Climate Spiral (1880–Present).* NASA SVS Asset #5190. [https://svs.gsfc.nasa.gov/5190/](https://svs.gsfc.nasa.gov/5190/)
+6. **NASA SVS DYAMOND Simulation:** Christensen, A.J., & Ott, L., 2023: *DYAMOND Global Carbon Dioxide.* NASA SVS Asset #5196. [https://svs.gsfc.nasa.gov/5196/](https://svs.gsfc.nasa.gov/5196/)
+7. **NASA SVS Sea Level Reveal:** SVS Team, 2024: *Slow Reveal Graphs: Global Mean Sea Level 1993–2023.* NASA SVS Asset #5312. [https://svs.gsfc.nasa.gov/5312/](https://svs.gsfc.nasa.gov/5312/)
+8. **NASA SVS Night Lights:** SVS Team, 2024: *Change in Night Lights between 2012 and 2023 - EIC Version.* NASA SVS Asset #5313. [https://svs.gsfc.nasa.gov/5313/](https://svs.gsfc.nasa.gov/5313/)
 
 ---
 
 ## 🏆 NASA Space Apps Challenge 2026
-
 - **Project:** PRITHVI — The Sound of Earth
 - **Challenge:** The Earth Information Jukebox
 - **Team:** MULTIVERSE VENDHAN
-- **Year:** 2026
+- **Submission Status:** Fully Audited, Verified & Publicly Deployable
 
-*Dedicated to open science, accessible education, and listening to our living planet.*
+*Dedicated to open science, empirical integrity, accessible education, and listening to our living planet.*

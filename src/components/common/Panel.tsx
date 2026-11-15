@@ -15,8 +15,8 @@ export const Panel: React.FC<PanelProps> = ({
 }) => {
   const surfaceStyles =
     surface === 'paper'
-      ? 'bg-[#F0EEE5] text-[#111820] border border-[#111820]/10 shadow-[0_4px_30px_rgba(0,0,0,0.08)]'
-      : 'bg-[#111820]/80 text-[#F0EEE5] border border-[#F0EEE5]/10 backdrop-blur-xl shadow-[0_4px_24px_rgba(0,0,0,0.3)]';
+      ? 'bg-[#FFFFFF] text-[#070B10] border border-[rgba(7,11,16,0.12)] shadow-[0_4px_24px_rgba(7,11,16,0.06)]'
+      : 'bg-[#0E141D] text-[#E9EDF0] border border-[#252D36] shadow-[0_8px_32px_rgba(0,0,0,0.5)]';
 
   return (
     <div

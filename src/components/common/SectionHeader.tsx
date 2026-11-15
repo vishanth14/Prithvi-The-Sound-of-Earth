@@ -9,6 +9,7 @@ interface SectionHeaderProps {
   badge?: string;
   badgeVariant?: BadgeVariant;
   centered?: boolean;
+  theme?: 'dark' | 'light';
 }
 
 export const SectionHeader: React.FC<SectionHeaderProps> = ({
@@ -19,7 +20,10 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
   badge,
   badgeVariant = 'sand',
   centered = false,
+  theme = 'dark',
 }) => {
+  const isLight = theme === 'light';
+
   return (
     <div className={`mb-12 sm:mb-16 ${centered ? 'text-center max-w-3xl mx-auto' : 'max-w-3xl'}`}>
       <div
@@ -27,11 +31,19 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
           centered ? 'justify-center' : 'justify-start'
         }`}
       >
-        <span className="font-mono text-xs sm:text-[13px] text-[#D1B77D] tracking-[0.25em] font-medium uppercase">
+        <span
+          className={`font-mono text-xs sm:text-[13px] tracking-[0.25em] font-medium uppercase ${
+            isLight ? 'text-[#FF5938]' : 'text-[#FF5938]'
+          }`}
+        >
           CHAPTER {number}
         </span>
-        <span className="h-px w-6 bg-[#D1B77D]/40" />
-        <span className="font-sans text-xs sm:text-[13px] text-[#F0EEE5]/70 tracking-widest uppercase">
+        <span className={`h-px w-6 ${isLight ? 'bg-black/15' : 'bg-[#252D36]'}`} />
+        <span
+          className={`font-mono text-xs sm:text-[13px] tracking-widest uppercase ${
+            isLight ? 'text-[#252D36]/80' : 'text-[#83BBD5]/90'
+          }`}
+        >
           {category}
         </span>
         {badge && (
@@ -41,11 +53,19 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
         )}
       </div>
 
-      <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#F0EEE5] mb-4 leading-[1.08]">
+      <h2
+        className={`font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold uppercase tracking-tight mb-4 leading-[0.98] ${
+          isLight ? 'text-[#070B10]' : 'text-[#E9EDF0]'
+        }`}
+      >
         {title}
       </h2>
 
-      <p className="font-sans text-sm sm:text-base text-[#F0EEE5]/80 leading-relaxed max-w-2xl font-light">
+      <p
+        className={`font-sans text-sm sm:text-base leading-relaxed max-w-2xl font-normal ${
+          isLight ? 'text-[#252D36]/80' : 'text-[#E9EDF0]/75'
+        }`}
+      >
         {subtitle}
       </p>
     </div>

@@ -26,34 +26,34 @@ export const Badge: React.FC<BadgeProps> = ({
   className = '',
 }) => {
   const variantStyles: Record<BadgeVariant, string> = {
-    sand: 'border-[#D1B77D]/40 bg-[#D1B77D]/10 text-[#D1B77D]',
-    signal: 'border-[#E16D54]/40 bg-[#E16D54]/10 text-[#E16D54]',
-    ocean: 'border-[#17465B] bg-[#17465B]/30 text-[#8BC4DE]',
-    paper: 'border-[#F0EEE5]/30 bg-[#F0EEE5]/10 text-[#F0EEE5]',
-    neutral: 'border-[#F0EEE5]/15 bg-white/[0.03] text-[#F0EEE5]/70',
-    cyan: 'border-[#508CA4]/40 bg-[#17465B]/40 text-[#A2D2E2]',
-    amber: 'border-[#D1B77D]/50 bg-[#D1B77D]/15 text-[#E6CCA0]',
-    crimson: 'border-[#E16D54]/50 bg-[#E16D54]/15 text-[#FFA894]',
+    sand: 'border-[#83BBD5]/40 bg-[#83BBD5]/10 text-[#83BBD5]',
+    signal: 'border-[#FF5938]/40 bg-[#FF5938]/10 text-[#FF5938]',
+    ocean: 'border-[#83BBD5]/50 bg-[#162432] text-[#83BBD5]',
+    paper: 'border-[#252D36] bg-[#E9EDF0] text-[#070B10] font-bold',
+    neutral: 'border-[#252D36] bg-[#0E141D] text-[#E9EDF0]/70',
+    cyan: 'border-[#83BBD5]/40 bg-[#162432]/60 text-[#83BBD5]',
+    amber: 'border-[#FF5938]/40 bg-[#FF5938]/10 text-[#FF5938]',
+    crimson: 'border-[#FF5938]/50 bg-[#FF5938]/20 text-[#FF5938]',
     emerald: 'border-emerald-600/40 bg-emerald-950/30 text-emerald-300',
     violet: 'border-purple-500/30 bg-purple-950/30 text-purple-300',
   };
 
   const dotColors: Record<BadgeVariant, string> = {
-    sand: 'bg-[#D1B77D]',
-    signal: 'bg-[#E16D54]',
-    ocean: 'bg-[#508CA4]',
-    paper: 'bg-[#F0EEE5]',
-    neutral: 'bg-[#F0EEE5]/60',
-    cyan: 'bg-[#508CA4]',
-    amber: 'bg-[#D1B77D]',
-    crimson: 'bg-[#E16D54]',
+    sand: 'bg-[#83BBD5]',
+    signal: 'bg-[#FF5938]',
+    ocean: 'bg-[#83BBD5]',
+    paper: 'bg-[#070B10]',
+    neutral: 'bg-[#E9EDF0]/60',
+    cyan: 'bg-[#83BBD5]',
+    amber: 'bg-[#FF5938]',
+    crimson: 'bg-[#FF5938]',
     emerald: 'bg-emerald-400',
     violet: 'bg-purple-400',
   };
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-3 py-0.5 text-[10px] sm:text-[11px] font-mono tracking-widest uppercase border rounded-full backdrop-blur-md ${variantStyles[variant]} ${className}`}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[10px] sm:text-[11px] font-mono tracking-widest uppercase border rounded-none ${variantStyles[variant]} ${className}`}
     >
       {pulse && (
         <span className="relative flex h-1.5 w-1.5">

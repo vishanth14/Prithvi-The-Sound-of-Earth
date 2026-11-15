@@ -32,22 +32,23 @@ const DATASET_METADATA_REGISTRY: Record<
     id: 'gistemp',
     title: 'GISTEMP v4 Surface Temperature Anomaly',
     shortCode: 'GISTEMP-T',
-    svsAssetId: 'NASA SVS #4976 / SVS #5057 (Climate Spiral)',
+    svsAssetId: 'NASA SVS #5190 (Climate Spiral 1880–Present)',
     eicExhibit: 'Earth Information Center — Climate Vital Signs: Thermal Spirals',
     scientificLeadAgency: 'NASA Goddard Institute for Space Studies (GISS)',
     instrumentPlatform: 'NOAA GHCN-v4 / ERSSTv5 / SCAR Antarctic Stations',
-    temporalRange: '1880 — 2026',
+    temporalRange: '1880 — 2024 (Annual Benchmark Series)',
     primaryUnit: '°C anomaly',
     baselineDefinition: '1951–1980 global climatological mean (0.00°C origin)',
     citation:
       'GISTEMP Team, 2026: GISS Surface Temperature Analysis (GISTEMP), version 4. NASA Goddard Institute for Space Studies. Lenssen et al., 2019, JGR Atmospheres.',
     archiveUrl: 'https://data.giss.nasa.gov/gistemp/',
-    themeColor: '#f59e0b', // Solar Amber
+    themeColor: '#FF5938', // Launch Signal Orange
+    verificationStatus: 'VERIFIED',
     normalizationDocumentation:
       'Linear transformation relative to pre-industrial envelope: y = (x - (-0.5)) / (1.5 - (-0.5)). Maps [-0.5°C, +1.5°C] to [0.0, 1.0]. Original anomaly is strictly preserved.',
     sonificationMapping: {
       acousticParameter: 'Pitch Frequency & Harmonic Color',
-      musicalMapping: 'Exponential pitch ladder from D3 (146.8 Hz) to F#5 (739.9 Hz) across 1880–2026.',
+      musicalMapping: 'Exponential pitch ladder from D3 (146.8 Hz) to F#5 (739.9 Hz) across 1880–2024.',
       frequencyFormula: 'f(x) = 146.83 * (2 ^ (x_norm * 2.33))',
       timbreDescription: 'Rich dual-oscillator sawtooth with dynamic 24dB/oct low-pass filter opening with anomaly rise.',
       frequencyRangeHz: '146.8 Hz — 739.9 Hz',
@@ -58,22 +59,23 @@ const DATASET_METADATA_REGISTRY: Record<
     id: 'co2_maunaloa',
     title: 'Atmospheric Carbon Dioxide (CO₂)',
     shortCode: 'MLO-CO2',
-    svsAssetId: 'NASA SVS #4864 / NOAA Global Monitoring Laboratory',
+    svsAssetId: 'NASA SVS #5196 (DYAMOND Simulation) / NOAA GML Keeling Curve',
     eicExhibit: 'Earth Information Center — Greenhouse Gas Flux Observatory',
     scientificLeadAgency: 'NOAA Global Monitoring Lab / Scripps / NASA ESRL',
     instrumentPlatform: 'Siemens Ultramat-3 / Picarro G2401 Cavity Ring-Down Spectrometer',
-    temporalRange: '1958 — 2026',
+    temporalRange: '1958 — 2024 (Mauna Loa In-Situ)',
     primaryUnit: 'ppm (dry air mole fraction)',
     baselineDefinition: 'Pre-industrial equilibrium benchmark: 280.0 ppm',
     citation:
       'Keeling, C.D., et al., 2026: Atmospheric Carbon Dioxide Dry Air Mole Fractions from the Mauna Loa Observatory, Hawaii. NOAA / SIO Keeling Curve Project.',
     archiveUrl: 'https://gml.noaa.gov/ccgg/trends/',
-    themeColor: '#ef4444', // Crimson
+    themeColor: '#83BBD5', // Atmospheric Blue
+    verificationStatus: 'VERIFIED',
     normalizationDocumentation:
       'Min-Max normalization relative to pre-industrial 280 ppm baseline: y = (ppm - 280.0) / (440.0 - 280.0). Clamped to [0.0, 1.0]. Original ppm value preserved untouched.',
     sonificationMapping: {
       acousticParameter: 'Sub-bass Pulse Rate & Resonant Filter Cutoff',
-      musicalMapping: 'Sub-audible heartbeat accelerando from 40 BPM (pre-industrial) to 138 BPM (2026).',
+      musicalMapping: 'Sub-audible heartbeat accelerando from 40 BPM (pre-industrial) to 138 BPM (2024).',
       frequencyFormula: 'tempo = 40 + (norm * 98) BPM; f_sub = 55.0 Hz (A1)',
       timbreDescription: 'Resonant sub-bass membrane pulse with percussive attack and breathing subharmonic tail.',
       frequencyRangeHz: '45.0 Hz — 90.0 Hz',
@@ -84,19 +86,20 @@ const DATASET_METADATA_REGISTRY: Record<
     id: 'sealevel_podaac',
     title: 'Global Mean Sea Level Satellite Altimetry',
     shortCode: 'ALTIM-GMSL',
-    svsAssetId: 'NASA SVS #4848 / PO.DAAC Ocean Surface Topography',
+    svsAssetId: 'NASA SVS #5312 (Global Mean Sea Level 1993–2023)',
     eicExhibit: 'Earth Information Center — Ocean Heat & Dynamic Topography',
     scientificLeadAgency: 'NASA Physical Oceanography DAAC (PO.DAAC) / JPL',
     instrumentPlatform: 'TOPEX/Poseidon, Jason-1, Jason-2, Jason-3, Sentinel-6 Michael Freilich',
-    temporalRange: '1993 — 2026',
+    temporalRange: '1993 — 2023 (Altimetry Capped)',
     primaryUnit: 'mm (sea height variation)',
     baselineDefinition: '1993.0 altimetry inception origin (0.0 mm reference)',
     citation:
-      'Beckley, B. D., et al., 2026: Global Mean Sea Level Trend from Satellite Radar Altimetry (1993-2026). NASA PO.DAAC / JPL.',
+      'Beckley, B. D., et al., 2026: Global Mean Sea Level Trend from Satellite Radar Altimetry (1993-2023). NASA PO.DAAC / JPL.',
     archiveUrl: 'https://podaac.jpl.nasa.gov/',
-    themeColor: '#06b6d4', // Cyan
+    themeColor: '#83BBD5', // Atmospheric Blue
+    verificationStatus: 'VERIFIED',
     normalizationDocumentation:
-      'Altimetric range normalization: y = (mm - 0.0) / (135.0 - 0.0). Maps 0 mm (1993) to 135 mm (2026) onto [0.0, 1.0]. Raw mm preserved intact.',
+      'Altimetric range normalization: y = (mm - 0.0) / (135.0 - 0.0). Maps 0 mm (1993) to 135 mm onto [0.0, 1.0]. Raw mm preserved intact.',
     sonificationMapping: {
       acousticParameter: 'Oceanic Waveform Swell & Bandpass Filter Modulation',
       musicalMapping: 'Deep oceanic brown noise filter sweeping from 120 Hz to 2400 Hz mimicking oceanic depth surge.',
@@ -108,19 +111,20 @@ const DATASET_METADATA_REGISTRY: Record<
 
   aerosols_geos: {
     id: 'aerosols_geos',
-    title: 'GEOS-FP Atmospheric Aerosol Optical Depth',
+    title: 'GEOS Atmospheric Aerosols (Experimental Proxy)',
     shortCode: 'GEOS-AOD',
-    svsAssetId: 'NASA SVS #4954 / GMAO GEOS Forward Processing Simulation',
+    svsAssetId: 'NASA GMAO GEOS Aerosol Suite (Experimental Model Proxy)',
     eicExhibit: 'Earth Information Center — Atmospheric Particulates & Wildfire Smoke',
     scientificLeadAgency: 'NASA Goddard Global Modeling and Assimilation Office (GMAO)',
     instrumentPlatform: 'GEOS-FP Model assimilating Terra/Aqua MODIS, Suomi-NPP VIIRS, CALIPSO',
-    temporalRange: '2000 — 2026',
+    temporalRange: '2000 — 2024 (Model Proxy)',
     primaryUnit: 'AOD (dimensionless) & µg/m³',
     baselineDefinition: '2000–2010 GEOS Climatological Clean-Sky Mean (0.12 AOD)',
     citation:
       'Keller, C. A., et al., 2026: The NASA GEOS Forward Processing System for Atmospheric Chemistry and Aerosol Assimilation. GMAO.',
     archiveUrl: 'https://gmao.gsfc.nasa.gov/weather_prediction/',
-    themeColor: '#8b5cf6', // Violet
+    themeColor: '#252D36', // Technical Graphite
+    verificationStatus: 'QUARANTINED',
     normalizationDocumentation:
       'Optical depth linear normalization: y = (AOD - 0.10) / (0.25 - 0.10). Scaled to [0.0, 1.0]. Original AOD and component concentrations preserved.',
     sonificationMapping: {
@@ -136,17 +140,18 @@ const DATASET_METADATA_REGISTRY: Record<
     id: 'nightlights_viirs',
     title: 'VIIRS Black Marble Earth at Night Radiance',
     shortCode: 'VIIRS-DNB',
-    svsAssetId: 'NASA SVS #4594 / Black Marble Global Nighttime Lights',
+    svsAssetId: 'NASA SVS #5313 (Change in Night Lights 2012–2023 - EIC Version)',
     eicExhibit: 'Earth Information Center — Human Footprint & Anthropogenic Illumination',
     scientificLeadAgency: 'NASA Terrestrial Information Systems Lab / GSFC / NOAA',
     instrumentPlatform: 'Suomi-NPP & NOAA-20 VIIRS Day-Night Band (DNB)',
-    temporalRange: '2012 — 2026',
+    temporalRange: '2012 — 2023 (EIC Hyperwall Series)',
     primaryUnit: 'nW·cm⁻²·sr⁻¹ (nanowatts per sq cm per steradian)',
     baselineDefinition: '2012 Suomi-NPP calibrated baseline (18.4 nW·cm⁻²·sr⁻¹ global mean)',
     citation:
       'Román, M. O., et al., 2026: NASA Black Marble Nighttime Lights Product Suite (VNP46/VJ146). Remote Sensing of Environment.',
     archiveUrl: 'https://blackmarble.gsfc.nasa.gov/',
-    themeColor: '#10b981', // Emerald
+    themeColor: '#FF5938', // Launch Signal Orange
+    verificationStatus: 'VERIFIED',
     normalizationDocumentation:
       'Radiance linear normalization: y = (nW - 15.0) / (30.0 - 15.0). Maps [15 nW, 30 nW] to [0.0, 1.0]. Unadjusted physical radiance strictly maintained.',
     sonificationMapping: {

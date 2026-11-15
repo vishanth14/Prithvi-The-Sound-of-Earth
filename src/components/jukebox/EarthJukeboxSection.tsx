@@ -53,7 +53,7 @@ const EIC_TRACKS: TrackDef[] = [
     trackLabel: 'Track 01 // Thermal PolySynth',
     nominalHz: '146.8 — 739.9 Hz',
     timbreDescription: 'Dual-oscillator triangle + dynamic 24dB/oct low-pass filter',
-    themeColor: '#D1B77D',
+    themeColor: '#FF5938',
     unit: '°C Anomaly',
     agency: 'NASA Goddard Institute for Space Studies (GISS)',
     mathFormula: 'f(ΔT) = 220 · 2^(ΔT / 1.2)',
@@ -64,7 +64,7 @@ const EIC_TRACKS: TrackDef[] = [
     trackLabel: 'Track 02 // Anthropocene Pulse',
     nominalHz: '45.0 — 90.0 Hz',
     timbreDescription: 'Sub-bass membrane punch with rate-coupled heartbeat',
-    themeColor: '#E16D54',
+    themeColor: '#83BBD5',
     unit: 'ppm',
     agency: 'NOAA Global Monitoring Laboratory & NASA OCO-2',
     mathFormula: 'BPM = 48 · (CO₂ / 280)^1.4',
@@ -75,20 +75,20 @@ const EIC_TRACKS: TrackDef[] = [
     trackLabel: 'Track 03 // Oceanic Resonance',
     nominalHz: '120.0 — 2400.0 Hz',
     timbreDescription: 'Hydrodynamic brown noise through 4-pole resonant bandpass',
-    themeColor: '#508CA4',
+    themeColor: '#83BBD5',
     unit: 'mm variance',
     agency: 'NASA PO.DAAC / Sentinel-6 Michael Freilich',
     mathFormula: 'fc(h) = 120 + 2280 · (h / 120)',
   },
   {
     key: 'aerosols_geos',
-    name: 'Aerosol Particulates (GEOS-FP Smoke)',
-    trackLabel: 'Track 04 // Granular Cloud',
+    name: 'Aerosol Particulates (GEOS-FP Model)',
+    trackLabel: 'Track 04 // Granular Cloud [EXPERIMENTAL PROXY]',
     nominalHz: '329.6 — 493.9 Hz',
     timbreDescription: 'Crystalline FM synthesis with metallic wildfire inharmonicity',
-    themeColor: '#9D8DF1',
+    themeColor: '#7E8B98',
     unit: 'AOD index (550nm)',
-    agency: 'NASA Global Modeling and Assimilation Office (GMAO)',
+    agency: 'NASA GMAO (Quarantined Experimental Proxy)',
     mathFormula: 'ModIndex = 0.2 + 2.5 · (AOD / 0.5)',
   },
   {
@@ -97,7 +97,7 @@ const EIC_TRACKS: TrackDef[] = [
     trackLabel: 'Track 05 // Nocturnal Choral',
     nominalHz: '261.6 — 392.0 Hz',
     timbreDescription: 'Warm analog synthesizer pad with pentatonic chord spread',
-    themeColor: '#4EBA97',
+    themeColor: '#E9EDF0',
     unit: 'nW·cm⁻²·sr⁻¹',
     agency: 'NASA ESDS Black Marble HD Suite',
     mathFormula: 'Gain = 0.2 + 0.7 · min(1, R / 100)',
@@ -105,14 +105,14 @@ const EIC_TRACKS: TrackDef[] = [
 ];
 
 const HISTORICAL_MILESTONES = [
-  { year: 1880, label: '1880 Baseline', description: 'Instrumental meteorological records begin' },
+  { year: 1880, label: '1880 Baseline', description: 'Instrumental meteorological records begin (-0.16°C)' },
   { year: 1910, label: '1910 Cool Phase', description: 'Volcanic aerosols & solar minimum' },
   { year: 1940, label: '1940 Warming Pulse', description: 'Pre-war industrial thermal acceleration' },
-  { year: 1958, label: '1958 Keeling Curve', description: 'Mauna Loa continuous CO₂ sampling begins' },
-  { year: 1970, label: '1970 First Earth Day', description: 'Initial satellite thermal instruments deployed' },
+  { year: 1958, label: '1958 Keeling Curve', description: 'Mauna Loa continuous CO₂ sampling begins (315.7 ppm)' },
+  { year: 1975, label: '1975 Inflection', description: 'Greenhouse forcing overtakes aerosol cooling' },
   { year: 1993, label: '1993 Altimetry Epoch', description: 'TOPEX/Poseidon radar altimetry commences' },
   { year: 2015, label: '2015 Paris Accord', description: '+1.0°C global anomaly threshold breached' },
-  { year: 2026, label: '2026 Anthropocene', description: '+1.45°C sustained anomaly; 429 ppm CO₂' },
+  { year: 2024, label: '2024 Benchmark', description: '+1.28°C empirical GISTEMP anomaly; 424.3 ppm Keeling benchmark' },
 ];
 
 export const EarthJukeboxSection: React.FC = () => {
@@ -305,7 +305,7 @@ export const EarthJukeboxSection: React.FC = () => {
       const waveData = sonificationCore.getWaveformData();
 
       // Background telemetry grid
-      ctx.strokeStyle = 'rgba(240, 238, 229, 0.04)';
+      ctx.strokeStyle = 'rgba(37, 45, 54, 0.45)';
       ctx.lineWidth = 1;
       const gridCols = 8;
       for (let c = 1; c < gridCols; c++) {
@@ -324,7 +324,7 @@ export const EarthJukeboxSection: React.FC = () => {
       const barCount = 48;
       const barWidth = width / barCount - 2;
       const peaks = peaksRef.current;
-      const trackTheme = EIC_TRACKS.find((t) => t.key === activeEicKey)?.themeColor || '#D1B77D';
+      const trackTheme = EIC_TRACKS.find((t) => t.key === activeEicKey)?.themeColor || '#FF5938';
 
       for (let i = 0; i < barCount; i++) {
         const rawFft = fftData[i];
@@ -337,15 +337,15 @@ export const EarthJukeboxSection: React.FC = () => {
         const y = height - barHeight;
 
         const grad = ctx.createLinearGradient(0, height, 0, 0);
-        grad.addColorStop(0, 'rgba(209, 183, 125, 0.08)');
+        grad.addColorStop(0, 'rgba(37, 45, 54, 0.25)');
         grad.addColorStop(0.65, trackTheme);
-        grad.addColorStop(1, '#F0EEE5');
+        grad.addColorStop(1, '#FF5938');
 
         ctx.fillStyle = grad;
         ctx.fillRect(x, y, barWidth, barHeight);
 
         if (isSynthesizing && peaks[i] > 6) {
-          ctx.fillStyle = '#F0EEE5';
+          ctx.fillStyle = '#E9EDF0';
           ctx.fillRect(x, height - peaks[i] - 1.5, barWidth, 1.5);
         }
       }
@@ -355,7 +355,7 @@ export const EarthJukeboxSection: React.FC = () => {
       ctx.shadowBlur = isSynthesizing ? 8 : 0;
       ctx.beginPath();
       ctx.lineWidth = 1.75;
-      ctx.strokeStyle = isSynthesizing ? trackTheme : 'rgba(240, 238, 229, 0.25)';
+      ctx.strokeStyle = isSynthesizing ? trackTheme : 'rgba(233, 237, 240, 0.25)';
 
       const waveStep = Math.max(1, Math.floor(waveData.length / width));
       for (let x = 0; x < width; x++) {
@@ -375,7 +375,7 @@ export const EarthJukeboxSection: React.FC = () => {
   }, [transportState, isMuted, activeEicKey]);
 
   // ---------------------------------------------------------------------------
-  // D3 CLIMATE SPIRAL COMPUTATION (NASA SVS #4976)
+  // D3 CLIMATE SPIRAL COMPUTATION (NASA SVS #5190)
   // ---------------------------------------------------------------------------
   const spiralParams = useMemo(() => {
     const gistempData = datasets?.gistemp?.observations || [];
@@ -410,7 +410,7 @@ export const EarthJukeboxSection: React.FC = () => {
     const colorScale = d3
       .scaleLinear<string>()
       .domain([-0.5, 0.0, 0.8, 1.2, 1.5])
-      .range(['#17465B', '#F0EEE5', '#D1B77D', '#E16D54', '#B83A2E'])
+      .range(['#162432', '#83BBD5', '#E9EDF0', '#FF5938', '#C9391B'])
       .clamp(true);
 
     const maxIdx =
@@ -467,7 +467,7 @@ export const EarthJukeboxSection: React.FC = () => {
     <section
       ref={sectionRef}
       id="jukebox"
-      className="relative w-full py-28 px-6 sm:px-10 lg:px-16 border-t border-[#F0EEE5]/10 z-10 bg-[#111820]"
+      className="relative w-full py-28 px-6 sm:px-10 lg:px-16 border-t border-[#252D36] z-10 bg-[#070B10]"
     >
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Section Header */}
@@ -484,14 +484,14 @@ export const EarthJukeboxSection: React.FC = () => {
 
         {/* Audio Context Suspended Banner */}
         {!isAudioUnlocked && (
-          <div className="jukebox-reveal p-5 bg-[#E16D54]/10 border border-[#E16D54]/30 rounded-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="jukebox-reveal p-5 bg-[#0E141D] border border-[#FF5938]/50 rounded-none flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
-              <Radio className="w-5 h-5 text-[#E16D54] animate-pulse" />
+              <Radio className="w-5 h-5 text-[#FF5938] animate-pulse" />
               <div>
-                <h4 className="font-sans font-semibold text-[#F0EEE5] text-sm uppercase tracking-wide">
+                <h4 className="font-display font-bold text-[#E9EDF0] text-sm uppercase tracking-wider">
                   WEB AUDIO SUSPENDED (AUTOPLAY POLICY)
                 </h4>
-                <p className="font-serif italic text-xs text-[#F0EEE5]/75">
+                <p className="font-mono text-xs text-[#83BBD5]">
                   Initialize the Web Audio API context to start real-time deterministic sonification.
                 </p>
               </div>
@@ -503,34 +503,55 @@ export const EarthJukeboxSection: React.FC = () => {
         )}
 
         {/* Master 5-Stream EIC Channel Selector */}
-        <div className="jukebox-reveal flex flex-wrap items-center gap-2.5 pb-4 border-b border-[#F0EEE5]/10">
-          <span className="font-mono text-xs text-[#D1B77D] uppercase tracking-[0.2em] mr-2 flex items-center gap-1.5 font-semibold">
-            <Disc className="w-3.5 h-3.5 text-[#D1B77D]" />
+        <div className="jukebox-reveal flex flex-wrap items-center gap-2.5 pb-4 border-b border-[#252D36]">
+          <span className="font-mono text-xs text-[#83BBD5] uppercase tracking-[0.2em] mr-2 flex items-center gap-1.5 font-semibold">
+            <Disc className="w-3.5 h-3.5 text-[#FF5938]" />
             EIC CHANNELS:
           </span>
           {EIC_TRACKS.map((track) => {
             const isSelected = activeEicKey === track.key;
+            const isQuarantined = track.key === 'aerosols_geos';
             return (
               <button
                 key={track.key}
-                onClick={() => handleSelectTrack(track.key)}
-                className={`px-4 py-2 text-xs font-sans tracking-wide uppercase transition-all duration-200 rounded-full flex items-center gap-2 cursor-pointer ${
-                  isSelected
-                    ? 'bg-[#F0EEE5] text-[#111820] font-semibold shadow-[0_4px_16px_rgba(240,238,229,0.15)]'
-                    : 'bg-transparent text-[#F0EEE5]/65 border border-[#F0EEE5]/15 hover:border-[#D1B77D] hover:text-[#D1B77D]'
+                disabled={isQuarantined}
+                onClick={() => !isQuarantined && handleSelectTrack(track.key)}
+                title={
+                  isQuarantined
+                    ? 'Quarantined by Scientific Provenance Audit: Historical assimilation proxy table is not a verified NASA DAAC Level-3 empirical release.'
+                    : undefined
+                }
+                className={`px-4 py-2 text-xs font-display tracking-wider uppercase transition-all duration-200 rounded-none border flex items-center gap-2 ${
+                  isQuarantined
+                    ? 'opacity-40 cursor-not-allowed bg-[#070B10] text-[#7E8B98] border-[#252D36]'
+                    : isSelected
+                    ? 'bg-[#FF5938] text-white font-bold border-[#FF5938] shadow-[0_4px_16px_rgba(255,89,56,0.25)] cursor-pointer'
+                    : 'bg-[#0E141D] text-[#E9EDF0]/70 border-[#252D36] hover:border-[#83BBD5] hover:text-white cursor-pointer'
                 }`}
               >
                 <span
-                  className="w-2 h-2 rounded-full shrink-0"
-                  style={{ backgroundColor: track.themeColor }}
+                  className="w-2 h-2 shrink-0"
+                  style={{
+                    backgroundColor: isQuarantined
+                      ? '#7E8B98'
+                      : isSelected
+                      ? '#FFFFFF'
+                      : track.themeColor,
+                  }}
                 />
-                <span>{track.name.split('(')[0]}</span>
+                <span className={isQuarantined ? 'line-through' : ''}>
+                  {track.name.split('(')[0]}
+                </span>
                 <span
                   className={`text-[10px] font-mono ${
-                    isSelected ? 'text-[#111820]/70' : 'text-[#D1B77D]'
+                    isQuarantined
+                      ? 'text-red-400 no-underline font-semibold'
+                      : isSelected
+                      ? 'text-white/80'
+                      : 'text-[#83BBD5]'
                   }`}
                 >
-                  ({track.unit})
+                  {isQuarantined ? '[DISABLED // QUARANTINED]' : `(${track.unit})`}
                 </span>
               </button>
             );
@@ -546,39 +567,39 @@ export const EarthJukeboxSection: React.FC = () => {
           {/* ================================================================= */}
           <div className="lg:col-span-7 flex flex-col space-y-6">
             {/* Visualizer Mode Switcher Tabs */}
-            <div className="flex items-center justify-between pb-3 border-b border-[#F0EEE5]/10">
-              <span className="font-mono text-xs text-[#D1B77D] tracking-widest uppercase font-semibold flex items-center gap-2">
-                <Activity className="w-3.5 h-3.5 text-[#D1B77D]" />
+            <div className="flex items-center justify-between pb-3 border-b border-[#252D36]">
+              <span className="font-mono text-xs text-[#83BBD5] tracking-widest uppercase font-semibold flex items-center gap-2">
+                <Activity className="w-3.5 h-3.5 text-[#FF5938]" />
                 NASA VISUAL DISPLAY
               </span>
 
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setActiveVisualTab('spiral')}
-                  className={`px-3 py-1 text-[11px] font-mono tracking-wider uppercase rounded-full transition-colors cursor-pointer ${
+                  className={`px-3 py-1 text-[11px] font-mono tracking-wider uppercase rounded-none border transition-colors cursor-pointer ${
                     activeVisualTab === 'spiral'
-                      ? 'bg-[#D1B77D] text-[#111820] font-semibold'
-                      : 'text-[#F0EEE5]/60 hover:text-[#F0EEE5] border border-[#F0EEE5]/15'
+                      ? 'bg-[#FF5938] text-white font-bold border-[#FF5938]'
+                      : 'bg-[#0E141D] text-[#E9EDF0]/60 border-[#252D36] hover:text-white'
                   }`}
                 >
-                  SVS #4976 SPIRAL
+                  SVS #5190 SPIRAL
                 </button>
                 <button
                   onClick={() => setActiveVisualTab('multitrack')}
-                  className={`px-3 py-1 text-[11px] font-mono tracking-wider uppercase rounded-full transition-colors cursor-pointer ${
+                  className={`px-3 py-1 text-[11px] font-mono tracking-wider uppercase rounded-none border transition-colors cursor-pointer ${
                     activeVisualTab === 'multitrack'
-                      ? 'bg-[#D1B77D] text-[#111820] font-semibold'
-                      : 'text-[#F0EEE5]/60 hover:text-[#F0EEE5] border border-[#F0EEE5]/15'
+                      ? 'bg-[#FF5938] text-white font-bold border-[#FF5938]'
+                      : 'bg-[#0E141D] text-[#E9EDF0]/60 border-[#252D36] hover:text-white'
                   }`}
                 >
                   TIME-SERIES
                 </button>
                 <button
                   onClick={() => setActiveVisualTab('audit')}
-                  className={`px-3 py-1 text-[11px] font-mono tracking-wider uppercase rounded-full transition-colors cursor-pointer ${
+                  className={`px-3 py-1 text-[11px] font-mono tracking-wider uppercase rounded-none border transition-colors cursor-pointer ${
                     activeVisualTab === 'audit'
-                      ? 'bg-[#D1B77D] text-[#111820] font-semibold'
-                      : 'text-[#F0EEE5]/60 hover:text-[#F0EEE5] border border-[#F0EEE5]/15'
+                      ? 'bg-[#FF5938] text-white font-bold border-[#FF5938]'
+                      : 'bg-[#0E141D] text-[#E9EDF0]/60 border-[#252D36] hover:text-white'
                   }`}
                 >
                   ZOD AUDIT
@@ -586,17 +607,17 @@ export const EarthJukeboxSection: React.FC = () => {
               </div>
             </div>
 
-            {/* TAB 1: NASA CLIMATE SPIRAL (SVS #4976) */}
+            {/* TAB 1: NASA CLIMATE SPIRAL (SVS #5190) */}
             {activeVisualTab === 'spiral' && (
-              <Panel className="p-6 sm:p-8 flex flex-col items-center justify-center relative overflow-hidden bg-[#0C1017] border-[#F0EEE5]/10">
-                <div className="w-full flex items-center justify-between mb-4 border-b border-[#F0EEE5]/10 pb-3 text-xs font-mono text-[#F0EEE5]/60">
+              <Panel className="p-6 sm:p-8 flex flex-col items-center justify-center relative overflow-hidden bg-[#0E141D] border-[#252D36] rounded-none">
+                <div className="w-full flex items-center justify-between mb-4 border-b border-[#252D36] pb-3 text-xs font-mono text-[#E9EDF0]/60">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#E16D54] animate-ping" />
-                    <span className="text-[#F0EEE5] font-semibold">
-                      NASA SVS #4976 // GISTEMP POLAR ANOMALY SPIRAL
+                    <span className="w-2 h-2 rounded-none bg-[#FF5938] animate-ping" />
+                    <span className="text-[#E9EDF0] font-semibold">
+                      NASA SVS #5190 // GISTEMP POLAR ANOMALY SPIRAL
                     </span>
                   </div>
-                  <span className="text-[#D1B77D]">1880 — 2026 PROGRESSION</span>
+                  <span className="text-[#83BBD5]">1880 — 2024 EMPIRICAL BENCHMARKS</span>
                 </div>
 
                 <div className="relative w-full aspect-square max-w-[440px] flex items-center justify-center">
@@ -636,14 +657,14 @@ export const EarthJukeboxSection: React.FC = () => {
                       cy={spiralParams.center}
                       r={spiralParams.ring0}
                       fill="none"
-                      stroke="rgba(240, 238, 229, 0.25)"
+                      stroke="rgba(233, 237, 240, 0.2)"
                       strokeWidth="1"
                       strokeDasharray="4,4"
                     />
                     <text
                       x={spiralParams.center + 6}
                       y={spiralParams.center - spiralParams.ring0 - 4}
-                      fill="rgba(240, 238, 229, 0.6)"
+                      fill="rgba(233, 237, 240, 0.6)"
                       fontSize="9"
                       fontFamily="IBM Plex Mono, monospace"
                     >
@@ -655,14 +676,14 @@ export const EarthJukeboxSection: React.FC = () => {
                       cy={spiralParams.center}
                       r={spiralParams.ring1}
                       fill="none"
-                      stroke="#D1B77D"
+                      stroke="#83BBD5"
                       strokeWidth="1"
-                      strokeOpacity="0.5"
+                      strokeOpacity="0.6"
                     />
                     <text
                       x={spiralParams.center + 6}
                       y={spiralParams.center - spiralParams.ring1 - 4}
-                      fill="#D1B77D"
+                      fill="#83BBD5"
                       fontSize="9"
                       fontFamily="IBM Plex Mono, monospace"
                     >
@@ -674,17 +695,18 @@ export const EarthJukeboxSection: React.FC = () => {
                       cy={spiralParams.center}
                       r={spiralParams.ring15}
                       fill="none"
-                      stroke="#E16D54"
+                      stroke="#FF5938"
                       strokeWidth="1.25"
-                      strokeOpacity="0.75"
+                      strokeOpacity="0.8"
                       strokeDasharray="3,3"
                     />
                     <text
                       x={spiralParams.center + 6}
                       y={spiralParams.center - spiralParams.ring15 - 4}
-                      fill="#E16D54"
+                      fill="#FF5938"
                       fontSize="9"
                       fontFamily="IBM Plex Mono, monospace"
+                      fontWeight="bold"
                     >
                       +1.5°C Paris Accord Target
                     </text>
@@ -694,8 +716,8 @@ export const EarthJukeboxSection: React.FC = () => {
                       <path
                         d={spiralParams.spiralD}
                         fill="none"
-                        stroke="#D1B77D"
-                        strokeWidth="1.75"
+                        stroke="#FF5938"
+                        strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       />
@@ -708,7 +730,7 @@ export const EarthJukeboxSection: React.FC = () => {
                           cx={spiralParams.currentTip.x}
                           cy={spiralParams.currentTip.y}
                           r="6"
-                          fill="#E16D54"
+                          fill="#FF5938"
                           className="animate-ping"
                           opacity="0.6"
                         />
@@ -716,8 +738,8 @@ export const EarthJukeboxSection: React.FC = () => {
                           cx={spiralParams.currentTip.x}
                           cy={spiralParams.currentTip.y}
                           r="4"
-                          fill="#F0EEE5"
-                          stroke="#E16D54"
+                          fill="#E9EDF0"
+                          stroke="#FF5938"
                           strokeWidth="2"
                         />
                       </g>
@@ -725,21 +747,21 @@ export const EarthJukeboxSection: React.FC = () => {
                   </svg>
                 </div>
 
-                <div className="w-full flex items-center justify-between pt-4 border-t border-[#F0EEE5]/10 text-xs font-mono text-[#F0EEE5]/60 mt-3">
+                <div className="w-full flex items-center justify-between pt-4 border-t border-[#252D36] text-xs font-mono text-[#E9EDF0]/60 mt-3">
                   <span>Polar Radius = Anomaly Magnitude</span>
-                  <span className="text-[#D1B77D]">12 Spokes = Annual Respiration</span>
+                  <span className="text-[#83BBD5]">12 Spokes = Annual Respiration</span>
                 </div>
               </Panel>
             )}
 
             {/* TAB 2: TIME-SERIES CURVE */}
             {activeVisualTab === 'multitrack' && (
-              <Panel className="p-6 sm:p-8 flex flex-col justify-between bg-[#0C1017] border-[#F0EEE5]/10 min-h-[440px]">
-                <div className="flex items-center justify-between border-b border-[#F0EEE5]/10 pb-3 text-xs font-mono">
-                  <span className="text-[#F0EEE5] font-semibold">
+              <Panel className="p-6 sm:p-8 flex flex-col justify-between bg-[#0E141D] border-[#252D36] rounded-none min-h-[440px]">
+                <div className="flex items-center justify-between border-b border-[#252D36] pb-3 text-xs font-mono">
+                  <span className="text-[#E9EDF0] font-semibold">
                     {activeDataset?.metadata.title || 'EIC Multi-Decadal Time-Series'}
                   </span>
-                  <span className="text-[#D1B77D]">{observations.length} Calibrated Points</span>
+                  <span className="text-[#83BBD5]">{observations.length} Calibrated Points</span>
                 </div>
 
                 <div className="relative w-full h-64 my-auto flex items-center justify-center">
@@ -750,13 +772,13 @@ export const EarthJukeboxSection: React.FC = () => {
                       y1="160"
                       x2="580"
                       y2="160"
-                      stroke="rgba(240, 238, 229, 0.2)"
+                      stroke="rgba(233, 237, 240, 0.2)"
                       strokeDasharray="4,4"
                     />
                     <text
                       x="40"
                       y="152"
-                      fill="rgba(240, 238, 229, 0.5)"
+                      fill="rgba(233, 237, 240, 0.5)"
                       fontSize="10"
                       fontFamily="IBM Plex Mono, monospace"
                     >
@@ -788,20 +810,20 @@ export const EarthJukeboxSection: React.FC = () => {
                   </svg>
                 </div>
 
-                <div className="pt-3 border-t border-[#F0EEE5]/10 text-xs font-mono text-[#F0EEE5]/60 flex items-center justify-between">
+                <div className="pt-3 border-t border-[#252D36] text-xs font-mono text-[#E9EDF0]/60 flex items-center justify-between">
                   <span>Sensor: {activeDataset?.metadata.instrumentPlatform}</span>
-                  <span className="text-[#D1B77D]">{activeDataset?.metadata.primaryUnit}</span>
+                  <span className="text-[#83BBD5]">{activeDataset?.metadata.primaryUnit}</span>
                 </div>
               </Panel>
             )}
 
             {/* TAB 3: ZOD DATA AUDIT TABLE */}
             {activeVisualTab === 'audit' && (
-              <Panel className="p-6 bg-[#0C1017] border-[#F0EEE5]/10 max-h-[440px] overflow-y-auto space-y-4">
-                <div className="flex items-center justify-between border-b border-[#F0EEE5]/10 pb-3 text-xs font-mono">
+              <Panel className="p-6 bg-[#0E141D] border-[#252D36] rounded-none max-h-[440px] overflow-y-auto space-y-4">
+                <div className="flex items-center justify-between border-b border-[#252D36] pb-3 text-xs font-mono">
                   <div className="flex items-center gap-2">
                     <FileCheck className="w-4 h-4 text-[#10B981]" />
-                    <span className="text-[#F0EEE5] font-semibold">
+                    <span className="text-[#E9EDF0] font-semibold">
                       ZOD AUDIT: {validationReport?.totalRecordsProcessed || 105} OBSERVATIONS
                     </span>
                   </div>
@@ -809,7 +831,7 @@ export const EarthJukeboxSection: React.FC = () => {
                 </div>
 
                 <table className="w-full text-left text-xs font-mono">
-                  <thead className="text-[#D1B77D] border-b border-[#F0EEE5]/10">
+                  <thead className="text-[#83BBD5] border-b border-[#252D36]">
                     <tr>
                       <th className="py-1.5">YEAR</th>
                       <th className="py-1.5">MEASUREMENT</th>
@@ -818,12 +840,12 @@ export const EarthJukeboxSection: React.FC = () => {
                       <th className="py-1.5">STATUS</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#F0EEE5]/05 text-[#F0EEE5]/80">
+                  <tbody className="divide-y divide-[#252D36] text-[#E9EDF0]/80">
                     {observations.slice(0, 12).map((obs) => (
                       <tr key={obs.id}>
                         <td className="py-1.5">{obs.year}</td>
-                        <td className="py-1.5 font-bold text-[#F0EEE5]">{obs.originalValue ?? '—'}</td>
-                        <td className="py-1.5 text-[#D1B77D]">{obs.unit}</td>
+                        <td className="py-1.5 font-bold text-[#E9EDF0]">{obs.originalValue ?? '—'}</td>
+                        <td className="py-1.5 text-[#83BBD5]">{obs.unit}</td>
                         <td className="py-1.5 text-[11px] truncate max-w-[120px]">{obs.baseline}</td>
                         <td className="py-1.5 text-[#10B981]">{obs.qualityFlag}</td>
                       </tr>
@@ -834,19 +856,19 @@ export const EarthJukeboxSection: React.FC = () => {
             )}
 
             {/* LIVE SOUND VISUALIZATION: 48-BAND FFT + REAL-TIME OSCILLOSCOPE */}
-            <Panel className="p-5 sm:p-6 bg-[#0C1017] border-[#F0EEE5]/10 space-y-3">
-              <div className="flex items-center justify-between border-b border-[#F0EEE5]/10 pb-2.5 text-xs font-mono">
+            <Panel className="p-5 sm:p-6 bg-[#0E141D] border-[#252D36] rounded-none space-y-3">
+              <div className="flex items-center justify-between border-b border-[#252D36] pb-2.5 text-xs font-mono">
                 <div className="flex items-center gap-2">
                   <span
-                    className={`w-2 h-2 rounded-full ${
-                      transportState === 'PLAYING' ? 'bg-[#E16D54] animate-pulse' : 'bg-[#F0EEE5]/30'
+                    className={`w-2 h-2 rounded-none ${
+                      transportState === 'PLAYING' ? 'bg-[#FF5938] animate-pulse' : 'bg-[#E9EDF0]/30'
                     }`}
                   />
-                  <span className="text-[#F0EEE5] font-semibold uppercase tracking-wider">
+                  <span className="text-[#E9EDF0] font-semibold uppercase tracking-wider">
                     WEB AUDIO ENGINE // 48-BAND FFT & OSCILLOSCOPE
                   </span>
                 </div>
-                <span className="text-[#D1B77D]">
+                <span className="text-[#83BBD5]">
                   {transportState === 'PLAYING'
                     ? `${activeParams?.tempoBpm || 60} BPM • 60 FPS`
                     : 'AWAITING SYNTHESIS'}
@@ -854,7 +876,7 @@ export const EarthJukeboxSection: React.FC = () => {
               </div>
 
               {/* Canvas element */}
-              <div className="w-full h-36 bg-[#06080C] border border-[#F0EEE5]/10 rounded-sm relative overflow-hidden">
+              <div className="w-full h-36 bg-[#070B10] border border-[#252D36] rounded-none relative overflow-hidden">
                 <canvas
                   ref={canvasRef}
                   width={680}
@@ -863,9 +885,9 @@ export const EarthJukeboxSection: React.FC = () => {
                 />
               </div>
 
-              <div className="flex items-center justify-between text-[11px] font-mono text-[#F0EEE5]/50 pt-1">
+              <div className="flex items-center justify-between text-[11px] font-mono text-[#E9EDF0]/50 pt-1">
                 <span>FFT: 20 Hz — 20 kHz Logarithmic Filterbank</span>
-                <span className="text-[#D1B77D]">Waveform: Dynamic Polyphonic Bus</span>
+                <span className="text-[#83BBD5]">Waveform: Dynamic Polyphonic Bus</span>
               </div>
             </Panel>
           </div>
@@ -875,54 +897,54 @@ export const EarthJukeboxSection: React.FC = () => {
           {/* ================================================================= */}
           <div className="lg:col-span-5 flex flex-col space-y-6">
             {/* CURRENT SCIENTIFIC MEASUREMENT CARD */}
-            <Panel className="p-6 sm:p-7 bg-[#0C1017] border-[#F0EEE5]/10 space-y-4">
-              <div className="flex items-center justify-between border-b border-[#F0EEE5]/10 pb-3">
-                <span className="font-mono text-xs text-[#D1B77D] uppercase tracking-widest font-semibold flex items-center gap-2">
-                  <Activity className="w-3.5 h-3.5 text-[#D1B77D]" />
+            <Panel className="p-6 sm:p-7 bg-[#0E141D] border-[#252D36] rounded-none space-y-4">
+              <div className="flex items-center justify-between border-b border-[#252D36] pb-3">
+                <span className="font-mono text-xs text-[#83BBD5] uppercase tracking-widest font-semibold flex items-center gap-2">
+                  <Activity className="w-3.5 h-3.5 text-[#FF5938]" />
                   CURRENT SCIENTIFIC MEASUREMENT
                 </span>
-                <Badge variant="sand">{activeObs?.year || 2026}</Badge>
+                <Badge variant="signal">{activeObs?.year || 2024}</Badge>
               </div>
 
               <div>
-                <span className="font-mono text-xs text-[#F0EEE5]/60 block mb-1">
+                <span className="font-mono text-xs text-[#E9EDF0]/60 block mb-1">
                   {currentTrack.name}
                 </span>
                 <div className="flex items-baseline gap-3">
-                  <span className="font-serif text-4xl sm:text-5xl font-normal text-[#F0EEE5]">
+                  <span className="font-display text-5xl sm:text-6xl font-extrabold uppercase text-[#E9EDF0] leading-none">
                     {activeObs?.originalValue !== null && activeObs?.originalValue !== undefined
                       ? activeObs.originalValue
                       : '—'}
                   </span>
-                  <span className="font-mono text-sm text-[#D1B77D]">{currentTrack.unit}</span>
+                  <span className="font-mono text-sm text-[#FF5938]">{currentTrack.unit}</span>
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-[#F0EEE5]/10 space-y-2 text-xs font-mono">
+              <div className="pt-3 border-t border-[#252D36] space-y-2 text-xs font-mono">
                 <div className="flex items-center justify-between">
-                  <span className="text-[#F0EEE5]/50">Baseline Reference:</span>
-                  <span className="text-[#F0EEE5] font-medium truncate max-w-[180px]">
+                  <span className="text-[#E9EDF0]/50">Baseline Reference:</span>
+                  <span className="text-[#83BBD5] font-medium truncate max-w-[180px]">
                     {activeDataset?.metadata.baselineDefinition || 'Pre-industrial equilibrium'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[#F0EEE5]/50">Observation Status:</span>
+                  <span className="text-[#E9EDF0]/50">Observation Status:</span>
                   <span className="text-[#10B981] font-semibold">
                     {activeObs?.qualityFlag || 'VALID'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[#F0EEE5]/50">Lead Agency:</span>
-                  <span className="text-[#D1B77D] truncate max-w-[200px]">{currentTrack.agency}</span>
+                  <span className="text-[#E9EDF0]/50">Lead Agency:</span>
+                  <span className="text-[#83BBD5] truncate max-w-[200px]">{currentTrack.agency}</span>
                 </div>
               </div>
             </Panel>
 
             {/* SOUND-TO-DATA EXPLANATION CARD */}
-            <Panel className="p-6 sm:p-7 bg-[#0C1017] border-[#F0EEE5]/10 space-y-4">
-              <div className="flex items-center justify-between border-b border-[#F0EEE5]/10 pb-3">
-                <span className="font-mono text-xs text-[#D1B77D] uppercase tracking-widest font-semibold flex items-center gap-2">
-                  <Disc className="w-3.5 h-3.5 text-[#D1B77D]" />
+            <Panel className="p-6 sm:p-7 bg-[#0E141D] border-[#252D36] rounded-none space-y-4">
+              <div className="flex items-center justify-between border-b border-[#252D36] pb-3">
+                <span className="font-mono text-xs text-[#83BBD5] uppercase tracking-widest font-semibold flex items-center gap-2">
+                  <Disc className="w-3.5 h-3.5 text-[#FF5938]" />
                   SOUND-TO-DATA EXPLANATION
                 </span>
                 <Badge variant="signal">DETERMINISTIC</Badge>
@@ -930,15 +952,15 @@ export const EarthJukeboxSection: React.FC = () => {
 
               <div className="space-y-3 text-xs font-mono">
                 <div className="flex items-center justify-between">
-                  <span className="text-[#F0EEE5]/50">Musical Pitch:</span>
-                  <span className="text-[#F0EEE5] font-semibold">
+                  <span className="text-[#E9EDF0]/50">Musical Pitch:</span>
+                  <span className="text-[#E9EDF0] font-semibold">
                     {activeParams?.noteName || 'D3'} ({activeParams?.frequencyHz.toFixed(1) || '146.8'} Hz)
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-[#F0EEE5]/50">Harmonic Consonance:</span>
-                  <span className="text-[#D1B77D]">
+                  <span className="text-[#E9EDF0]/50">Harmonic Consonance:</span>
+                  <span className="text-[#83BBD5]">
                     {activeParams && activeParams.frequencyHz > 300
                       ? 'Dissonant Minor 2nd'
                       : 'Consonant Perfect 5th'}
@@ -946,24 +968,24 @@ export const EarthJukeboxSection: React.FC = () => {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-[#F0EEE5]/50">Rhythm Cadence:</span>
-                  <span className="text-[#E16D54] font-semibold">
+                  <span className="text-[#E9EDF0]/50">Rhythm Cadence:</span>
+                  <span className="text-[#FF5938] font-semibold">
                     {activeParams?.tempoBpm || 48} BPM ({activeParams?.stepIntervalMs || 1250} ms)
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-[#F0EEE5]/50">Filter Cutoff:</span>
-                  <span className="text-[#F0EEE5]">
+                  <span className="text-[#E9EDF0]/50">Filter Cutoff:</span>
+                  <span className="text-[#E9EDF0]">
                     {activeParams?.filterCutoffHz || 450} Hz
                   </span>
                 </div>
 
-                <div className="pt-2 border-t border-[#F0EEE5]/10">
-                  <span className="text-[#F0EEE5]/50 block text-[10px] uppercase mb-1">
+                <div className="pt-2 border-t border-[#252D36]">
+                  <span className="text-[#E9EDF0]/50 block text-[10px] uppercase mb-1">
                     TRANSFER FORMULA:
                   </span>
-                  <span className="text-[#D1B77D] bg-[#111820] px-2.5 py-1 rounded block text-[11px]">
+                  <span className="text-[#FF5938] bg-[#070B10] border border-[#252D36] px-2.5 py-1 rounded-none block text-[11px]">
                     {currentTrack.mathFormula}
                   </span>
                 </div>
@@ -971,13 +993,13 @@ export const EarthJukeboxSection: React.FC = () => {
             </Panel>
 
             {/* PLAYBACK TIMELINE SCRUBBER & TRANSPORT CONTROLS */}
-            <Panel className="p-6 sm:p-7 bg-[#0C1017] border-[#F0EEE5]/10 space-y-5">
-              <div className="flex items-center justify-between border-b border-[#F0EEE5]/10 pb-3">
-                <span className="font-mono text-xs text-[#D1B77D] uppercase tracking-widest font-semibold flex items-center gap-2">
-                  <Calendar className="w-3.5 h-3.5 text-[#D1B77D]" />
-                  PLAYBACK TIMELINE (1880 — 2026)
+            <Panel className="p-6 sm:p-7 bg-[#0E141D] border-[#252D36] rounded-none space-y-5">
+              <div className="flex items-center justify-between border-b border-[#252D36] pb-3">
+                <span className="font-mono text-xs text-[#83BBD5] uppercase tracking-widest font-semibold flex items-center gap-2">
+                  <Calendar className="w-3.5 h-3.5 text-[#FF5938]" />
+                  PLAYBACK TIMELINE (1880 — 2024)
                 </span>
-                <span className="font-mono text-xs text-[#F0EEE5]">
+                <span className="font-mono text-xs text-[#FF5938] font-bold">
                   {activeObs?.year || 1880}
                 </span>
               </div>
@@ -991,14 +1013,14 @@ export const EarthJukeboxSection: React.FC = () => {
                   value={selectedObservationIndex || 0}
                   onChange={(e) => handleScrub(parseInt(e.target.value, 10))}
                   aria-label="Seek timeline observation"
-                  className="w-full h-2 bg-[#111820] rounded-lg appearance-none cursor-pointer accent-[#D1B77D]"
+                  className="w-full h-2 bg-[#070B10] rounded-none appearance-none cursor-pointer accent-[#FF5938] border border-[#252D36]"
                 />
 
-                <div className="flex items-center justify-between text-[10px] font-mono text-[#F0EEE5]/50">
+                <div className="flex items-center justify-between text-[10px] font-mono text-[#E9EDF0]/50">
                   <span>1880 Baseline</span>
                   <span>1958 Keeling</span>
                   <span>1993 Ocean</span>
-                  <span>2026 Modern</span>
+                  <span>2024 Modern</span>
                 </div>
               </div>
 
@@ -1011,7 +1033,7 @@ export const EarthJukeboxSection: React.FC = () => {
                       const idx = observations.findIndex((o) => o.year >= m.year);
                       if (idx !== -1) handleScrub(idx);
                     }}
-                    className="px-2 py-0.5 text-[10px] font-mono border border-[#F0EEE5]/10 hover:border-[#D1B77D] text-[#F0EEE5]/60 hover:text-[#D1B77D] rounded-full transition-colors cursor-pointer"
+                    className="px-2 py-0.5 text-[10px] font-mono border border-[#252D36] bg-[#070B10] hover:border-[#FF5938] text-[#E9EDF0]/60 hover:text-[#FF5938] rounded-none transition-colors cursor-pointer"
                   >
                     {m.year}
                   </button>
@@ -1019,7 +1041,7 @@ export const EarthJukeboxSection: React.FC = () => {
               </div>
 
               {/* Master Transport Action Buttons */}
-              <div className="pt-3 border-t border-[#F0EEE5]/10 flex flex-wrap items-center justify-between gap-3">
+              <div className="pt-3 border-t border-[#252D36] flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <Button
                     variant="primary"
@@ -1027,9 +1049,9 @@ export const EarthJukeboxSection: React.FC = () => {
                     onClick={handleTogglePlay}
                     icon={
                       transportState === 'PLAYING' ? (
-                        <Pause className="w-4 h-4 text-[#111820]" />
+                        <Pause className="w-4 h-4 text-white" />
                       ) : (
-                        <Play className="w-4 h-4 text-[#111820]" />
+                        <Play className="w-4 h-4 text-white" />
                       )
                     }
                   >
@@ -1038,7 +1060,7 @@ export const EarthJukeboxSection: React.FC = () => {
 
                   <button
                     onClick={handleRestart}
-                    className="p-2 border border-[#F0EEE5]/15 hover:border-[#D1B77D] text-[#F0EEE5]/70 hover:text-[#F0EEE5] rounded-full transition-colors cursor-pointer"
+                    className="p-2 border border-[#252D36] bg-[#070B10] hover:border-[#83BBD5] text-[#E9EDF0]/70 hover:text-white rounded-none transition-colors cursor-pointer"
                     title="Reset to 1880 origin"
                   >
                     <RotateCcw className="w-4 h-4" />
@@ -1046,7 +1068,7 @@ export const EarthJukeboxSection: React.FC = () => {
 
                   <button
                     onClick={handleSpeedCycle}
-                    className="px-2.5 py-1 text-xs font-mono border border-[#F0EEE5]/15 hover:border-[#D1B77D] text-[#D1B77D] rounded-full transition-colors cursor-pointer"
+                    className="px-2.5 py-1 text-xs font-mono border border-[#252D36] bg-[#070B10] hover:border-[#83BBD5] text-[#83BBD5] rounded-none transition-colors cursor-pointer"
                     title="Cycle Playback Speed"
                   >
                     {speedMultiplier}x
@@ -1054,10 +1076,10 @@ export const EarthJukeboxSection: React.FC = () => {
 
                   <button
                     onClick={handleToggleLoop}
-                    className={`p-2 border rounded-full transition-colors cursor-pointer ${
+                    className={`p-2 border rounded-none transition-colors cursor-pointer ${
                       isLooping
-                        ? 'border-[#D1B77D] text-[#D1B77D] bg-[#D1B77D]/10'
-                        : 'border-[#F0EEE5]/15 text-[#F0EEE5]/60 hover:text-[#F0EEE5]'
+                        ? 'border-[#FF5938] text-[#FF5938] bg-[#FF5938]/10'
+                        : 'border-[#252D36] bg-[#070B10] text-[#E9EDF0]/60 hover:text-white'
                     }`}
                     title="Toggle Loop"
                   >
@@ -1069,13 +1091,13 @@ export const EarthJukeboxSection: React.FC = () => {
                 <div className="flex items-center gap-2.5">
                   <button
                     onClick={toggleMute}
-                    className="text-[#F0EEE5]/70 hover:text-[#F0EEE5] transition-colors cursor-pointer"
+                    className="text-[#E9EDF0]/70 hover:text-white transition-colors cursor-pointer"
                     title={isMuted ? 'Unmute' : 'Mute'}
                   >
                     {isMuted ? (
-                      <VolumeX className="w-4 h-4 text-[#E16D54]" />
+                      <VolumeX className="w-4 h-4 text-[#FF5938]" />
                     ) : (
-                      <Volume2 className="w-4 h-4 text-[#D1B77D]" />
+                      <Volume2 className="w-4 h-4 text-[#83BBD5]" />
                     )}
                   </button>
                   <input
@@ -1086,7 +1108,7 @@ export const EarthJukeboxSection: React.FC = () => {
                     value={isMuted ? 0 : masterVolume}
                     onChange={(e) => setMasterVolume(parseFloat(e.target.value))}
                     aria-label="Master Sonification Volume"
-                    className="w-16 h-1 bg-[#111820] rounded-lg appearance-none cursor-pointer accent-[#D1B77D]"
+                    className="w-16 h-1 bg-[#070B10] rounded-none appearance-none cursor-pointer accent-[#FF5938] border border-[#252D36]"
                   />
                 </div>
               </div>

@@ -1,41 +1,49 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Space Grotesk", system-ui, -apple-system, sans-serif;
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-display: "Barlow Condensed", system-ui, -apple-system, sans-serif;
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
-  /* Editorial Planetary Color Palette */
-  --color-paper: #F0EEE5;
-  --color-paper-muted: #E4E0D2;
-  --color-paper-card: #F7F5EE;
+  /* Orbital Documentary Official Color Tokens */
+  --color-space-black: #070B10;
+  --color-starlight-white: #E9EDF0;
+  --color-signal-orange: #FF5938;
+  --color-atmos-blue: #83BBD5;
+  --color-tech-graphite: #252D36;
+
+  /* Semantic Aliases */
+  --color-paper: #E9EDF0;
+  --color-paper-muted: #D8DFE4;
+  --color-paper-card: #FFFFFF;
   
-  --color-ink: #111820;
-  --color-ink-light: #1A232E;
-  --color-ink-muted: #6B7280;
+  --color-ink: #070B10;
+  --color-ink-light: #121820;
+  --color-ink-muted: #7E8B98;
   
-  --color-ocean: #17465B;
-  --color-ocean-light: #256685;
-  --color-ocean-deep: #0D2633;
+  --color-ocean: #162432;
+  --color-ocean-light: #83BBD5;
+  --color-ocean-deep: #070B10;
   
-  --color-sand: #D1B77D;
-  --color-sand-light: #E2CE9F;
-  --color-sand-muted: #B89E62;
+  --color-sand: #83BBD5;
+  --color-sand-light: #A5D2E6;
+  --color-sand-muted: #6496AD;
   
-  --color-signal: #E16D54;
-  --color-signal-hover: #D05940;
-  --color-signal-dark: #B3442D;
+  --color-signal: #FF5938;
+  --color-signal-hover: #E84C2C;
+  --color-signal-dark: #C9391B;
 }
 
 :root {
   color-scheme: dark;
-  --bg-primary: #111820;
-  --bg-paper: #F0EEE5;
-  --text-primary: #F0EEE5;
-  --text-ink: #111820;
-  --text-muted: #9CA3AF;
-  --border-subtle: rgba(240, 238, 229, 0.12);
-  --border-editorial: rgba(17, 24, 32, 0.15);
+  --bg-primary: #070B10;
+  --bg-paper: #E9EDF0;
+  --text-primary: #E9EDF0;
+  --text-ink: #070B10;
+  --text-muted: #7E8B98;
+  --border-subtle: rgba(233, 237, 240, 0.12);
+  --border-editorial: rgba(7, 11, 16, 0.15);
+  --border-tech: #252D36;
 }
 
 html,
@@ -58,44 +66,44 @@ body {
   position: relative;
 }
 
-/* Subtle, refined editorial scrollbar */
+/* Aerospace minimal scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #111820;
+  background: #070B10;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(209, 183, 125, 0.3);
-  border-radius: 2px;
+  background: #252D36;
+  border-radius: 0px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(209, 183, 125, 0.6);
+  background: #FF5938;
 }
 
 /* Editorial layout utility classes */
 .editorial-container {
-  max-width: 1360px;
+  max-width: 1400px;
   margin-left: auto;
   margin-right: auto;
-  padding-left: clamp(1.25rem, 4vw, 3.5rem);
-  padding-right: clamp(1.25rem, 4vw, 3.5rem);
+  padding-left: clamp(1.25rem, 4vw, 4rem);
+  padding-right: clamp(1.25rem, 4vw, 4rem);
 }
 
 .editorial-divider {
   width: 100%;
   height: 1px;
-  background-color: var(--border-subtle);
+  background-color: #252D36;
 }
 
 .editorial-divider-ink {
   width: 100%;
   height: 1px;
-  background-color: rgba(17, 24, 32, 0.12);
+  background-color: rgba(7, 11, 16, 0.12);
 }
 
 /* Ensure fixed navbar never obscures chapter section headers */
@@ -103,43 +111,36 @@ section {
   scroll-margin-top: 5rem;
 }
 
-/* Backwards-compatible glass & panel surfaces refactored into editorial elegance */
+/* Editorial documentary surface styling */
 .glass-panel {
-  background: rgba(17, 24, 32, 0.82);
+  background: rgba(7, 11, 16, 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(240, 238, 229, 0.1);
+  border: 1px solid #252D36;
 }
 
 .glass-panel-glow {
-  background: rgba(17, 24, 32, 0.88);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(209, 183, 125, 0.3);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  background: rgba(11, 16, 23, 0.95);
+  border: 1px solid #252D36;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
 }
 
 .editorial-card {
-  background: rgba(26, 35, 46, 0.6);
-  border: 1px solid rgba(240, 238, 229, 0.1);
-  transition: border-color 0.3s ease, transform 0.3s ease;
+  background: #0E141D;
+  border: 1px solid #252D36;
+  transition: border-color 0.25s ease;
 }
 
 .editorial-card:hover {
-  border-color: rgba(209, 183, 125, 0.4);
+  border-color: #83BBD5;
 }
 
 .editorial-card-light {
   background: #FFFFFF;
-  border: 1px solid rgba(17, 24, 32, 0.08);
-  box-shadow: 0 4px 24px -2px rgba(17, 24, 32, 0.04);
+  border: 1px solid rgba(7, 11, 16, 0.12);
+  box-shadow: 0 4px 20px -2px rgba(7, 11, 16, 0.05);
 }
 
 .editorial-card-light:hover {
-  border-color: rgba(23, 70, 91, 0.3);
-}
-
-/* Subtle corner styling without harsh sci-fi brackets */
-.hud-border {
-  position: relative;
+  border-color: #FF5938;
 }

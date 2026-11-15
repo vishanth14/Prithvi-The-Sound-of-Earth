@@ -3,6 +3,7 @@ import Lenis from 'lenis';
 import { gsap, ScrollTrigger } from './lib/gsap';
 import { useObservatoryStore } from './store/useObservatoryStore';
 import { StarfieldCanvas } from './components/canvas/StarfieldCanvas';
+import { CustomCursor } from './components/common/CustomCursor';
 import { Navbar } from './components/navigation/Navbar';
 import { HeroSection } from './components/hero/HeroSection';
 import { EarthExplorerSection } from './components/explorer/EarthExplorerSection';
@@ -149,7 +150,10 @@ export const App: React.FC = () => {
   ]);
 
   return (
-    <div className="relative min-h-screen w-full bg-[#02040a] text-slate-100 overflow-x-hidden selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="relative min-h-screen w-full bg-[#070B10] text-[#E9EDF0] overflow-x-hidden selection:bg-[#FF5938] selection:text-white">
+      {/* 0. Custom Space-Inspired Aerospace Cursor */}
+      <CustomCursor />
+
       {/* 1. Restrained Animated Cosmos Background */}
       <StarfieldCanvas />
 

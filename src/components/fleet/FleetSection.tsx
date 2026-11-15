@@ -1,9 +1,6 @@
 import React, { useRef } from 'react';
 import { SATELLITE_FLEET } from '../../data/earthDatasets';
 import { gsap, useGSAP } from '../../lib/gsap';
-import { SectionHeader } from '../common/SectionHeader';
-import { Panel } from '../common/Panel';
-import { Badge } from '../common/Badge';
 import { Radio } from 'lucide-react';
 
 export const FleetSection: React.FC = () => {
@@ -33,89 +30,99 @@ export const FleetSection: React.FC = () => {
     <section
       ref={sectionRef}
       id="fleet"
-      className="relative w-full py-28 px-6 sm:px-10 lg:px-16 border-t border-[#F0EEE5]/10 z-10 bg-[#111820]"
+      className="relative w-full py-20 px-6 sm:px-10 lg:px-16 border-t border-[#252D36]/20 z-10 bg-[#E9EDF0] text-[#070B10]"
     >
-      <div className="max-w-7xl mx-auto space-y-12">
-        <SectionHeader
-          number="02.5"
-          category="CHAPTER 02 COMPANION // ORBITAL TELEMETRY"
-          title="THE EARTH OBSERVING CONSTELLATION"
-          subtitle="Continuous low-Earth orbit telemetry streams empirical data into PRITHVI. Five active satellite instruments monitor Earth's dynamic vital signs in motion."
-          badge="5 ACTIVE MISSIONS"
-          badgeVariant="sand"
-        />
+      <div className="max-w-7xl mx-auto space-y-10">
+        <div className="border-b border-[#252D36]/20 pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
+            <span className="font-mono text-xs uppercase tracking-[0.25em] text-[#FF5938] font-bold">
+              CHAPTER 02.5 // ORBITAL TELEMETRY
+            </span>
+            <span className="font-mono text-xs uppercase tracking-widest text-[#252D36] font-semibold">
+              5 ACTIVE MISSIONS
+            </span>
+          </div>
+          <h3 className="font-display font-extrabold text-4xl sm:text-6xl text-[#070B10] tracking-tight uppercase leading-[0.95]">
+            THE EARTH OBSERVING CONSTELLATION
+          </h3>
+          <p className="font-sans text-sm sm:text-base text-[#252D36]/80 font-normal leading-relaxed max-w-3xl mt-3">
+            Continuous low-Earth orbit telemetry streams empirical data into PRITHVI. Five active satellite instruments monitor Earth's dynamic vital signs in motion.
+          </p>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {SATELLITE_FLEET.map((sat) => (
-            <Panel
+            <div
               key={sat.id}
-              className="fleet-card flex flex-col justify-between group hover:border-[#D1B77D]/40 transition-all duration-300 bg-[#0C1017] border-[#F0EEE5]/10 p-7"
+              className="fleet-card flex flex-col justify-between bg-white border-2 border-[#252D36] p-7 shadow-sm hover:border-[#FF5938] transition-all"
             >
               <div>
-                <div className="flex items-center justify-between mb-5 pb-3 border-b border-[#F0EEE5]/10">
+                <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#252D36]/20">
                   <div className="flex items-center gap-2">
                     <span
-                      className="w-2.5 h-2.5 rounded-full"
+                      className="w-2.5 h-2.5"
                       style={{ backgroundColor: sat.color }}
                     />
-                    <span className="font-mono text-xs text-[#D1B77D] tracking-wider uppercase">
+                    <span className="font-mono text-xs text-[#252D36] tracking-wider uppercase font-bold">
                       LAUNCH {sat.launchYear}
                     </span>
                   </div>
-                  <Badge variant="sand">LEO</Badge>
+                  <span className="px-2 py-0.5 bg-[#E9EDF0] text-[#070B10] font-mono text-[10px] uppercase font-bold border border-[#252D36]/20">
+                    LEO
+                  </span>
                 </div>
 
-                <h3 className="font-serif text-2xl font-normal text-[#F0EEE5] mb-2 group-hover:text-[#D1B77D] transition-colors">
+                <h4 className="font-display text-3xl font-extrabold text-[#070B10] uppercase tracking-tight mb-2">
                   {sat.name}
-                </h3>
+                </h4>
 
-                <p className="font-sans text-xs sm:text-sm text-[#F0EEE5]/70 leading-relaxed mb-6">
+                <p className="font-sans text-xs sm:text-sm text-[#252D36]/80 leading-relaxed mb-6 font-normal">
                   {sat.observationalFocus}
                 </p>
               </div>
 
-              <div className="pt-4 border-t border-[#F0EEE5]/10 space-y-2 text-xs font-mono">
+              <div className="pt-4 border-t border-[#252D36]/20 space-y-2 text-xs font-mono">
                 <div className="flex items-center justify-between">
-                  <span className="text-[#F0EEE5]/50">Orbit Altitude:</span>
-                  <span className="text-[#F0EEE5] font-semibold">{sat.orbitAltitudeKm} km</span>
+                  <span className="text-[#252D36]/60">Orbit Altitude:</span>
+                  <span className="text-[#070B10] font-semibold">{sat.orbitAltitudeKm} km</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[#F0EEE5]/50">Inclination:</span>
-                  <span className="text-[#F0EEE5] font-semibold">{sat.orbitInclinationDeg}°</span>
+                  <span className="text-[#252D36]/60">Inclination:</span>
+                  <span className="text-[#070B10] font-semibold">{sat.orbitInclinationDeg}°</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[#F0EEE5]/50">Primary Sensor:</span>
-                  <span className="text-[#D1B77D] truncate max-w-[180px] font-semibold">
+                  <span className="text-[#252D36]/60">Primary Sensor:</span>
+                  <span className="text-[#FF5938] truncate max-w-[180px] font-bold">
                     {sat.primarySensor}
                   </span>
                 </div>
               </div>
-            </Panel>
+            </div>
           ))}
 
           {/* NASA Earth Information Center summary card */}
-          <Panel className="fleet-card flex flex-col justify-between border-[#E16D54]/30 bg-[#0C1017] p-7">
+          <div className="fleet-card flex flex-col justify-between border-2 border-[#FF5938] bg-[#070B10] text-[#E9EDF0] p-7 shadow-sm">
             <div>
-              <div className="flex items-center gap-2 mb-5 pb-3 border-b border-[#F0EEE5]/10 text-[#E16D54]">
+              <div className="flex items-center gap-2 mb-4 pb-3 border-b border-[#252D36] text-[#FF5938]">
                 <Radio className="w-4 h-4 animate-pulse" />
-                <span className="font-mono text-xs uppercase tracking-[0.2em] font-semibold">
+                <span className="font-mono text-xs uppercase tracking-[0.2em] font-bold">
                   EIC INTEGRATION
                 </span>
               </div>
-              <h3 className="font-serif text-2xl font-normal text-[#F0EEE5] mb-2">
+              <h4 className="font-display text-3xl font-extrabold text-[#E9EDF0] uppercase tracking-tight mb-2">
                 Earth Information Center
-              </h3>
-              <p className="font-sans text-xs sm:text-sm text-[#F0EEE5]/75 leading-relaxed">
+              </h4>
+              <p className="font-sans text-xs sm:text-sm text-[#E9EDF0]/80 leading-relaxed font-normal">
                 PRITHVI connects the public to NASA’s operational Earth Science Division, translating
                 raw telemetry streams into accessible visual geometries and harmonic audio.
               </p>
             </div>
 
-            <div className="pt-5 border-t border-[#F0EEE5]/10 flex items-center justify-between text-xs font-mono text-[#D1B77D]">
-              <span>NASA Headquarters & Goddard</span>
-              <span className="text-[#F0EEE5]/50">2026 Space Apps</span>
+            <div className="pt-5 border-t border-[#252D36] flex items-center justify-between text-xs font-mono text-[#83BBD5]">
+              <span className="font-semibold">NASA Headquarters & Goddard</span>
+              <span className="text-[#7E8B98]">2026 Space Apps</span>
             </div>
-          </Panel>
+          </div>
         </div>
       </div>
     </section>
