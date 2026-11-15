@@ -91,6 +91,7 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
 
           <button
             onClick={onClose}
+            data-cursor-label="CLOSE"
             aria-label="Close keyboard shortcuts dialog"
             className="p-1.5 border border-[#252D36] bg-[#070B10] hover:border-[#FF5938] text-[#E9EDF0]/50 hover:text-white transition-colors cursor-pointer rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5938]"
           >

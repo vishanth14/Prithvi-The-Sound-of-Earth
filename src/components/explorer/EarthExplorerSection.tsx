@@ -19,6 +19,7 @@ import {
   Compass,
   ArrowRight,
   Sparkles,
+  BookOpen,
 } from 'lucide-react';
 
 interface ScientificLayerDetail {
@@ -219,6 +220,19 @@ export const EarthExplorerSection: React.FC = () => {
       document.getElementById('stories');
     if (jukeboxEl) {
       jukeboxEl.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleOpenStory = async (eicKey?: EicDatasetKey) => {
+    const key = eicKey || activeLayer.eicKey;
+    await setActiveEicKey(key);
+    const storiesEl = document.getElementById('stories');
+    if (storiesEl) {
+      if ((window as any).__lenis) {
+        (window as any).__lenis.scrollTo(storiesEl, { duration: 1.2 });
+      } else {
+        storiesEl.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
@@ -463,23 +477,33 @@ export const EarthExplorerSection: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col sm:flex-row gap-2.5">
+                  <button
+                    onClick={() => handleOpenStory(currentSentinel.eicKey)}
+                    data-cursor-label="STORY"
+                    data-cursor-magnetic="true"
+                    className="flex-1 py-3 px-4 text-xs font-display font-bold tracking-wider uppercase bg-[#FF5938] hover:bg-[#E84C2C] text-[#070B10] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    <BookOpen className="w-3.5 h-3.5 text-[#070B10]" />
+                    <span>EXPLORE STORY</span>
+                  </button>
+
                   <button
                     onClick={handleListenToData}
                     data-cursor-label="LISTEN"
                     data-cursor-magnetic="true"
-                    className="flex-1 py-3 px-4 text-xs font-display font-bold tracking-widest uppercase bg-[#FF5938] hover:bg-[#E84C2C] text-[#070B10] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+                    className="flex-1 py-3 px-4 text-xs font-display font-bold tracking-wider uppercase border border-[#252D36] hover:border-[#83BBD5] bg-[#0E141D] text-[#E9EDF0] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
                   >
-                    <Headphones className="w-4 h-4 text-[#070B10]" />
-                    <span>LISTEN TO THIS DATA</span>
+                    <Headphones className="w-3.5 h-3.5 text-[#83BBD5]" />
+                    <span>LISTEN</span>
                   </button>
 
                   <button
                     onClick={handleBackToOverview}
                     data-cursor-label="RESET"
-                    className="py-3 px-4 text-xs font-display font-bold tracking-wider uppercase border border-[#252D36] hover:border-[#83BBD5] text-[#E9EDF0] transition-colors cursor-pointer text-center hover:bg-[#0E141D]"
+                    className="py-3 px-3 text-xs font-display font-bold tracking-wider uppercase border border-[#252D36] hover:border-[#83BBD5] text-[#7E8B98] hover:text-[#E9EDF0] transition-colors cursor-pointer text-center hover:bg-[#0E141D]"
                   >
-                    RESET OVERVIEW
+                    RESET
                   </button>
                 </div>
               </div>
@@ -572,23 +596,34 @@ export const EarthExplorerSection: React.FC = () => {
               {/* Action Buttons: Listen & Jukebox Navigation */}
               <div className="pt-4 border-t border-[#252D36]/20 flex flex-col sm:flex-row gap-3">
                 <button
-                  onClick={handleListenToData}
-                  data-cursor-label="LISTEN"
+                  onClick={() => handleOpenStory()}
+                  data-cursor-label="STORY"
                   data-cursor-magnetic="true"
-                  className="flex-1 py-3.5 px-6 text-xs font-display font-extrabold tracking-widest uppercase bg-[#FF5938] hover:bg-[#E84C2C] text-[#070B10] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:scale-[1.02] hover:tracking-[0.18em] active:scale-[0.98]"
+                  className="flex-1 py-3.5 px-5 text-xs font-display font-extrabold tracking-widest uppercase bg-[#FF5938] hover:bg-[#E84C2C] text-[#070B10] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:scale-[1.02] hover:tracking-[0.16em] active:scale-[0.98]"
                 >
-                  <Headphones className="w-4 h-4 text-[#070B10]" />
-                  <span>LISTEN TO THIS DATA</span>
+                  <BookOpen className="w-4 h-4 text-[#070B10]" />
+                  <span>EXPLORE SCIENTIFIC STORY</span>
                   <ArrowRight className="w-3.5 h-3.5 text-[#070B10]" />
                 </button>
 
                 <button
-                  onClick={handleViewInJukebox}
-                  data-cursor-label="OPEN"
+                  onClick={handleListenToData}
+                  data-cursor-label="LISTEN"
                   data-cursor-magnetic="true"
                   className="py-3.5 px-5 text-xs font-display font-extrabold tracking-wider uppercase border-2 border-[#252D36] hover:bg-[#070B10] hover:text-[#E9EDF0] text-[#070B10] transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 hover:scale-[1.02] hover:border-[#070B10] active:scale-[0.98]"
                 >
-                  <span>VIEW EIC JUKEBOX</span>
+                  <Headphones className="w-4 h-4" />
+                  <span>LISTEN TO DATA</span>
+                </button>
+
+                <button
+                  onClick={handleViewInJukebox}
+                  data-cursor-label="JUKEBOX"
+                  data-cursor-magnetic="true"
+                  className="py-3.5 px-4 text-xs font-display font-bold tracking-wider uppercase border border-[#252D36]/40 hover:bg-[#070B10] hover:text-[#E9EDF0] text-[#7E8B98] transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5 hover:scale-[1.02]"
+                  title="Open Jukebox Laboratory"
+                >
+                  <span>JUKEBOX</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </button>
               </div>
