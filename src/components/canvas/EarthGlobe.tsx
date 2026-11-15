@@ -586,18 +586,18 @@ export const EarthGlobe: React.FC = () => {
             </mesh>
 
             {/* Editorial Hover Tooltip Label */}
-            {(isHovered || isSelected) && (
+            {isHovered && !isSelected && (
               <Html
                 position={[0, 0.08, 0]}
                 center
-                distanceFactor={14}
+                distanceFactor={7.5}
                 pointerEvents="none"
               >
-                <div className="bg-[#111820]/95 text-[#F0EEE5] border border-[#D1B77D]/60 px-3 py-1.5 shadow-[0_4px_20px_rgba(0,0,0,0.6)] backdrop-blur-md whitespace-nowrap flex flex-col items-center gap-0.5 pointer-events-none select-none">
-                  <span className="font-display font-semibold text-xs tracking-wide text-[#F0EEE5]">
+                <div className="bg-[#070B10]/95 text-[#E9EDF0] border border-[#FF5938]/60 px-2.5 py-1 shadow-lg whitespace-nowrap flex flex-col items-center gap-0.5 pointer-events-none select-none text-[11px] font-mono">
+                  <span className="font-display font-bold text-xs tracking-wide text-[#E9EDF0]">
                     {s.name}
                   </span>
-                  <span className="font-mono text-[10px] text-[#D1B77D] tracking-widest uppercase">
+                  <span className="text-[10px] text-[#FF5938] tracking-widest uppercase">
                     {s.stationCode} • {s.lat > 0 ? `${s.lat}°N` : `${Math.abs(s.lat)}°S`},{' '}
                     {s.lng > 0 ? `${s.lng}°E` : `${Math.abs(s.lng)}°W`}
                   </span>

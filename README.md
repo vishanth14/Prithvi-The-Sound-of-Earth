@@ -1,20 +1,21 @@
 # PRITHVI — THE SOUND OF EARTH
+
 ### The Earth Information Jukebox // NASA Space Apps Challenge 2026
 
-> *"Every change has a sound. Every sound tells a story."*
+> _"Every change has a sound. Every sound tells a story."_
 
 **Team:** MULTIVERSE VENDHAN  
 **Challenge:** NASA Space Apps Challenge 2026 — The Earth Information Jukebox  
 **Live Observatory Engine:** React 19 • Three.js • React Three Fiber • Tone.js • Web Audio API • GSAP • Lenis • D3 • Zod • Tailwind CSS v4  
 **Design Identity:** Orbital Documentary (Editorial Aerospace Magazine)  
 **Scientific Audit:** Certified in [docs/scientific-provenance-audit.md](docs/scientific-provenance-audit.md)  
-**Submission Dossier:** Complete 7-Slide Presentation in [docs/nasa-space-apps-submission-dossier.md](docs/nasa-space-apps-submission-dossier.md)  
+**Submission Dossier:** Complete 7-Slide Presentation in [docs/nasa-space-apps-submission-dossier.md](docs/nasa-space-apps-submission-dossier.md)
 
 ---
 
 ## 🌍 Executive Summary & Vision
 
-**PRITHVI (Sanskrit for "Earth")** is an immersive digital orbital documentary and real-time scientific sonification instrument developed for the NASA Space Apps Challenge 2026: *The Earth Information Jukebox*.
+**PRITHVI (Sanskrit for "Earth")** is an immersive digital orbital documentary and real-time scientific sonification instrument developed for the NASA Space Apps Challenge 2026: _The Earth Information Jukebox_.
 
 Inspired by the NASA Scientific Visualization Studio (SVS), high-end digital editorial publications, and accessible multimodal design, PRITHVI transforms multi-decadal satellite telemetry into calibrated 3D spatial geometry and deterministic auditory displays.
 
@@ -28,24 +29,25 @@ Instead of playing static background audio or arbitrary pre-recorded loops, **PR
 
 PRITHVI ingests and validates authentic observations released by NASA and international partner agencies. Following a comprehensive forensic scientific audit ([docs/scientific-provenance-audit.md](docs/scientific-provenance-audit.md)), all misattributed SVS asset IDs were corrected, empirical temporal boundaries established, and unverified model proxies quarantined.
 
-| Visualization | Official ID | Data Source | Variable | Physical Unit | True Temporal Range | In-Project Rows | Verification Status |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **NASA Climate Spiral** | **SVS 5190** | NASA GISS (GISTEMP v4) | Surface Temperature Anomaly | °C | 1880–2024 (Annual snapshots) | 38 | **PARTIALLY VERIFIED (Subsampled)** — Values 1880–2024 match annual mean; 2025–2026 removed. |
-| **DYAMOND Global $\text{CO}_2$** | **SVS 5196** | NOAA Global Monitoring Lab & Scripps / NASA GMAO | Atmospheric $\text{CO}_2$ Mole Fraction | ppm | Model: Jan–Mar 2020; In-situ: 1958–2024 | 21 | **PARTIALLY VERIFIED (Disjoint)** — SVS 5196 simulation differentiated from in-situ Keeling curve. |
-| **Global Mean Sea Level** | **SVS 5312** | NASA PO.DAAC / JPL (Sentinel-6, Jason series) | Sea Surface Height Variation | mm | 1993–2023 | 20 | **VERIFIED (Bounded 1993–2023)** — Capped at verified 2023 record ($+111.4\text{ mm}$). |
-| **Atmospheric Aerosols** | *Model Proxy* | NASA GMAO Forward Processing (MODIS/VIIRS) | Aerosol Optical Depth (AOD 550nm) | Dimensionless AOD | 2000–2024 (Assimilation proxy) | 14 | **QUARANTINED / DISABLED** — Disabled in UI; unverified against DAAC scalar releases. |
-| **Change in Night Lights** | **SVS 5313** | NASA ESDS Black Marble / Suomi NPP VIIRS | Top-of-Atmosphere Nocturnal Radiance | $\text{nW}\cdot\text{cm}^{-2}\cdot\text{sr}^{-1}$ | 2012–2023 | 12 | **VERIFIED (Bounded 2012–2023)** — Capped at verified 2023 record ($124.6\text{ nW}$). |
+| Visualization                    | Official ID   | Data Source                                      | Variable                                | Physical Unit                                     | True Temporal Range                     | In-Project Rows | Verification Status                                                                                |
+| :------------------------------- | :------------ | :----------------------------------------------- | :-------------------------------------- | :------------------------------------------------ | :-------------------------------------- | :-------------- | :------------------------------------------------------------------------------------------------- |
+| **NASA Climate Spiral**          | **SVS 5190**  | NASA GISS (GISTEMP v4)                           | Surface Temperature Anomaly             | °C                                                | 1880–2024 (Annual snapshots)            | 38              | **PARTIALLY VERIFIED (Subsampled)** — Values 1880–2024 match annual mean; 2025–2026 removed.       |
+| **DYAMOND Global $\text{CO}_2$** | **SVS 5196**  | NOAA Global Monitoring Lab & Scripps / NASA GMAO | Atmospheric $\text{CO}_2$ Mole Fraction | ppm                                               | Model: Jan–Mar 2020; In-situ: 1958–2024 | 21              | **PARTIALLY VERIFIED (Disjoint)** — SVS 5196 simulation differentiated from in-situ Keeling curve. |
+| **Global Mean Sea Level**        | **SVS 5312**  | NASA PO.DAAC / JPL (Sentinel-6, Jason series)    | Sea Surface Height Variation            | mm                                                | 1993–2023                               | 20              | **VERIFIED (Bounded 1993–2023)** — Capped at verified 2023 record ($+111.4\text{ mm}$).            |
+| **Atmospheric Aerosols**         | _Model Proxy_ | NASA GMAO Forward Processing (MODIS/VIIRS)       | Aerosol Optical Depth (AOD 550nm)       | Dimensionless AOD                                 | 2000–2024 (Assimilation proxy)          | 14              | **QUARANTINED / DISABLED** — Disabled in UI; unverified against DAAC scalar releases.              |
+| **Change in Night Lights**       | **SVS 5313**  | NASA ESDS Black Marble / Suomi NPP VIIRS         | Top-of-Atmosphere Nocturnal Radiance    | $\text{nW}\cdot\text{cm}^{-2}\cdot\text{sr}^{-1}$ | 2012–2023                               | 12              | **VERIFIED (Bounded 2012–2023)** — Capped at verified 2023 record ($124.6\text{ nW}$).             |
 
 ---
 
 ## 🎨 Creative Direction: "Orbital Documentary"
 
 PRITHVI features an aerospace editorial visual identity inspired by high-end digital storytelling:
+
 - **Alternating Light & Dark Chapters:** Breaks visual monotony by alternating between deep space black (`#070B10`) and starlight white editorial paper (`#E9EDF0`).
 - **Typographic Hierarchy:**
-  - *Headlines:* `Barlow Condensed` (uppercase, bold/extrabold, tight letter-spacing).
-  - *Body:* `IBM Plex Sans` (clean, readable editorial prose).
-  - *Telemetry & Code:* `IBM Plex Mono` (calibrated scientific readings, formulas, and coordinates).
+  - _Headlines:_ `Barlow Condensed` (uppercase, bold/extrabold, tight letter-spacing).
+  - _Body:_ `IBM Plex Sans` (clean, readable editorial prose).
+  - _Telemetry & Code:_ `IBM Plex Mono` (calibrated scientific readings, formulas, and coordinates).
 - **Aerospace Color Tokens:**
   - Deep Space Black: `#070B10`
   - Starlight White: `#E9EDF0`
@@ -63,21 +65,22 @@ PRITHVI features a dedicated synthesizer graph built on **Tone.js v15** and the 
 
 1. **Thermal Frequency Transfer Function (GISTEMP v4):**
    $$f(\Delta T) = 220 \times 2^{\left(\frac{\Delta T}{1.2}\right)} \quad [\text{Hz}]$$
-   *Maps temperature deviation ($\Delta T$) to musical pitch in equal temperament. Each $+1.2^\circ\text{C}$ warming anomaly doubles the frequency.*
+   _Maps temperature deviation ($\Delta T$) to musical pitch in equal temperament. Each $+1.2^\circ\text{C}$ warming anomaly doubles the frequency._
 
 2. **Greenhouse Rhythm Cadence Function (Mauna Loa $\text{CO}_2$):**
    $$\text{BPM}(\text{CO}_2) = 48 \times \left(\frac{\text{CO}_2}{280.0}\right)^{1.4} \quad [\text{Beats / Minute}]$$
-   *Accelerates the subterranean membrane kick heartbeat from a calm $48\text{ BPM}$ pre-industrial resting pulse to an urgent $92+\text{ BPM}$ modern cadence.*
+   _Accelerates the subterranean membrane kick heartbeat from a calm $48\text{ BPM}$ pre-industrial resting pulse to an urgent $92+\text{ BPM}$ modern cadence._
 
 3. **Oceanic Altimetry Resonant Filter Swell (Sentinel-6 / PO.DAAC):**
    $$f_{\text{cutoff}}(\text{GMSL}) = 120 + 2280 \times \left(\frac{\text{GMSL}}{120}\right) \quad [\text{Hz}]$$
-   *Modulates a 4-pole resonant bandpass filter over brownian noise, evoking rising tidal surges.*
+   _Modulates a 4-pole resonant bandpass filter over brownian noise, evoking rising tidal surges._
 
 4. **Aerosol Particulate Modulation (GEOS-FP Proxy):**
    $$\text{ModIndex}(\text{AOD}) = 0.2 + 2.5 \times \left(\frac{\text{AOD}}{0.5}\right)$$
-   *Modulates frequency modulation (FM) index to induce crystalline inharmonic overtones during high particulate loading.*
+   _Modulates frequency modulation (FM) index to induce crystalline inharmonic overtones during high particulate loading._
 
 ### Psychoacoustic Consonance vs. Dissonance
+
 - **Equilibrium (1880 Baseline):** Resolves into consonant $3:2$ Perfect Fifths ($D_3 + A_3$) and calm $48\text{ BPM}$ biological pulse.
 - **Acceleration (1975):** Introduces $5:4$ Major Thirds ($G_3$) and accelerating $69\text{ BPM}$ tempo.
 - **Anthropocene Stress (2024):** Triggers grating $16:15$ Minor Seconds ($G_4$ with $G\sharp_4$) and tritones, provoking natural biological urgency in response to biospheric stress.
@@ -90,8 +93,8 @@ PRITHVI features a dedicated synthesizer graph built on **Tone.js v15** and the 
 2. **CHAPTER 02 // ORBIT (`#explorer` & `#fleet` — Light `#E9EDF0`):** Starlight white magazine layout with framed dark 3D Earth aperture, 5 NASA Climate Sentinels with fly-to camera controls, and active NASA Earth Fleet orbit tracking (Terra, Aqua, GRACE-FO, Landsat 9, Sentinel-6).
 3. **CHAPTER 03 // SIGNALS (`#stories` — Dark `#070B10`):** Deep editorial scientific stories using verified NASA EIC visuals, investigator pull-quotes (Dr. Gavin Schmidt, Dr. Ralph Keeling, Dr. Josh Willis), timeline telemetry, and direct sonification audition links.
 4. **CHAPTER 04 // FREQUENCY (`#jukebox` — Dark Acoustic Studio `#070B10` / `#0E141D`):** Primary challenge split composition:
-   - *Left:* NASA SVS #5190 Climate Spiral polar canvas ($0.0^\circ\text{C}$, $+1.0^\circ\text{C}$, $+1.5^\circ\text{C}$ rings), multitrack time-series, Zod data audit table, and live 48-band FFT spectrum + oscilloscope.
-   - *Right:* 5 EIC channel selector buttons (with quarantined aerosol stream disabled), live scientific readout, transfer formula HUD, and timeline scrubber bounded to empirical benchmarks (1880–2024).
+   - _Left:_ NASA SVS #5190 Climate Spiral polar canvas ($0.0^\circ\text{C}$, $+1.0^\circ\text{C}$, $+1.5^\circ\text{C}$ rings), multitrack time-series, Zod data audit table, and live 48-band FFT spectrum + oscilloscope.
+   - _Right:_ 5 EIC channel selector buttons (with quarantined aerosol stream disabled), live scientific readout, transfer formula HUD, and timeline scrubber bounded to empirical benchmarks (1880–2024).
 5. **CHAPTER 05 // DECODING (`#signal` — Light Laboratory `#E9EDF0`):** Mathematical equations, epistemological limitations, and interactive harmonic audition lab comparing 1880, 1975, and 2024.
 6. **CHAPTER 06 // BEYOND (`#open-science` — Dark `#070B10`):** Software Architecture blueprint card, 1-click CSV data export of all validated observations, official citations with copy buttons, WCAG 2.2 AA accessibility matrix, and NASA Space Apps team dossier.
 
@@ -99,7 +102,7 @@ PRITHVI features a dedicated synthesizer graph built on **Tone.js v15** and the 
 
 ## 🎬 Central Cinematic Experience Orchestrator (Layer 9)
 
-PRITHVI orchestrates its six editorial chapters as a continuous, unified planetary narrative inspired by the spatial continuity of *Igloo* and the cinematic chapter pacing of *Charles Leclerc*:
+PRITHVI orchestrates its six editorial chapters as a continuous, unified planetary narrative inspired by the spatial continuity of _Igloo_ and the cinematic chapter pacing of _Charles Leclerc_:
 
 - **Centralized Experience State (`useExperienceStore`):** Zustand-powered state engine tracking active chapter (`01 ORIGIN` through `06 BEYOND`), visual scene mode, camera interpolation state, active scientific story, and transition directions. High-frequency 60fps telemetry is decoupled from React renders to eliminate re-render overhead.
 - **Continuous Persistent 3D Canvas:** Rather than mounting and destroying WebGL contexts across sections, a single persistent React Three Fiber canvas spans the entire application viewport.
@@ -151,6 +154,30 @@ PRITHVI features an aerospace-grade interaction language designed to feel precis
 
 ---
 
+## 🌍 Planetary Rendering & Exploration Engine (Layer 11)
+
+PRITHVI upgrades the 3D planetary exploration experience into a high-fidelity, scientifically authentic digital twin of Earth without compromising scientific integrity:
+
+1. **Forensic Planetary Texture Audit ([docs/planetary-texture-audit.md](docs/planetary-texture-audit.md)):**
+   - **0% AI-Generated Assets:** All surface textures are sourced directly from NASA Visible Earth, NASA Blue Marble Next Generation, NASA/NOAA Suomi NPP VIIRS Black Marble, and NASA JPL SRTM elevation models.
+   - **Calibrated Color Spaces:** $4096\times 2048$ sRGB color maps (`THREE.SRGBColorSpace`) for day surface, night lights, and clouds; Linear (`THREE.NoColorSpace`) for SRTM normal relief and ocean specular masks.
+   - **16x Anisotropic Filtering:** Preserves sharp continental definition at grazing camera angles across desktop and mobile.
+
+2. **Physically-Based Planetary Shaders:**
+   - **Bilinear Day/Night Terminator:** Smooth physical cosine falloff transitioning daylight into twilight and night-side city radiance.
+   - **Rayleigh & Mie Scattering:** Single-pass atmospheric limb glow with forward scattering on clouds and zero thick cartoonish outlines.
+   - **Controlled Ocean Specular Response:** Blinn-Phong specular highlights restricted strictly to water surfaces via binary specular mask ($0.0$ land shine).
+   - **Selective Nocturnal Radiance:** VIIRS Day-Night Band lights illuminate strictly on the dark hemisphere with cloud shadow occlusion.
+
+3. **Restrained Planetary Exploration Controls:**
+   - **Orbit Controls with Soft Damping:** Smooth inertial rotation (`rotateSpeed: 0.65`, `dampingFactor: 0.05`).
+   - **Physical Distance Constraints:** Zoom strictly bounded between $3.2\times$ and $12.0\times$ planetary radii to prevent sphere clipping and sky disorientation.
+   - **Instant Orientation Reset (North-Up):** Dedicated `<Compass>` `RESET VIEW` / `GLOBAL OVERVIEW` action resets camera position, releases drag locks, and aligns celestial North.
+   - **Fly-To Climate Sentinel Focus:** Clicking any verified observatory (Mauna Loa, Svalbard, Vostok, ATTO, Pacific TAO) executes smooth spherical fly-to interpolation ($4.2\times$ focus) with geographic extent, temporal range, and sensor metadata.
+   - **Zero-Blur Transparent Aperture:** Decoupled canvas pointer routing allowing direct drag interaction on the 3D globe with custom `ROTATE` cursor reticle.
+
+---
+
 ## ♿ Multimodal Accessibility & WCAG 2.2 AA Compliance
 
 - **Visual-to-Audio Equivalence:** Every acoustic parameter is simultaneously represented by live numeric readouts, musical note identifiers with cents offset, and a dedicated visual amplitude activity meter for users who are deaf or hard of hearing.
@@ -169,16 +196,16 @@ PRITHVI features an aerospace-grade interaction language designed to feel precis
 
 ## 🛠️ Technology Stack
 
-| Layer | Technologies |
-| :--- | :--- |
-| **Core Framework** | React 19, TypeScript 5.9, Vite 8 |
-| **3D & WebGL Canvas** | Three.js, React Three Fiber (R3F), Drei, Custom GLSL Shaders, Postprocessing |
-| **Audio Engine** | Tone.js v15, Native Web Audio API (`AudioContext`, `AnalyserNode`, `Limiter`) |
-| **Animation & Scroll** | GSAP 3, ScrollTrigger, `@gsap/react`, Lenis Smooth Scroll |
+| Layer                    | Technologies                                                                        |
+| :----------------------- | :---------------------------------------------------------------------------------- |
+| **Core Framework**       | React 19, TypeScript 5.9, Vite 8                                                    |
+| **3D & WebGL Canvas**    | Three.js, React Three Fiber (R3F), Drei, Custom GLSL Shaders, Postprocessing        |
+| **Audio Engine**         | Tone.js v15, Native Web Audio API (`AudioContext`, `AnalyserNode`, `Limiter`)       |
+| **Animation & Scroll**   | GSAP 3, ScrollTrigger, `@gsap/react`, Lenis Smooth Scroll                           |
 | **Data & Visualization** | D3.js (Scales, Shapes, Polar Coordinates), PapaParse (CSV), Zod (Schema Validation) |
-| **State Management** | Zustand 5 (Unidirectional reactive state bus with 0ms clock drift) |
-| **Styling & Design** | Tailwind CSS v4, Lucide React Icons |
-| **Typography** | Barlow Condensed (Headlines), IBM Plex Sans (Prose), IBM Plex Mono (Telemetry) |
+| **State Management**     | Zustand 5 (Unidirectional reactive state bus with 0ms clock drift)                  |
+| **Styling & Design**     | Tailwind CSS v4, Lucide React Icons                                                 |
+| **Typography**           | Barlow Condensed (Headlines), IBM Plex Sans (Prose), IBM Plex Mono (Telemetry)      |
 
 ---
 
@@ -206,21 +233,22 @@ npm run preview
 
 ## 📚 Authentic NASA Citations
 
-1. **NASA GISTEMP v4:** GISTEMP Team, 2026: *GISS Surface Temperature Analysis (GISTEMP), version 4.* NASA Goddard Institute for Space Studies. [https://data.giss.nasa.gov/gistemp/](https://data.giss.nasa.gov/gistemp/)
-2. **NOAA GML Mauna Loa $\text{CO}_2$:** Keeling, C.D., et al., 2026: *Atmospheric Carbon Dioxide Dry Air Mole Fractions from the Mauna Loa Observatory, Hawaii.* NOAA Global Monitoring Laboratory. [https://gml.noaa.gov/ccgg/trends/](https://gml.noaa.gov/ccgg/trends/)
-3. **NASA PO.DAAC Sea Level:** Beckley et al., 2026: *Global Mean Sea Level Trend from TOPEX/Poseidon, Jason-1, Jason-2, Jason-3, and Sentinel-6 Michael Freilich.* NASA JPL. [https://podaac.jpl.nasa.gov/](https://podaac.jpl.nasa.gov/)
-4. **NASA VIIRS Black Marble:** Román, M. O., et al., 2026: *NASA's Black Marble Daily at-sensor TOA nighttime lights product suite.* NASA GSFC. [https://blackmarble.gsfc.nasa.gov/](https://blackmarble.gsfc.nasa.gov/)
-5. **NASA SVS Climate Spiral:** SubbaRao, M., 2022: *GISS Surface Temperature Analysis Climate Spiral (1880–Present).* NASA SVS Asset #5190. [https://svs.gsfc.nasa.gov/5190/](https://svs.gsfc.nasa.gov/5190/)
-6. **NASA SVS DYAMOND Simulation:** Christensen, A.J., & Ott, L., 2023: *DYAMOND Global Carbon Dioxide.* NASA SVS Asset #5196. [https://svs.gsfc.nasa.gov/5196/](https://svs.gsfc.nasa.gov/5196/)
-7. **NASA SVS Sea Level Reveal:** SVS Team, 2024: *Slow Reveal Graphs: Global Mean Sea Level 1993–2023.* NASA SVS Asset #5312. [https://svs.gsfc.nasa.gov/5312/](https://svs.gsfc.nasa.gov/5312/)
-8. **NASA SVS Night Lights:** SVS Team, 2024: *Change in Night Lights between 2012 and 2023 - EIC Version.* NASA SVS Asset #5313. [https://svs.gsfc.nasa.gov/5313/](https://svs.gsfc.nasa.gov/5313/)
+1. **NASA GISTEMP v4:** GISTEMP Team, 2026: _GISS Surface Temperature Analysis (GISTEMP), version 4._ NASA Goddard Institute for Space Studies. [https://data.giss.nasa.gov/gistemp/](https://data.giss.nasa.gov/gistemp/)
+2. **NOAA GML Mauna Loa $\text{CO}_2$:** Keeling, C.D., et al., 2026: _Atmospheric Carbon Dioxide Dry Air Mole Fractions from the Mauna Loa Observatory, Hawaii._ NOAA Global Monitoring Laboratory. [https://gml.noaa.gov/ccgg/trends/](https://gml.noaa.gov/ccgg/trends/)
+3. **NASA PO.DAAC Sea Level:** Beckley et al., 2026: _Global Mean Sea Level Trend from TOPEX/Poseidon, Jason-1, Jason-2, Jason-3, and Sentinel-6 Michael Freilich._ NASA JPL. [https://podaac.jpl.nasa.gov/](https://podaac.jpl.nasa.gov/)
+4. **NASA VIIRS Black Marble:** Román, M. O., et al., 2026: _NASA's Black Marble Daily at-sensor TOA nighttime lights product suite._ NASA GSFC. [https://blackmarble.gsfc.nasa.gov/](https://blackmarble.gsfc.nasa.gov/)
+5. **NASA SVS Climate Spiral:** SubbaRao, M., 2022: _GISS Surface Temperature Analysis Climate Spiral (1880–Present)._ NASA SVS Asset #5190. [https://svs.gsfc.nasa.gov/5190/](https://svs.gsfc.nasa.gov/5190/)
+6. **NASA SVS DYAMOND Simulation:** Christensen, A.J., & Ott, L., 2023: _DYAMOND Global Carbon Dioxide._ NASA SVS Asset #5196. [https://svs.gsfc.nasa.gov/5196/](https://svs.gsfc.nasa.gov/5196/)
+7. **NASA SVS Sea Level Reveal:** SVS Team, 2024: _Slow Reveal Graphs: Global Mean Sea Level 1993–2023._ NASA SVS Asset #5312. [https://svs.gsfc.nasa.gov/5312/](https://svs.gsfc.nasa.gov/5312/)
+8. **NASA SVS Night Lights:** SVS Team, 2024: _Change in Night Lights between 2012 and 2023 - EIC Version._ NASA SVS Asset #5313. [https://svs.gsfc.nasa.gov/5313/](https://svs.gsfc.nasa.gov/5313/)
 
 ---
 
 ## 🏆 NASA Space Apps Challenge 2026
+
 - **Project:** PRITHVI — The Sound of Earth
 - **Challenge:** The Earth Information Jukebox
 - **Team:** MULTIVERSE VENDHAN
 - **Submission Status:** Fully Audited, Verified & Publicly Deployable
 
-*Dedicated to open science, empirical integrity, accessible education, and listening to our living planet.*
+_Dedicated to open science, empirical integrity, accessible education, and listening to our living planet._

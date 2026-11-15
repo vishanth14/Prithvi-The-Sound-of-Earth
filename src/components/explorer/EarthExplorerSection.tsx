@@ -5,7 +5,6 @@ import { gsap, useGSAP } from '../../lib/gsap';
 import { MagneticButton } from '../common/MagneticButton';
 import type { DatasetKey } from '../../data/types';
 import type { EicDatasetKey } from '../../data/eicSchemas';
-import { scrollState } from '../../lib/scrollState';
 import {
   Thermometer,
   CloudRain,
@@ -21,6 +20,7 @@ import {
   ArrowRight,
   Sparkles,
   BookOpen,
+  Globe,
 } from 'lucide-react';
 
 interface ScientificLayerDetail {
@@ -37,6 +37,7 @@ interface ScientificLayerDetail {
   instrument: string;
   unit: string;
   timeRange: string;
+  geographicExtent: string;
   scientificExplanation: string;
   color: string;
 }
@@ -57,6 +58,7 @@ const SCIENTIFIC_LAYERS: Record<DatasetKey, ScientificLayerDetail> = {
     instrument: 'GHCNv4 Meteorological Sensors & ERSSTv5 Ocean Buoys',
     unit: '°C Anomaly (vs 1951–1980 baseline)',
     timeRange: '1880 – 2024 (Annual Benchmark Series)',
+    geographicExtent: 'Global (90°N – 90°S, 180°W – 180°E; 2°×2° gridded resolution)',
     scientificExplanation:
       'Quantifies global thermal amplification relative to mid-20th-century climate equilibrium. Values exceeding +1.0°C indicate sustained greenhouse radiative forcing; +1.5°C represents the international Paris Agreement threshold.',
     color: '#FF5938',
@@ -76,6 +78,7 @@ const SCIENTIFIC_LAYERS: Record<DatasetKey, ScientificLayerDetail> = {
     instrument: 'Cavity Ring-Down Laser Spectrometer & Picarro G2401',
     unit: 'Parts Per Million (ppm)',
     timeRange: '1958 – 2024 (Continuous Keeling observatory epoch)',
+    geographicExtent: 'Global Baseline (19.53°N, 155.58°W Mauna Loa + Marine Troposphere)',
     scientificExplanation:
       'Tracks background tropospheric CO₂ mole fractions. Pre-industrial equilibrium was ~280 ppm; current values exceed 424 ppm, demonstrating biospheric seasonal respiration overlaid on exponential anthropogenic emissions.',
     color: '#83BBD5',
@@ -95,6 +98,7 @@ const SCIENTIFIC_LAYERS: Record<DatasetKey, ScientificLayerDetail> = {
     instrument: 'Poseidon-4 Radar Altimeter & AMR-C Microwave Radiometer',
     unit: 'Millimeters (mm variance vs 1993 baseline)',
     timeRange: '1993 – 2023 (Continuous multi-mission altimeter record)',
+    geographicExtent: 'Global Oceans (66°S – 66°N ice-free marine domain; Jason / Sentinel-6)',
     scientificExplanation:
       'Measures total oceanic volume change resulting from steric thermal expansion (warming seawater expands) and barystatic addition (glacier and polar ice sheet melt). Current global mean sea level has risen +111.4 mm above the 1993 baseline.',
     color: '#83BBD5',
@@ -114,6 +118,7 @@ const SCIENTIFIC_LAYERS: Record<DatasetKey, ScientificLayerDetail> = {
     instrument: 'Terra & Aqua MODIS Spectroradiometer & GEOS-FP Assimilation',
     unit: 'Aerosol Optical Depth (AOD unitless index, 550nm)',
     timeRange: '2000 – 2024 (Experimental Model Proxy)',
+    geographicExtent: 'Global Atmospheric Column (550nm total aerosol optical depth; gridded assimilation)',
     scientificExplanation:
       'AOD quantifies total light attenuation through the atmospheric column by airborne aerosols. Values under 0.1 indicate pristine atmospheric clarity; values above 0.4 indicate dense smoke, desert dust transport, or severe air quality hazard. Note: Current stream is an experimental proxy.',
     color: '#252D36',
@@ -133,6 +138,7 @@ const SCIENTIFIC_LAYERS: Record<DatasetKey, ScientificLayerDetail> = {
     instrument: 'Visible Infrared Imaging Radiometer Suite (VIIRS Day-Night Band)',
     unit: 'nW·cm⁻²·sr⁻¹ (Nanowatts per sq cm per steradian)',
     timeRange: '2012 – 2023 (EIC Hyperwall Series)',
+    geographicExtent: 'Global Land Surface & Continental Margins (75°N – 65°S latitudinal swath; 750m)',
     scientificExplanation:
       'Measures artificial light emissions at night from urban infrastructure, commercial shipping, offshore rigs, and power grids. Correlates directly with human energy consumption, economic density, and extreme weather power grid resilience.',
     color: '#FF5938',
@@ -150,6 +156,7 @@ export const EarthExplorerSection: React.FC = () => {
     activeSentinelId,
     hoveredSentinelId,
     selectSentinel,
+    resetCameraOrientation,
     isAudioUnlocked,
     unlockAudio,
     startPlayback,
@@ -238,7 +245,7 @@ export const EarthExplorerSection: React.FC = () => {
   };
 
   const handleBackToOverview = () => {
-    selectSentinel(null);
+    resetCameraOrientation();
   };
 
   return (
@@ -342,9 +349,9 @@ export const EarthExplorerSection: React.FC = () => {
         {/* Main 3D Canvas Viewport & Comprehensive Scientific Detail Panel */}
         <div className="explorer-reveal grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* Left Column: 3D Earth Globe Canvas Viewport */}
-          <div className="lg:col-span-7 relative min-h-[520px] sm:min-h-[660px] bg-[#070B10]/40 border-2 border-[#252D36] overflow-hidden flex flex-col justify-between p-6 sm:p-8 shadow-sm backdrop-blur-xs pointer-events-auto">
+          <div className="lg:col-span-7 relative min-h-[520px] sm:min-h-[660px] bg-transparent border-2 border-[#252D36] overflow-hidden flex flex-col justify-between p-6 sm:p-8 shadow-sm pointer-events-none">
             {/* Viewport Top Header */}
-            <div className="relative z-20 flex items-center justify-between">
+            <div className="relative z-20 flex items-center justify-between pointer-events-auto">
               <div className="flex items-center gap-3">
                 <span className="font-mono text-xs tracking-widest text-[#FF5938] uppercase font-bold">
                   ACTIVE LAYER: {activeLayer.shortLabel}
@@ -356,14 +363,19 @@ export const EarthExplorerSection: React.FC = () => {
               </div>
 
               <div className="flex items-center gap-2">
-                {activeSentinelId && (
-                  <button
-                    onClick={handleBackToOverview}
-                    className="px-3 py-1.5 border border-[#FF5938] bg-[#FF5938]/15 hover:bg-[#FF5938] text-[#FF5938] hover:text-[#070B10] text-xs font-mono tracking-wider uppercase transition-colors cursor-pointer"
-                  >
-                    RESET VIEW
-                  </button>
-                )}
+                <button
+                  onClick={handleBackToOverview}
+                  data-cursor-label="RESET"
+                  className={`px-3 py-1.5 border text-xs font-mono tracking-wider uppercase transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
+                    activeSentinelId
+                      ? 'border-[#FF5938] bg-[#FF5938] text-[#070B10] font-bold shadow-md'
+                      : 'border-[#252D36] bg-[#070B10]/85 hover:border-[#FF5938] text-[#E9EDF0] hover:text-[#FF5938]'
+                  }`}
+                  title="Reset Planetary Overview & North-Up Orientation"
+                >
+                  <Compass className={`w-3.5 h-3.5 ${activeSentinelId ? 'text-[#070B10]' : 'text-[#FF5938]'}`} />
+                  <span>{activeSentinelId ? 'GLOBAL OVERVIEW' : 'RESET VIEW'}</span>
+                </button>
                 <button
                   onClick={() => setGlobeRotating(!globeRotating)}
                   data-cursor-label="ROTATE"
@@ -380,37 +392,27 @@ export const EarthExplorerSection: React.FC = () => {
               </div>
             </div>
 
-            {/* 3D Interactive Aperture Viewport (Persistent Earth shines through) */}
-            <div
-              className="absolute inset-0 z-10 pointer-events-auto cursor-grab active:cursor-grabbing"
-              data-cursor-label="ROTATE"
-              onPointerDown={() => {
-                scrollState.isInteractingWithGlobe = true;
-              }}
-              onPointerUp={() => {
-                scrollState.isInteractingWithGlobe = false;
-              }}
-            >
-              {/* Corner HUD crosshairs for precision scientific aperture */}
-              <div className="absolute top-2 left-2 w-3.5 h-3.5 border-t-2 border-l-2 border-[#FF5938]/60 pointer-events-none" />
-              <div className="absolute top-2 right-2 w-3.5 h-3.5 border-t-2 border-r-2 border-[#FF5938]/60 pointer-events-none" />
-              <div className="absolute bottom-2 left-2 w-3.5 h-3.5 border-b-2 border-l-2 border-[#FF5938]/60 pointer-events-none" />
-              <div className="absolute bottom-2 right-2 w-3.5 h-3.5 border-b-2 border-r-2 border-[#FF5938]/60 pointer-events-none" />
+            {/* Corner HUD crosshairs for precision scientific aperture */}
+            <div className="absolute inset-0 pointer-events-none z-10">
+              <div className="absolute top-2 left-2 w-3.5 h-3.5 border-t-2 border-l-2 border-[#FF5938]/60" />
+              <div className="absolute top-2 right-2 w-3.5 h-3.5 border-t-2 border-r-2 border-[#FF5938]/60" />
+              <div className="absolute bottom-2 left-2 w-3.5 h-3.5 border-b-2 border-l-2 border-[#FF5938]/60" />
+              <div className="absolute bottom-2 right-2 w-3.5 h-3.5 border-b-2 border-r-2 border-[#FF5938]/60" />
             </div>
 
             {/* Viewport Bottom Overlay: Interactive Instructions */}
-            <div className="relative z-20 flex flex-wrap items-end justify-between pt-4 border-t border-[#252D36] text-xs font-mono text-[#7E8B98]">
+            <div className="relative z-20 flex flex-wrap items-end justify-between pt-4 border-t border-[#252D36] text-xs font-mono text-[#7E8B98] pointer-events-none bg-[#070B10]/70 backdrop-blur-xs px-3 py-2 -mx-2 -mb-2">
               <div className="flex flex-col gap-1">
                 <span className="text-[#83BBD5] flex items-center gap-1.5 font-semibold">
                   <span className="w-1.5 h-1.5 bg-[#FF5938]" />
-                  DRAG GLOBE TO ROTATE • SCROLL TO ZOOM • SELECT BEACONS
+                  DRAG GLOBE TO ROTATE • SCROLL TO ZOOM (3.2x — 12.0x) • SELECT SENTINEL BEACONS
                 </span>
                 <span className="text-[11px] text-[#7E8B98]">
-                  RAYLEIGH SCATTERING WITH GEOGRAPHICALLY VERIFIED OBSERVATORIES
+                  HIGH-FIDELITY PLANETARY SHADERS WITH GEOGRAPHICALLY VERIFIED OBSERVATORIES
                 </span>
               </div>
               <div className="text-right hidden sm:block">
-                <span className="text-[#7E8B98]">POLAR TILT: </span>
+                <span className="text-[#7E8B98]">POLAR AXIAL TILT: </span>
                 <span className="text-[#E9EDF0] font-semibold">23.44° EQUATORIAL EPOCH</span>
               </div>
             </div>
@@ -570,7 +572,7 @@ export const EarthExplorerSection: React.FC = () => {
                 <div className="grid grid-cols-2 gap-3 mb-6 text-xs font-mono">
                   <div className="p-3 bg-[#E9EDF0]/60 border border-[#252D36]/20">
                     <span className="text-[#252D36]/60 block text-[10px] uppercase font-bold">
-                      TIME RANGE
+                      TEMPORAL COVERAGE
                     </span>
                     <span className="text-[#070B10] font-semibold">{activeLayer.timeRange}</span>
                   </div>
@@ -586,11 +588,21 @@ export const EarthExplorerSection: React.FC = () => {
 
                   <div className="col-span-2 p-3 bg-[#E9EDF0]/60 border border-[#252D36]/20">
                     <span className="text-[#252D36]/60 block text-[10px] uppercase font-bold">
-                      NASA EIC VISUALIZATION
+                      GEOGRAPHIC EXTENT
+                    </span>
+                    <span className="text-[#070B10] font-semibold flex items-center gap-1.5">
+                      <Globe className="w-3.5 h-3.5 text-[#FF5938] shrink-0" />
+                      <span>{activeLayer.geographicExtent}</span>
+                    </span>
+                  </div>
+
+                  <div className="col-span-2 p-3 bg-[#E9EDF0]/60 border border-[#252D36]/20">
+                    <span className="text-[#252D36]/60 block text-[10px] uppercase font-bold">
+                      AUTHENTIC NASA VISUALIZATION
                     </span>
                     <span className="text-[#070B10] font-semibold flex items-center justify-between">
                       <span>{activeLayer.nasaVisualization}</span>
-                      <Sparkles className="w-3.5 h-3.5 text-[#FF5938]" />
+                      <Sparkles className="w-3.5 h-3.5 text-[#FF5938] shrink-0" />
                     </span>
                   </div>
                 </div>

@@ -37,7 +37,23 @@ const ContinuousScrollCameraController: React.FC<{
   controlsRef: React.RefObject<OrbitControlsImpl | null>;
   isInteractingRef: React.RefObject<boolean>;
 }> = ({ controlsRef, isInteractingRef }) => {
-  const { activeSentinelId } = useObservatoryStore();
+  const { activeSentinelId, cameraResetTrigger } = useObservatoryStore();
+  const lastResetRef = useRef(cameraResetTrigger);
+
+  useEffect(() => {
+    if (cameraResetTrigger !== lastResetRef.current) {
+      lastResetRef.current = cameraResetTrigger;
+      scrollState.isInteractingWithGlobe = false;
+      if (isInteractingRef.current) {
+        isInteractingRef.current = false;
+      }
+      if (controlsRef.current) {
+        controlsRef.current.reset();
+        controlsRef.current.target.set(0, 0, 0);
+        controlsRef.current.update();
+      }
+    }
+  }, [cameraResetTrigger, controlsRef, isInteractingRef]);
 
   useFrame((state, delta) => {
     // If user is actively dragging the 3D globe, do not override their manual view
@@ -218,7 +234,7 @@ export const PersistentEarthCanvas: React.FC = () => {
 
   return (
     <WebGLErrorBoundary>
-      <div className="relative w-full h-full pointer-events-auto">
+      <div className="relative w-full h-full pointer-events-auto" data-cursor-label="ROTATE">
         <Canvas
           camera={{ position: [0.0, -0.02, 7.8], fov: 42 }}
           dpr={isMobile ? [1, 1.5] : [1, 2]}

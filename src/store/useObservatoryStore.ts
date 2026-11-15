@@ -186,6 +186,8 @@ export interface ObservatoryState {
   setHoveredCoordinate: (coord: { lat: number; lng: number } | null) => void;
   selectSentinel: (sentinelId: string | null) => Promise<void>;
   setHoveredSentinelId: (id: string | null) => void;
+  cameraResetTrigger: number;
+  resetCameraOrientation: () => void;
 }
 
 export const useObservatoryStore = create<ObservatoryState>((set, get) => {
@@ -310,6 +312,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
     hoveredCoordinate: null,
     activeSentinelId: null,
     hoveredSentinelId: null,
+    cameraResetTrigger: 0,
 
     atmosphereTargetColor: '#1E5A7A',
     atmosphereTargetCoefficient: 0.35,
@@ -442,6 +445,14 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
     setActiveCameraTarget: (activeCameraTarget) => set({ activeCameraTarget }),
     setHoveredCoordinate: (hoveredCoordinate) => set({ hoveredCoordinate }),
     setHoveredSentinelId: (hoveredSentinelId) => set({ hoveredSentinelId }),
+
+    resetCameraOrientation: () => {
+      set((s) => ({
+        cameraResetTrigger: s.cameraResetTrigger + 1,
+        activeSentinelId: null,
+        hoveredSentinelId: null,
+      }));
+    },
 
     selectSentinel: async (sentinelId: string | null) => {
       if (!sentinelId) {
