@@ -552,4 +552,106 @@ Following the comprehensive Layer 15 production audit, a forensic defect inspect
 
 ---
 
+## 17. Climate Sentinel Geographic Focus & Interaction Refinement
+
+Following the production stabilization, the planetary exploration subsystem was enhanced to deliver a true Google Earth-inspired, geographically verified camera-focus experience across all five Earth observation sentinels:
+
+### 17.1. Authoritative Data Model & Provenance (`src/data/climateSentinels.ts`)
+- **Runtime Zod Validation (`ClimateSentinelSchema`):** Enforces strict types on IDs, station codes, geographic coordinates, elevations, scientific roles, sensor types, baselines, and attribution URLs.
+- **Authoritative Verified Stations:**
+  1. *Mauna Loa Observatory, Hawaii (MLO-NOAA):* $19.5362^\circ\text{N}, 155.5763^\circ\text{W}$, 3,397 m a.s.l. (NOAA GML / Scripps).
+  2. *Svalbard Arctic Sentinel, Norway (SVB-ARC):* $78.9067^\circ\text{N}, 11.8883^\circ\text{E}$, 474 m a.s.l. (Zeppelin Observatory, Ny-Ålesund / NPI / NILU).
+  3. *Vostok Research Station, Antarctica (VOS-ICE):* $78.4644^\circ\text{S}, 106.8373^\circ\text{E}$, 3,488 m a.s.l. (Russian Antarctic Expedition / IPICS).
+  4. *Amazon Tall Tower Observatory, Brazil (ATTO-BIO):* $2.1459^\circ\text{S}, 59.0056^\circ\text{W}$, 130 m a.s.l., 325 m mast (INPA / Max Planck).
+  5. *Pacific TAO/TRITON Buoy Array (TAO-ENSO):* Central representative mooring at $0.0000^\circ\text{N}, 140.0000^\circ\text{W}$ within the trans-Pacific 70-buoy array (NOAA PMEL).
+- **Single Source of Truth:** Re-exported throughout the application to guarantee total coordinate consistency.
+
+### 17.2. Geographic Coordinate to 3D World Position (`src/utils/geoCoordinates.ts`)
+- Local coordinates parameterize Three.js `SphereGeometry` UV mapping ($u \in [0, 1]$, $v \in [0, 1]$).
+- `getSentinelWorldPosition()` transforms local coordinates using the dynamic `earthGroup.matrixWorld`, accounting for real-time axial tilt ($23.44^\circ$), planetary spin ($y$-rotation), observer tilt/roll damping, and parent scaling.
+
+### 17.3. Spherical Geodesic Camera Flight (`src/components/explorer/ExplorerCameraController.tsx`)
+- **GSAP Spherical Slerp:** Calculates great-circle quaternion slerp between the observer's current vantage and the target station normal vector over 1.35 seconds (`power2.inOut`).
+- **Parabolic Clearance Arc:** Lifts the camera along an outward parabolic path ($+0.48$ radius peak) so the camera never clips or grazes the surface during antipode transitions.
+- **OrbitControls Synchronization:** Temporarily disables user drag during camera flight, smoothly interpolates `controls.target`, and re-enables controls upon arrival.
+- **Safe Preemption:** Rapid clicks between stations kill prior in-flight tweens cleanly and transition from the current in-flight coordinates without visual jumping.
+
+### 17.4. Surface-Tangent Markers & Drag Discrimination (`src/components/canvas/EarthGlobe.tsx`)
+- **Surface Normals:** All marker bases and rings are oriented tangent to the sphere surface using quaternions derived from local surface normals ($\vec{q} = \text{setFromUnitVectors}(\hat{y}, \hat{n})$).
+- **Dynamic Radar Ring:** Selected station renders an animated radar pulse ring expanding radially on the surface.
+- **Click vs Drag Discrimination:** Tracks pointer travel distance ($\le 8\text{ px}$) and duration ($< 600\text{ ms}$) to ensure orbital dragging does not trigger accidental station selection.
+
+### 17.5. Verified Scientific Information Panel (`src/components/explorer/EarthExplorerSection.tsx`)
+- Structured layout displaying station identifier, full name, verified coordinates, elevation, scientific role, observation type, instruments, baseline reference, official source with external link, and data limitations.
+- Three primary actions: `FOCUS ON LOCATION`, `OPEN SOURCE`, and `RETURN TO GLOBAL VIEW`.
+- Option 6 ("6. RESET TO GLOBAL OVERVIEW") smoothly slerps the camera back to global perspective, resets the controls target, and resumes automatic planetary rotation.
+
+### 17.6. Multi-Viewport Photographic Evidence
+- Full technical report: [final-verification-report.md](file:///v:/Prithvi-The-Sound-of-Earth/docs/final-verification-report.md)
+- Global Overview: [01_global_earth_overview.png](file:///v:/Prithvi-The-Sound-of-Earth/docs/verification-screenshots/climate-sentinels/01_global_earth_overview.png)
+- Mauna Loa Selected: [02_mauna_loa_selected.png](file:///v:/Prithvi-The-Sound-of-Earth/docs/verification-screenshots/climate-sentinels/02_mauna_loa_selected.png)
+- Svalbard Selected: [03_svalbard_selected.png](file:///v:/Prithvi-The-Sound-of-Earth/docs/verification-screenshots/climate-sentinels/03_svalbard_selected.png)
+- Vostok Selected: [04_vostok_selected.png](file:///v:/Prithvi-The-Sound-of-Earth/docs/verification-screenshots/climate-sentinels/04_vostok_selected.png)
+- Amazon ATTO Selected: [05_amazon_atto_selected.png](file:///v:/Prithvi-The-Sound-of-Earth/docs/verification-screenshots/climate-sentinels/05_amazon_atto_selected.png)
+- Pacific TAO/TRITON Selected: [06_pacific_tao_selected.png](file:///v:/Prithvi-The-Sound-of-Earth/docs/verification-screenshots/climate-sentinels/06_pacific_tao_selected.png)
+- Reset Global Overview: [07_reset_global_overview.png](file:///v:/Prithvi-The-Sound-of-Earth/docs/verification-screenshots/climate-sentinels/07_reset_global_overview.png)
+- Viewport 1440x900: [08_sentinel_1440x900.png](file:///v:/Prithvi-The-Sound-of-Earth/docs/verification-screenshots/climate-sentinels/08_sentinel_1440x900.png)
+- Viewport 1024x768: [09_sentinel_1024x768.png](file:///v:/Prithvi-The-Sound-of-Earth/docs/verification-screenshots/climate-sentinels/09_sentinel_1024x768.png)
+- Viewport 768x1024: [10_sentinel_768x1024.png](file:///v:/Prithvi-The-Sound-of-Earth/docs/verification-screenshots/climate-sentinels/10_sentinel_768x1024.png)
+- Viewport 390x844: [11_sentinel_390x844.png](file:///v:/Prithvi-The-Sound-of-Earth/docs/verification-screenshots/climate-sentinels/11_sentinel_390x844.png)
+
+---
+
+## 18. Cinematic Initial Loading Experience & Observatory Initialization
+
+To deliver a truly immersive, museum-grade planetary gateway, a cinematic initial loading screen was implemented for PRITHVI: THE SOUND OF EARTH, transforming the browser asset download phase into an atmospheric planetary observatory arrival:
+
+### 18.1. Design Direction & Visual Identity
+- **PRITHVI Orbital Documentary Visual Identity:**
+  - Deep Space background: `#070B10`
+  - Starlight typography: `#E9EDF0`
+  - NASA Launch Orange telemetry and progress bar: `#FF5938`
+  - Atmospheric Blue accents and glow: `#83BBD5`
+  - Typography: Barlow Condensed (Monumental Display), IBM Plex Sans (Subtitle & Navigation), IBM Plex Mono (Technical Telemetry & Progress Readouts).
+- **Planetary Emerging Aperture:** A full-screen fixed overlay (`z-50`) features a central radial gradient mask (`transparent 0%, rgba(7,11,16,0.3) 30%, rgba(7,11,16,0.92) 70%, #070B10 100%`) allowing the real 3D Earth in `PersistentEarthCanvas` to emerge gently from darkness with subtle atmospheric illumination, avoiding duplicate WebGL contexts.
+- **HUD Aerospace Reticles:** Subtle HUD corners (`border-[#83BBD5]/25`), telemetry ticks, and stage indicators communicate precision scientific telemetry.
+
+### 18.2. Determinate Asset Loading Pipeline (`src/components/common/CinematicLoader.tsx`)
+- **Authentic Asset Progress (Drei `useProgress`):**
+  - Uses `@react-three/drei`'s `useProgress()` hooked into Three.js `THREE.DefaultLoadingManager`.
+  - Displays actual determinate load progress with zero fabricated percentages.
+  - Formatted strictly to integer precision (`progress.toFixed(0)}%`).
+- **Verified Stage Progression:**
+  - $0\% - 25\%$: `INITIALIZING EARTH OBSERVATORY`
+  - $26\% - 55\%$: `LOADING PLANETARY TEXTURES`
+  - $56\% - 80\%$: `INITIALIZING 3D ENVIRONMENT`
+  - $81\% - 99\%$: `PREPARING SCIENTIFIC VISUALIZATIONS`
+  - $100\%$: `CALIBRATING EXPERIENCE`
+- **Cache-Resilience & Edge-Case Handling:**
+  - When assets are pre-cached, `THREE.DefaultLoadingManager` reports `total === 0` and `progress === 0`. The loader explicitly accounts for cached visits (`(!active && progress >= 100) || (!active && total === 0)`), guaranteeing zero stuck loading states.
+  - Minimum presentation duration: $1,800\text{ ms}$ (smooth cinematic pacing).
+  - Maximum watchdog timeout: $5,500\text{ ms}$ (auto-unlock on slow or dropped connections).
+  - Manual bypass: Prominent `[ENTER OBSERVATORY [ESC]]` interactive button and global `Escape` key event listener.
+
+### 18.3. Seamless Exit Choreography & Hero Synchronization
+- **GSAP Exit Sequence:**
+  - When loading completes, GSAP animates the loader overlay with `power3.inOut` easing over $1.1\text{ s}$ (fading opacity and scaling up the radial aperture from $1.0$ to $1.08$), revealing the planetary hero scene.
+  - Sets `isInitialLoading: false` in `src/orchestrator/experienceStore.ts`.
+- **Hero Entrance Choreography (`src/components/hero/HeroSection.tsx`):**
+  - Hero typographic entrance animations (`useGSAP`) are directly bound to `isInitialLoading`, ensuring the title and telemetry reveal immediately as the loader dissolves.
+- **Single-Run Session State:**
+  - Loader only renders once on initial application load; subsequent chapter scrolling and route changes do not re-trigger it.
+  - Direct hash navigation (e.g. `/#jukebox`, `/#explorer`) is preserved, automatically scrolling to target section once the loader exits.
+- **Accessibility & Safety Compliance:**
+  - ARIA attributes: `role="region"`, `aria-label="Observatory Asset Loader"`, `aria-live="polite"`.
+  - Respects `@media (prefers-reduced-motion: reduce)` by bypassing scale tweens and performing immediate opacity fades.
+  - Zero audio autoplay: Tone.js AudioContext remains securely unlocked until intentional user interaction.
+
+### 18.4. Empirical Verification Artifacts
+- **Verified Loader Preview:** [cinematic_loader_preview.png](file:///v:/Prithvi-The-Sound-of-Earth/docs/verification-screenshots/cinematic_loader_preview.png)
+- **Component Source:** [CinematicLoader.tsx](file:///v:/Prithvi-The-Sound-of-Earth/src/components/common/CinematicLoader.tsx)
+- **Orchestration Store:** [experienceStore.ts](file:///v:/Prithvi-The-Sound-of-Earth/src/orchestrator/experienceStore.ts)
+
+---
+
 **Submission Status: READY FOR OFFICIAL NASA SPACE APPS 2026 SUBMISSION.**

@@ -15,10 +15,13 @@ import { SoundToScienceSection } from './components/science/SoundToScienceSectio
 import { MethodologySection } from './components/methodology/MethodologySection';
 import { ShortcutsModal } from './components/common/ShortcutsModal';
 import { ScrollProgressHUD } from './components/navigation/ScrollProgressHUD';
+import { CinematicLoader } from './components/common/CinematicLoader';
 import { scrollState } from './lib/scrollState';
 
 export const App: React.FC = () => {
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const isInitialLoading = useExperienceStore((s) => s.isInitialLoading);
+  const setInitialLoading = useExperienceStore((s) => s.setInitialLoading);
   const {
     setActiveSection,
     transportState,
@@ -153,6 +156,11 @@ export const App: React.FC = () => {
 
       {/* 0. Custom Space-Inspired Aerospace Cursor */}
       <CustomCursor />
+
+      {/* 0. Cinematic Initial Planetary Observatory Loader */}
+      {isInitialLoading && (
+        <CinematicLoader onComplete={() => setInitialLoading(false)} />
+      )}
 
       {/* 1. Root Persistent 3D Planetary Environment (Single WebGL Canvas) */}
       <div

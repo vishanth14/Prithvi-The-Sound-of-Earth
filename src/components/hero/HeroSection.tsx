@@ -8,10 +8,11 @@ import { ArrowDown, Compass, Headphones } from 'lucide-react';
 export const HeroSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { isAudioUnlocked, unlockAudio, startPlayback } = useObservatoryStore();
-  const { navigateToChapter } = useExperienceStore();
+  const { navigateToChapter, isInitialLoading } = useExperienceStore();
 
   useGSAP(
     () => {
+      if (isInitialLoading) return;
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (prefersReducedMotion) return;
 
@@ -99,7 +100,7 @@ export const HeroSection: React.FC = () => {
         window.removeEventListener('pointermove', handlePointer);
       };
     },
-    { scope: containerRef }
+    { scope: containerRef, dependencies: [isInitialLoading] }
   );
 
   const handleBeginJourney = () => {

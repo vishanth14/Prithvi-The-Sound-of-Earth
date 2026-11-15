@@ -14,6 +14,7 @@ export interface ExperienceState {
   cameraMode: CameraMode;
   selectedScientificStory: string;
   transitionState: ChapterTransitionState;
+  isInitialLoading: boolean;
 
   // Actions
   setChapter: (chapter: ChapterId) => void;
@@ -21,6 +22,7 @@ export interface ExperienceState {
   setActiveVisualScene: (scene: VisualScene) => void;
   setSelectedScientificStory: (storyId: string) => void;
   setTransitionState: (state: Partial<ChapterTransitionState>) => void;
+  setInitialLoading: (loading: boolean) => void;
   navigateToChapter: (chapter: ChapterId, options?: { duration?: number; offset?: number }) => void;
 }
 
@@ -29,12 +31,17 @@ export const useExperienceStore = create<ExperienceState>((set, get) => ({
   activeVisualScene: 'deep-space-origin',
   cameraMode: 'origin',
   selectedScientificStory: 'thermal-spiral',
+  isInitialLoading: true,
   transitionState: {
     isTransitioning: false,
     fromChapter: null,
     toChapter: null,
     progress: 0,
     direction: 'forward',
+  },
+
+  setInitialLoading: (isInitialLoading: boolean) => {
+    set({ isInitialLoading });
   },
 
   setChapter: (chapter: ChapterId) => {
