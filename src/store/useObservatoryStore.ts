@@ -10,6 +10,12 @@ import {
 import { sonificationCore } from '../audio/sonification';
 import { mapObservationToAudio } from '../audio/dataMapping';
 import { EicDataService } from '../data/eicDataService';
+import {
+  CLIMATE_SENTINELS,
+  type ClimateSentinel,
+} from '../data/climateSentinels';
+
+export { CLIMATE_SENTINELS, type ClimateSentinel };
 
 // Bidirectional mapping between legacy dataset keys and authentic EIC keys
 export const DATASET_TO_EIC_MAP: Record<DatasetKey, EicDatasetKey> = {
@@ -27,88 +33,6 @@ export const EIC_TO_DATASET_MAP: Record<EicDatasetKey, DatasetKey> = {
   aerosols_geos: 'vegetation',
   nightlights_viirs: 'ozone',
 };
-
-export interface ClimateSentinel {
-  id: string;
-  name: string;
-  stationCode: string;
-  datasetKey: DatasetKey;
-  eicKey: EicDatasetKey;
-  description: string;
-  lat: number;
-  lng: number;
-  color: string;
-  instrument: string;
-  baseline: string;
-}
-
-export const CLIMATE_SENTINELS: ClimateSentinel[] = [
-  {
-    id: 'mauna-loa',
-    name: 'Mauna Loa Observatory, Hawaii',
-    stationCode: 'MLO-NOAA',
-    datasetKey: 'co2',
-    eicKey: 'co2_maunaloa',
-    description: 'Global benchmark for background atmospheric CO₂ mole fractions since 1958.',
-    lat: 19.5362,
-    lng: -155.5763,
-    color: '#ef4444',
-    instrument: 'Cavity Ring-Down Spectrometer',
-    baseline: '280.0 ppm pre-industrial benchmark',
-  },
-  {
-    id: 'svalbard',
-    name: 'Svalbard Arctic Sentinel, Norway',
-    stationCode: 'SVB-ARC',
-    datasetKey: 'temperature',
-    eicKey: 'gistemp',
-    description: 'High-latitude warming sentinel monitoring extreme Arctic thermal amplification and sea ice retreat.',
-    lat: 78.2232,
-    lng: 15.6267,
-    color: '#f59e0b',
-    instrument: 'GISTEMP Ground Calibration & Modis Albedo',
-    baseline: '1951-1980 mean',
-  },
-  {
-    id: 'vostok',
-    name: 'Vostok Research Station, Antarctica',
-    stationCode: 'VOS-ICE',
-    datasetKey: 'temperature',
-    eicKey: 'gistemp',
-    description: 'Deep ice-core borehole paleoclimate reference preserving 800,000 years of Earth atmosphere.',
-    lat: -78.4644,
-    lng: 106.8373,
-    color: '#38bdf8',
-    instrument: 'EPICA / Vostok Deep Ice Core Mass Spec',
-    baseline: 'Holocene Equilibrium Baseline',
-  },
-  {
-    id: 'atto-amazon',
-    name: 'Amazon Tall Tower Observatory (ATTO), Brazil',
-    stationCode: 'ATTO-BIO',
-    datasetKey: 'vegetation',
-    eicKey: 'aerosols_geos',
-    description: '325m atmospheric chemistry tower measuring tropical wildfire smoke, biogenic VOCs and CO₂ flux.',
-    lat: -2.1436,
-    lng: -59.0011,
-    color: '#8b5cf6',
-    instrument: 'GEOS-FP Gas & Aerosol Sampling Mast',
-    baseline: 'Clean-Sky Climatology (0.12 AOD)',
-  },
-  {
-    id: 'pacific-tao',
-    name: 'Pacific TAO/TRITON Buoy Array (Equator)',
-    stationCode: 'TAO-ENSO',
-    datasetKey: 'seaLevel',
-    eicKey: 'sealevel_podaac',
-    description: 'Moorings across equatorial Pacific measuring thermal expansion, El Niño oscillations and ocean heat.',
-    lat: 0.0,
-    lng: -140.0,
-    color: '#06b6d4',
-    instrument: 'Sentinel-6 / Jason Radar Calibration Array',
-    baseline: '1993.0 Altimetry Reference Origin',
-  },
-];
 
 export interface ObservatoryState {
   // Navigation & View
@@ -191,6 +115,8 @@ export interface ObservatoryState {
   selectSentinel: (sentinelId: string | null) => Promise<void>;
   setHoveredSentinelId: (id: string | null) => void;
   cameraResetTrigger: number;
+  sentinelFocusTrigger: number;
+  triggerSentinelFocus: () => void;
   resetCameraOrientation: () => void;
 }
 
@@ -331,6 +257,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
     activeSentinelId: null,
     hoveredSentinelId: null,
     cameraResetTrigger: 0,
+    sentinelFocusTrigger: 0,
 
     atmosphereTargetColor: '#1E5A7A',
     atmosphereTargetCoefficient: 0.35,
@@ -469,6 +396,10 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
     setHoveredCoordinate: (hoveredCoordinate) => set({ hoveredCoordinate }),
     setHoveredSentinelId: (hoveredSentinelId) => set({ hoveredSentinelId }),
 
+    triggerSentinelFocus: () => {
+      set((s) => ({ sentinelFocusTrigger: s.sentinelFocusTrigger + 1 }));
+    },
+
     resetCameraOrientation: () => {
       set((s) => ({
         cameraResetTrigger: s.cameraResetTrigger + 1,
@@ -479,16 +410,21 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
 
     selectSentinel: async (sentinelId: string | null) => {
       if (!sentinelId) {
-        set({ activeSentinelId: null });
+        set((s) => ({
+          activeSentinelId: null,
+          hoveredSentinelId: null,
+          cameraResetTrigger: s.cameraResetTrigger + 1,
+        }));
         return;
       }
       const sentinel = CLIMATE_SENTINELS.find((s) => s.id === sentinelId);
       if (!sentinel) return;
 
-      set({
+      set((s) => ({
         activeSentinelId: sentinel.id,
+        sentinelFocusTrigger: s.sentinelFocusTrigger + 1,
         hoveredCoordinate: { lat: sentinel.lat, lng: sentinel.lng },
-      });
+      }));
 
       // Switch to this sentinel's observational dataset
       await get().setActiveEicKey(sentinel.eicKey);

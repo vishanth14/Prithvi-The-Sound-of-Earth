@@ -11,16 +11,6 @@ import { scrollState } from '../../lib/scrollState';
 import { experienceOrchestrator } from '../../orchestrator/experienceOrchestrator';
 import { Globe } from 'lucide-react';
 
-// Converts Latitude & Longitude to 3D Cartesian coordinates on sphere (Radius 2.0)
-function latLngToVector3(lat: number, lng: number, radius = 2.016): [number, number, number] {
-  const phi = (lat * Math.PI) / 180;
-  const theta = ((lng + 180) * Math.PI) / 180;
-  const x = -radius * Math.cos(phi) * Math.cos(theta);
-  const y = radius * Math.sin(phi);
-  const z = radius * Math.cos(phi) * Math.sin(theta);
-  return [x, y, z];
-}
-
 /**
  * Continuous 6-Chapter Cinematic Camera Controller
  * 
@@ -36,7 +26,7 @@ const ContinuousScrollCameraController: React.FC<{
   controlsRef: React.RefObject<OrbitControlsImpl | null>;
   isInteractingRef: React.RefObject<boolean>;
 }> = ({ controlsRef, isInteractingRef }) => {
-  const { activeSentinelId, cameraResetTrigger } = useObservatoryStore();
+  const { cameraResetTrigger } = useObservatoryStore();
   const lastResetRef = useRef(cameraResetTrigger);
 
   useEffect(() => {
@@ -78,34 +68,6 @@ const ContinuousScrollCameraController: React.FC<{
     }
 
     const p = scrollState.progress;
-
-    // Climate Sentinel Station Focus (Active when exploring inside Chapter 2)
-    if (activeSentinelId && p >= 0.08 && p <= 0.36) {
-      const coords: Record<string, { lat: number; lng: number }> = {
-        'mauna-loa': { lat: 19.5362, lng: -155.5763 },
-        'svalbard': { lat: 78.2232, lng: 15.6267 },
-        'vostok': { lat: -78.4644, lng: 106.8373 },
-        'atto-amazon': { lat: -2.1436, lng: -59.0011 },
-        'pacific-tao': { lat: 0.0, lng: -140.0 },
-      };
-      const c = coords[activeSentinelId];
-      if (c) {
-        const [sx, sy, sz] = latLngToVector3(c.lat, c.lng, 2.0);
-        const norm = Math.hypot(sx, sy, sz) || 2.0;
-        const camDistance = 4.2 * distanceScale;
-        const targetPos: [number, number, number] = [
-          (sx / norm) * camDistance,
-          (sy / norm) * camDistance + 0.12,
-          (sz / norm) * camDistance,
-        ];
-        easing.damp3(state.camera.position, targetPos, 0.6, delta);
-        if (controlsRef.current) {
-          easing.damp3(controlsRef.current.target, [sx * 0.35, sy * 0.35, sz * 0.35], 0.6, delta);
-          state.camera.lookAt(controlsRef.current.target);
-        }
-        return;
-      }
-    }
 
     // If user prefers reduced motion, hold a calm, centered, stable vantage
     if (scrollState.prefersReducedMotion) {

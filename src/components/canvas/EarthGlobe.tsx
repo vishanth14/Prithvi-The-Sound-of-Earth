@@ -1,22 +1,13 @@
-import React, { useRef, useMemo, useEffect } from 'react';
+import React, { useRef, useMemo, useEffect, useImperativeHandle } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { easing } from 'maath';
 import { gsap } from '../../lib/gsap';
-import { useObservatoryStore, CLIMATE_SENTINELS } from '../../store/useObservatoryStore';
+import { useObservatoryStore, CLIMATE_SENTINELS, type ClimateSentinel } from '../../store/useObservatoryStore';
 import { SATELLITE_FLEET } from '../../data/earthDatasets';
 import { scrollState } from '../../lib/scrollState';
-
-// Converts geographic Latitude & Longitude to 3D Cartesian coordinates on sphere (Radius 2.0)
-function latLngToVector3(lat: number, lng: number, radius = 2.018): [number, number, number] {
-  const phi = (lat * Math.PI) / 180;
-  const theta = ((lng + 180) * Math.PI) / 180;
-  const x = -radius * Math.cos(phi) * Math.cos(theta);
-  const y = radius * Math.sin(phi);
-  const z = radius * Math.cos(phi) * Math.sin(theta);
-  return [x, y, z];
-}
+import { latLngToVector3 } from '../../utils/geoCoordinates';
 
 // Shader 1: Natural Daylight Earth Surface Shader (NASA Blue Marble Daylight Globe)
 // Google Earth-style natural planetary illumination with deep blue oceans, realistic relief, and selective night lights
@@ -245,6 +236,138 @@ const AtmosphereRimShader = {
   `,
 };
 
+interface SentinelMarkerItemProps {
+  sentinel: ClimateSentinel & {
+    pos: THREE.Vector3;
+    normal: THREE.Vector3;
+    orientation: THREE.Quaternion;
+  };
+  isSelected: boolean;
+  isHovered: boolean;
+  onSelect: (sentinelId: string) => Promise<void>;
+  onHover: (sentinelId: string | null) => void;
+}
+
+const SentinelMarkerItem: React.FC<SentinelMarkerItemProps> = ({
+  sentinel,
+  isSelected,
+  isHovered,
+  onSelect,
+  onHover,
+}) => {
+  const pulseRingRef = useRef<THREE.Mesh>(null!);
+  const pointerDownRef = useRef({ x: 0, y: 0, time: 0 });
+
+  useFrame((_, delta) => {
+    if (pulseRingRef.current && isSelected) {
+      pulseRingRef.current.scale.addScalar(delta * 0.95);
+      const mat = pulseRingRef.current.material as THREE.MeshBasicMaterial;
+      if (mat) {
+        mat.opacity = Math.max(0, mat.opacity - delta * 0.75);
+      }
+      if (pulseRingRef.current.scale.x > 2.3) {
+        pulseRingRef.current.scale.set(1, 1, 1);
+        if (mat) mat.opacity = 0.95;
+      }
+    }
+  });
+
+  const handlePointerDown = (e: any) => {
+    pointerDownRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      time: performance.now(),
+    };
+  };
+
+  const handleClick = async (e: any) => {
+    e.stopPropagation();
+    const dx = e.clientX - pointerDownRef.current.x;
+    const dy = e.clientY - pointerDownRef.current.y;
+    const dist = Math.hypot(dx, dy);
+    const dt = performance.now() - pointerDownRef.current.time;
+    // Discriminate drag from click
+    if (dist > 8 || dt > 600) {
+      return;
+    }
+    await onSelect(sentinel.id);
+  };
+
+  return (
+    <group
+      position={sentinel.pos}
+      quaternion={sentinel.orientation}
+      onPointerDown={handlePointerDown}
+      onClick={handleClick}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        onHover(sentinel.id);
+        document.body.style.cursor = 'pointer';
+      }}
+      onPointerOut={() => {
+        onHover(null);
+        document.body.style.cursor = 'auto';
+      }}
+    >
+      {/* 1. Base Crust Ground Ring (Tangent to Sphere) */}
+      <mesh position={[0, 0.003, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.024, 0.038, 32]} />
+        <meshBasicMaterial
+          color={isSelected ? '#FF5938' : sentinel.color}
+          opacity={isSelected ? 0.95 : 0.6}
+          transparent
+          side={THREE.DoubleSide}
+          depthWrite={false}
+        />
+      </mesh>
+
+      {/* 2. Expanding Radar Pulse Ring (Active when selected) */}
+      {isSelected && (
+        <mesh ref={pulseRingRef} position={[0, 0.004, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[0.036, 0.048, 32]} />
+          <meshBasicMaterial
+            color="#FF5938"
+            opacity={0.95}
+            transparent
+            side={THREE.DoubleSide}
+            depthWrite={false}
+          />
+        </mesh>
+      )}
+
+      {/* 3. Scientific Observatory Vertical Mast */}
+      <mesh position={[0, 0.02, 0]}>
+        <cylinderGeometry args={[0.0032, 0.0032, 0.038, 8]} />
+        <meshBasicMaterial color={isSelected ? '#FF5938' : '#D1B77D'} />
+      </mesh>
+
+      {/* 4. Core Optical Beacon Sphere */}
+      <mesh position={[0, 0.042, 0]}>
+        <sphereGeometry args={[isSelected ? 0.038 : 0.024, 16, 16]} />
+        <meshBasicMaterial color={isSelected ? '#FF5938' : sentinel.color} />
+      </mesh>
+
+      {/* 5. Precision Editorial Hover Tooltip */}
+      {isHovered && !isSelected && (
+        <Html position={[0, 0.12, 0]} center distanceFactor={7.5} pointerEvents="none">
+          <div className="bg-[#070B10]/95 text-[#E9EDF0] border border-[#FF5938]/80 px-2.5 py-1.5 shadow-xl whitespace-nowrap flex flex-col items-center gap-0.5 pointer-events-none select-none text-[11px] font-mono backdrop-blur-xs">
+            <span className="font-display font-bold text-xs tracking-wide text-[#E9EDF0]">
+              {sentinel.name}
+            </span>
+            <span className="text-[10px] text-[#FF5938] tracking-widest uppercase font-semibold">
+              {sentinel.stationCode} • {sentinel.lat > 0 ? `${sentinel.lat.toFixed(2)}°N` : `${Math.abs(sentinel.lat).toFixed(2)}°S`},{' '}
+              {sentinel.lng > 0 ? `${sentinel.lng.toFixed(2)}°E` : `${Math.abs(sentinel.lng).toFixed(2)}°W`}
+            </span>
+            <span className="text-[9px] text-[#83BBD5] tracking-wider uppercase">
+              {sentinel.region}
+            </span>
+          </div>
+        </Html>
+      )}
+    </group>
+  );
+};
+
 export interface EarthGlobeProps {
   showSatellites?: boolean;
   showSentinels?: boolean;
@@ -254,19 +377,24 @@ export interface EarthGlobeProps {
   showNightLights?: boolean;
 }
 
-export const EarthGlobe: React.FC<EarthGlobeProps> = ({
-  showSatellites = true,
-  showSentinels = true,
-  activeSatelliteId = null,
-  onSelectSatellite,
-  scale = 1.0,
-  showNightLights = false,
-}) => {
+export const EarthGlobe = React.forwardRef<THREE.Group, EarthGlobeProps>(function EarthGlobe(
+  {
+    showSatellites = true,
+    showSentinels = true,
+    activeSatelliteId = null,
+    onSelectSatellite,
+    scale = 1.0,
+    showNightLights = false,
+  },
+  ref
+) {
   const earthMeshRef = useRef<THREE.Mesh>(null!);
   const cloudsMeshRef = useRef<THREE.Mesh>(null!);
   const atmosphereMeshRef = useRef<THREE.Mesh>(null!);
   const earthGroupRef = useRef<THREE.Group>(null!);
   const cloudOffsetRef = useRef(0);
+
+  useImperativeHandle(ref, () => earthGroupRef.current, []);
 
   // Store Selectors
   const globeRotating = useObservatoryStore((s) => s.globeRotating);
@@ -433,12 +561,22 @@ export const EarthGlobe: React.FC<EarthGlobeProps> = ({
     });
   }, []);
 
-  // Climate Sentinel 3D Positions
+  // Climate Sentinel 3D Positions & Tangent Orientations
   const sentinelNodes = useMemo(() => {
-    return CLIMATE_SENTINELS.map((s) => ({
-      ...s,
-      pos: latLngToVector3(s.lat, s.lng, 2.016),
-    }));
+    return CLIMATE_SENTINELS.map((s) => {
+      const pos = latLngToVector3(s.lat, s.lng, 2.016);
+      const normal = pos.clone().normalize();
+      const orientation = new THREE.Quaternion().setFromUnitVectors(
+        new THREE.Vector3(0, 1, 0),
+        normal
+      );
+      return {
+        ...s,
+        pos,
+        normal,
+        orientation,
+      };
+    });
   }, []);
 
   // 60fps Continuous Loop (Zero-allocation animation loop with subtle pointer parallax)
@@ -515,27 +653,6 @@ export const EarthGlobe: React.FC<EarthGlobeProps> = ({
     }
   });
 
-  const pointerDownPos = useRef({ x: 0, y: 0 });
-
-  const handleSentinelPointerDown = (e: any) => {
-    pointerDownPos.current = { x: e.clientX, y: e.clientY };
-  };
-
-  const handleSentinelClick = async (e: any, sentinelId: string) => {
-    e.stopPropagation();
-    const dx = e.clientX - pointerDownPos.current.x;
-    const dy = e.clientY - pointerDownPos.current.y;
-    if (Math.hypot(dx, dy) > 8) {
-      // User was dragging the globe, not clicking
-      return;
-    }
-    if (!isAudioUnlocked) {
-      await unlockAudio();
-    }
-    await selectSentinel(sentinelId);
-    await startPlayback();
-  };
-
   return (
     <group ref={earthGroupRef} rotation={[0.41, 0, 0]} scale={[scale, scale, scale]}>
       {/* 1. Photorealistic 4K Earth Surface (Day/Night/Normal/Specular/Thermal) */}
@@ -580,64 +697,22 @@ export const EarthGlobe: React.FC<EarthGlobeProps> = ({
 
       {/* 5. Interactive Climate Sentinel Geographic Pins & Editorial Tooltips */}
       {showSentinels &&
-        sentinelNodes.map((s) => {
-          const isSelected = activeSentinelId === s.id;
-          const isHovered = hoveredSentinelId === s.id;
-          return (
-            <group
-              key={s.id}
-              position={s.pos}
-              onPointerDown={handleSentinelPointerDown}
-              onClick={(e) => handleSentinelClick(e, s.id)}
-              onPointerOver={(e) => {
-                e.stopPropagation();
-                setHoveredSentinelId(s.id);
-                document.body.style.cursor = 'pointer';
-              }}
-              onPointerOut={() => {
-                setHoveredSentinelId(null);
-                document.body.style.cursor = 'auto';
-              }}
-            >
-              {/* Core Sentinel Sphere Pin */}
-              <mesh>
-                <sphereGeometry args={[isSelected ? 0.042 : 0.028, 16, 16]} />
-                <meshBasicMaterial color={s.color} />
-              </mesh>
-
-              {/* Pulsating Outer Beacon Ring */}
-              <mesh rotation={[Math.PI / 2, 0, 0]}>
-                <ringGeometry args={[0.038, 0.052, 24]} />
-                <meshBasicMaterial
-                  color={s.color}
-                  opacity={isSelected ? 0.95 : 0.55}
-                  transparent
-                  side={THREE.DoubleSide}
-                />
-              </mesh>
-
-              {/* Editorial Hover Tooltip Label */}
-              {isHovered && !isSelected && (
-                <Html
-                  position={[0, 0.08, 0]}
-                  center
-                  distanceFactor={7.5}
-                  pointerEvents="none"
-                >
-                  <div className="bg-[#070B10]/95 text-[#E9EDF0] border border-[#FF5938]/60 px-2.5 py-1 shadow-lg whitespace-nowrap flex flex-col items-center gap-0.5 pointer-events-none select-none text-[11px] font-mono">
-                    <span className="font-display font-bold text-xs tracking-wide text-[#E9EDF0]">
-                      {s.name}
-                    </span>
-                    <span className="text-[10px] text-[#FF5938] tracking-widest uppercase">
-                      {s.stationCode} • {s.lat > 0 ? `${s.lat}°N` : `${Math.abs(s.lat)}°S`},{' '}
-                      {s.lng > 0 ? `${s.lng}°E` : `${Math.abs(s.lng)}°W`}
-                    </span>
-                  </div>
-                </Html>
-              )}
-            </group>
-          );
-        })}
+        sentinelNodes.map((s) => (
+          <SentinelMarkerItem
+            key={s.id}
+            sentinel={s}
+            isSelected={activeSentinelId === s.id}
+            isHovered={hoveredSentinelId === s.id}
+            onSelect={async (sentinelId) => {
+              if (!isAudioUnlocked) {
+                await unlockAudio();
+              }
+              await selectSentinel(sentinelId);
+              await startPlayback();
+            }}
+            onHover={(sentinelId) => setHoveredSentinelId(sentinelId)}
+          />
+        ))}
     </group>
   );
-};
+});
