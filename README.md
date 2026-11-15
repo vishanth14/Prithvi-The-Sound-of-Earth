@@ -178,6 +178,34 @@ PRITHVI upgrades the 3D planetary exploration experience into a high-fidelity, s
 
 ---
 
+## 🎞️ NASA EIC Frame-by-Frame Visual Synchronization (Layer 12)
+
+PRITHVI integrates authentic NASA Earth Information Center visual assets into the sonification experience through **NASA Scientific Visualization Studio (SVS) Asset #5190**:
+
+1. **Authentic NASA SVS #5190 Integration:**
+   - **Lead Visualizer:** Mark SubbaRao (NASA SVS)
+   - **Scientific Dataset:** NASA Goddard Institute for Space Studies (GISS) GISTEMP v4 ($1880 - 2026$).
+   - **Resolution & Framerate:** $2160\times 2160$ master render at 60.0 fps (1,800 frames over 30.00 seconds).
+
+2. **Empirical Frame-Timing Mathematical Model:**
+   - **2D Spiral Horizon:** Frames #0 through #1402 ($t = 0.00\text{s} - 23.366\text{s}$) span January 1880 through October 2026 ($1,762\text{ calendar months}$).
+   - **Frame Progression Rate:** $\approx 9.55\text{ frames/year}$ ($\approx 0.796\text{ frames/month}$, or $1.256\text{ months/frame}$).
+   - **3D Perspective Elevation ("Tornado"):** Frames #1403 through #1800 ($t = 23.37\text{s} - 30.00\text{s}$) elevate the camera into a 3D isometric cylinder showcasing multi-decadal vertical anomaly displacement.
+   - **Scientific Integrity Disclosure:** Discloses in the interface that 1 video frame does not equal 1 calendar month, maintaining verifiable provenance without fabricating artificial month-to-frame precision.
+
+3. **Lightweight Visual Asset Pipeline:**
+   - **Curated Milestones:** Extracted 38 multi-decadal observation milestones plus the 3D elevation perspective frame (#1800) into WebP ($720\times 720$, ~25 KB each) with universal JPEG fallbacks (bundle size: 4.78 MB).
+   - **Sliding-Window LRU Preloading:** `NasaFrameService` buffers only the active frame $\pm 3$ adjacent frames (~4 frames in memory at any instant), eliminating out-of-memory risks on mobile devices.
+   - **Hardware-Accelerated 60 FPS Video Stream:** Instant toggle allows users to switch between the frame pipeline and the authentic 60 fps MP4 stream (`GISTEMP_Spiral_English_degC_2160p60.mp4`, 19.9 MB).
+
+4. **Tripartite Scientific Comparison Dashboard:**
+   - **1. Original NASA SVS 5190 Visual:** Authentic Mark SubbaRao render for the selected observation epoch.
+   - **2. PRITHVI Derived Polar Vector Spiral:** Real-time D3 polar projection displaying monthly vector arcs, $+1.0^\circ\text{C}$ boundary, and $+1.5^\circ\text{C}$ Paris Accord threshold.
+   - **3. Deterministic Sonification Telemetry:** Tone.js real-time pitch frequency, musical note name, consonance index, and sub-30ms audio-visual synchrony.
+   - **Interactive Comparison Modes:** `DUAL COMPARISON`, `NASA ORIGINAL`, `DERIVED VECTOR`, and `3D TORNADO`.
+
+---
+
 ## ♿ Multimodal Accessibility & WCAG 2.2 AA Compliance
 
 - **Visual-to-Audio Equivalence:** Every acoustic parameter is simultaneously represented by live numeric readouts, musical note identifiers with cents offset, and a dedicated visual amplitude activity meter for users who are deaf or hard of hearing.

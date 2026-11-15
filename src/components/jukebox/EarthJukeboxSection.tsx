@@ -14,6 +14,7 @@ import { SectionHeader } from '../common/SectionHeader';
 import { Panel } from '../common/Panel';
 import { MagneticButton } from '../common/MagneticButton';
 import { Badge } from '../common/Badge';
+import { NasaSvsVisualizer } from '../visualization/NasaSvsVisualizer';
 import {
   Volume2,
   VolumeX,
@@ -581,151 +582,12 @@ export const EarthJukeboxSection: React.FC = () => {
               </div>
             </div>
 
-            {/* TAB 1: NASA CLIMATE SPIRAL (SVS #5190) */}
+            {/* TAB 1: NASA CLIMATE SPIRAL (SVS #5190) WITH EMPIRICAL VISUAL SYNCHRONIZATION */}
             {activeVisualTab === 'spiral' && (
-              <Panel className="p-6 sm:p-8 flex flex-col items-center justify-center relative overflow-hidden bg-[#0E141D] border-[#252D36] rounded-none">
-                <div className="w-full flex items-center justify-between mb-4 border-b border-[#252D36] pb-3 text-xs font-mono text-[#E9EDF0]/60">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-none bg-[#FF5938] animate-ping" />
-                    <span className="text-[#E9EDF0] font-semibold">
-                      NASA SVS #5190 // GISTEMP POLAR ANOMALY SPIRAL
-                    </span>
-                  </div>
-                  <span className="text-[#83BBD5]">1880 — 2024 EMPIRICAL BENCHMARKS</span>
-                </div>
-
-                <div className="relative w-full aspect-square max-w-[440px] flex items-center justify-center">
-                  <svg
-                    ref={spiralSvgRef}
-                    viewBox="0 0 460 460"
-                    className="w-full h-full overflow-visible select-none"
-                  >
-                    {/* Month Radial Axes */}
-                    {spiralParams.monthAxes.map((axis) => (
-                      <g key={axis.name}>
-                        <line
-                          x1={axis.x1}
-                          y1={axis.y1}
-                          x2={axis.x2}
-                          y2={axis.y2}
-                          stroke="rgba(240, 238, 229, 0.08)"
-                          strokeDasharray="2,3"
-                        />
-                        <text
-                          x={axis.lx}
-                          y={axis.ly}
-                          fill="rgba(240, 238, 229, 0.5)"
-                          fontSize="9"
-                          fontFamily="IBM Plex Mono, monospace"
-                          textAnchor="middle"
-                          dominantBaseline="central"
-                        >
-                          {axis.name}
-                        </text>
-                      </g>
-                    ))}
-
-                    {/* Concentric Limit Rings */}
-                    <circle
-                      cx={spiralParams.center}
-                      cy={spiralParams.center}
-                      r={spiralParams.ring0}
-                      fill="none"
-                      stroke="rgba(233, 237, 240, 0.2)"
-                      strokeWidth="1"
-                      strokeDasharray="4,4"
-                    />
-                    <text
-                      x={spiralParams.center + 6}
-                      y={spiralParams.center - spiralParams.ring0 - 4}
-                      fill="rgba(233, 237, 240, 0.6)"
-                      fontSize="9"
-                      fontFamily="IBM Plex Mono, monospace"
-                    >
-                      0.0°C (1951-1980 mean)
-                    </text>
-
-                    <circle
-                      cx={spiralParams.center}
-                      cy={spiralParams.center}
-                      r={spiralParams.ring1}
-                      fill="none"
-                      stroke="#83BBD5"
-                      strokeWidth="1"
-                      strokeOpacity="0.6"
-                    />
-                    <text
-                      x={spiralParams.center + 6}
-                      y={spiralParams.center - spiralParams.ring1 - 4}
-                      fill="#83BBD5"
-                      fontSize="9"
-                      fontFamily="IBM Plex Mono, monospace"
-                    >
-                      +1.0°C Warning Ring
-                    </text>
-
-                    <circle
-                      cx={spiralParams.center}
-                      cy={spiralParams.center}
-                      r={spiralParams.ring15}
-                      fill="none"
-                      stroke="#FF5938"
-                      strokeWidth="1.25"
-                      strokeOpacity="0.8"
-                      strokeDasharray="3,3"
-                    />
-                    <text
-                      x={spiralParams.center + 6}
-                      y={spiralParams.center - spiralParams.ring15 - 4}
-                      fill="#FF5938"
-                      fontSize="9"
-                      fontFamily="IBM Plex Mono, monospace"
-                      fontWeight="bold"
-                    >
-                      +1.5°C Paris Accord Target
-                    </text>
-
-                    {/* Dynamic Polar Spiral Line */}
-                    {spiralParams.spiralD && (
-                      <path
-                        d={spiralParams.spiralD}
-                        fill="none"
-                        stroke="#FF5938"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    )}
-
-                    {/* Current Frame-Aligned Scrubber Head */}
-                    {spiralParams.currentTip && (
-                      <g>
-                        <circle
-                          cx={spiralParams.currentTip.x}
-                          cy={spiralParams.currentTip.y}
-                          r="6"
-                          fill="#FF5938"
-                          className="animate-ping"
-                          opacity="0.6"
-                        />
-                        <circle
-                          cx={spiralParams.currentTip.x}
-                          cy={spiralParams.currentTip.y}
-                          r="4"
-                          fill="#E9EDF0"
-                          stroke="#FF5938"
-                          strokeWidth="2"
-                        />
-                      </g>
-                    )}
-                  </svg>
-                </div>
-
-                <div className="w-full flex items-center justify-between pt-4 border-t border-[#252D36] text-xs font-mono text-[#E9EDF0]/60 mt-3">
-                  <span>Polar Radius = Anomaly Magnitude</span>
-                  <span className="text-[#83BBD5]">12 Spokes = Annual Respiration</span>
-                </div>
-              </Panel>
+              <NasaSvsVisualizer
+                spiralSvgRef={spiralSvgRef}
+                spiralParams={spiralParams}
+              />
             )}
 
             {/* TAB 2: FRAME-ALIGNED TIME-SERIES CURVE */}
