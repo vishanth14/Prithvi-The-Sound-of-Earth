@@ -173,9 +173,9 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
     const eicKey = observation.datasetId as EicDatasetKey;
     const datasetKey = EIC_TO_DATASET_MAP[eicKey] || 'temperature';
 
-    // Compute 3D shader targets based on active measurement
-    let atmosphereColor = '#38bdf8';
-    let atmosphereCoeff = 0.72;
+    // Compute 3D shader targets based on active measurement (Editorial, non-overexposed palette)
+    let atmosphereColor = '#1E5A7A';
+    let atmosphereCoeff = 0.38;
     let nightBoost = 1.0;
     let heatFactor = 0.0;
 
@@ -183,30 +183,31 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
       case 'gistemp': {
         const val = observation.originalValue ?? 0;
         heatFactor = Math.max(0, Math.min(1, (val - (-0.4)) / (1.5 - (-0.4))));
-        atmosphereColor = val > 1.0 ? '#ef4444' : val > 0.4 ? '#f59e0b' : '#38bdf8';
-        atmosphereCoeff = 0.7 + heatFactor * 0.35;
+        atmosphereColor = val > 1.0 ? '#C96846' : val > 0.4 ? '#D1B77D' : '#1E5A7A';
+        atmosphereCoeff = 0.32 + heatFactor * 0.12;
         break;
       }
       case 'co2_maunaloa': {
         const ppm = observation.originalValue ?? 280;
         const norm = Math.max(0, Math.min(1, (ppm - 280) / (440 - 280)));
-        atmosphereColor = '#ef4444';
-        atmosphereCoeff = 0.75 + norm * 0.45;
+        atmosphereColor = norm > 0.6 ? '#B85B38' : '#1E5A7A';
+        atmosphereCoeff = 0.35 + norm * 0.10;
         break;
       }
       case 'sealevel_podaac': {
-        atmosphereColor = '#06b6d4';
-        atmosphereCoeff = 0.8;
+        atmosphereColor = '#17465B';
+        atmosphereCoeff = 0.38;
         break;
       }
       case 'aerosols_geos': {
-        atmosphereColor = '#8b5cf6';
-        atmosphereCoeff = 0.95;
+        atmosphereColor = '#4E446B';
+        atmosphereCoeff = 0.36;
         break;
       }
       case 'nightlights_viirs': {
-        atmosphereColor = '#10b981';
-        nightBoost = 1.0 + (params.velocity * 1.5);
+        atmosphereColor = '#D1B77D';
+        atmosphereCoeff = 0.32;
+        nightBoost = 1.0 + (params.velocity * 0.8);
         break;
       }
     }
@@ -255,8 +256,8 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
     activeSentinelId: null,
     hoveredSentinelId: null,
 
-    atmosphereTargetColor: '#2A6B8C',
-    atmosphereTargetCoefficient: 0.65,
+    atmosphereTargetColor: '#1E5A7A',
+    atmosphereTargetCoefficient: 0.35,
     nightLightBoost: 1.0,
     thermalAnomalyFactor: 0.0,
 

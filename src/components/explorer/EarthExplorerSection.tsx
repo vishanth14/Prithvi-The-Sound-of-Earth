@@ -3,8 +3,10 @@ import { useObservatoryStore, CLIMATE_SENTINELS } from '../../store/useObservato
 import { EARTH_DATASETS } from '../../data/earthDatasets';
 import { gsap, useGSAP } from '../../lib/gsap';
 import type { DatasetKey } from '../../data/types';
+import type { EicDatasetKey } from '../../data/eicSchemas';
 import { SectionHeader } from '../common/SectionHeader';
 import { Panel } from '../common/Panel';
+import { Badge } from '../common/Badge';
 import { EarthCanvas } from '../canvas/EarthCanvas';
 import {
   Thermometer,
@@ -13,17 +15,137 @@ import {
   Trees,
   ShieldAlert,
   RotateCw,
-  Volume2,
   MapPin,
   X,
-  Radio,
+  ExternalLink,
+  Headphones,
+  Compass,
+  ArrowRight,
+  Sparkles,
 } from 'lucide-react';
+
+interface ScientificLayerDetail {
+  id: DatasetKey;
+  eicKey: EicDatasetKey;
+  number: string;
+  category: string;
+  scientificTitle: string;
+  shortLabel: string;
+  description: string;
+  nasaVisualization: string;
+  dataSource: string;
+  leadAgency: string;
+  instrument: string;
+  unit: string;
+  timeRange: string;
+  scientificExplanation: string;
+  color: string;
+}
+
+const SCIENTIFIC_LAYERS: Record<DatasetKey, ScientificLayerDetail> = {
+  temperature: {
+    id: 'temperature',
+    eicKey: 'gistemp',
+    number: '01',
+    category: 'GLOBAL SURFACE TEMPERATURE',
+    scientificTitle: 'GISS Surface Temperature Analysis (GISTEMP v4)',
+    shortLabel: 'Surface Temperature',
+    description:
+      'Comprehensive estimate of global surface temperature change combining meteorological stations, Antarctic boreholes, and ocean buoy sea-surface measurements.',
+    nasaVisualization: 'NASA SVS #4976 Climate Spiral & EIC Global Anomaly Visualizer',
+    dataSource: 'NASA Goddard Institute for Space Studies (GISS)',
+    leadAgency: 'NASA Earth Science Division',
+    instrument: 'GHCNv4 Meteorological Sensors & ERSSTv5 Ocean Buoys',
+    unit: '°C Anomaly (vs 1951–1980 baseline)',
+    timeRange: '1880 – 2026 (147-year empirical instrumental record)',
+    scientificExplanation:
+      'Quantifies global thermal amplification relative to mid-20th-century climate equilibrium. Values exceeding +1.0°C indicate sustained greenhouse radiative forcing; +1.5°C represents the international Paris Agreement threshold.',
+    color: '#D1B77D',
+  },
+  co2: {
+    id: 'co2',
+    eicKey: 'co2_maunaloa',
+    number: '02',
+    category: 'ATMOSPHERIC GREENHOUSE GASES',
+    scientificTitle: 'Atmospheric Carbon Dioxide Mole Fraction',
+    shortLabel: 'Carbon Dioxide (CO₂)',
+    description:
+      'Direct in-situ air sampling and cavity ring-down laser spectroscopy monitoring baseline background greenhouse gas concentrations above marine boundary layer.',
+    nasaVisualization: 'NASA OCO-2 Global Carbon Cycle & SVS Keeling Trace',
+    dataSource: 'NOAA Global Monitoring Laboratory (GML) & NASA OCO-2',
+    leadAgency: 'NOAA / NASA Earth Science',
+    instrument: 'Cavity Ring-Down Laser Spectrometer & Picarro G2401',
+    unit: 'Parts Per Million (ppm)',
+    timeRange: '1958 – 2026 (Continuous Keeling observatory epoch)',
+    scientificExplanation:
+      'Tracks background tropospheric CO₂ mole fractions. Pre-industrial equilibrium was ~280 ppm; current values exceed 424 ppm, demonstrating biospheric seasonal respiration overlaid on exponential anthropogenic emissions.',
+    color: '#E16D54',
+  },
+  seaLevel: {
+    id: 'seaLevel',
+    eicKey: 'sealevel_podaac',
+    number: '03',
+    category: 'OCEAN & SEA LEVEL VARIANCE',
+    scientificTitle: 'Global Mean Sea Level Satellite Altimetry Record',
+    shortLabel: 'Sea Level Variance',
+    description:
+      'Integrated multi-satellite radar altimetry tracking global ocean steric thermal expansion and barystatic mass addition from land-ice melting.',
+    nasaVisualization: 'NASA PO.DAAC Integrated Ocean Surface Topography',
+    dataSource: 'NASA Physical Oceanography DAAC (PO.DAAC)',
+    leadAgency: 'NASA / ESA / EUMETSAT / CNES',
+    instrument: 'Poseidon-4 Radar Altimeter & AMR-C Microwave Radiometer',
+    unit: 'Millimeters (mm variance vs 1993 baseline)',
+    timeRange: '1993 – 2026 (Continuous multi-mission altimeter record)',
+    scientificExplanation:
+      'Measures total oceanic volume change resulting from steric thermal expansion (warming seawater expands) and barystatic addition (glacier and polar ice sheet melt). Current global mean sea level has risen +116.8 mm since 1993.',
+    color: '#508CA4',
+  },
+  vegetation: {
+    id: 'vegetation',
+    eicKey: 'aerosols_geos',
+    number: '04',
+    category: 'AEROSOLS & ATMOSPHERIC PARTICULATES',
+    scientificTitle: 'Goddard Earth Observing System Aerosol Optical Depth (GEOS-FP)',
+    shortLabel: 'Aerosol Optical Depth',
+    description:
+      'Assimilated satellite radiance and chemical transport modeling tracking atmospheric particulate extinction from wildfire smoke, desert dust, and urban pollution.',
+    nasaVisualization: 'NASA Earth Information Center Atmospheric Transport Model',
+    dataSource: 'NASA Global Modeling and Assimilation Office (GMAO)',
+    leadAgency: 'NASA Goddard Space Flight Center',
+    instrument: 'Terra & Aqua MODIS Spectroradiometer & GEOS-FP Assimilation',
+    unit: 'Aerosol Optical Depth (AOD unitless index, 550nm)',
+    timeRange: '2000 – 2026 (Modern EOS satellite observation epoch)',
+    scientificExplanation:
+      'AOD quantifies total light attenuation through the atmospheric column by airborne aerosols. Values under 0.1 indicate pristine atmospheric clarity; values above 0.4 indicate dense smoke, desert dust transport, or severe air quality hazard.',
+    color: '#9D8DF1',
+  },
+  ozone: {
+    id: 'ozone',
+    eicKey: 'nightlights_viirs',
+    number: '05',
+    category: 'NIGHT-TIME LIGHTS & ANTHROPOGENIC RADIANCE',
+    scientificTitle: 'Suomi NPP VIIRS Day-Night Band Nighttime Radiance',
+    shortLabel: 'Night-Time Radiance',
+    description:
+      'Calibrated nocturnal anthropogenic lighting, urban electrification expansion, maritime fleets, and disaster blackout recovery monitoring.',
+    nasaVisualization: 'NASA Earth Science Data Systems (ESDS) Black Marble HD Suite',
+    dataSource: 'NASA/NOAA Suomi National Polar-orbiting Partnership (Suomi NPP)',
+    leadAgency: 'NASA / NOAA',
+    instrument: 'Visible Infrared Imaging Radiometer Suite (VIIRS Day-Night Band)',
+    unit: 'nW·cm⁻²·sr⁻¹ (Nanowatts per sq cm per steradian)',
+    timeRange: '2012 – 2026 (Multi-decadal calibrated nocturnal dataset)',
+    scientificExplanation:
+      'Measures artificial light emissions at night from urban infrastructure, commercial shipping, offshore rigs, and power grids. Correlates directly with human energy consumption, economic density, and extreme weather power grid resilience.',
+    color: '#4EBA97',
+  },
+};
 
 export const EarthExplorerSection: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const {
     activeDataset,
     setActiveDataset,
+    setActiveEicKey,
     globeRotating,
     setGlobeRotating,
     activeSentinelId,
@@ -55,43 +177,14 @@ export const EarthExplorerSection: React.FC = () => {
   );
 
   const dataset = EARTH_DATASETS[activeDataset];
+  const activeLayer = SCIENTIFIC_LAYERS[activeDataset];
 
-  const datasetOptions: { id: DatasetKey; label: string; icon: React.ReactNode; color: string; number: string }[] = [
-    {
-      id: 'temperature',
-      label: 'Surface Temp',
-      number: '01',
-      icon: <Thermometer className="w-3.5 h-3.5" />,
-      color: '#D1B77D',
-    },
-    {
-      id: 'co2',
-      label: 'Carbon Dioxide',
-      number: '02',
-      icon: <CloudRain className="w-3.5 h-3.5" />,
-      color: '#E16D54',
-    },
-    {
-      id: 'seaLevel',
-      label: 'Sea Level',
-      number: '03',
-      icon: <Waves className="w-3.5 h-3.5" />,
-      color: '#508CA4',
-    },
-    {
-      id: 'vegetation',
-      label: 'Aerosol Depth',
-      number: '04',
-      icon: <Trees className="w-3.5 h-3.5" />,
-      color: '#9D8DF1',
-    },
-    {
-      id: 'ozone',
-      label: 'Night Lights',
-      number: '05',
-      icon: <ShieldAlert className="w-3.5 h-3.5" />,
-      color: '#4EBA97',
-    },
+  const layerNavList: { id: DatasetKey; icon: React.ReactNode }[] = [
+    { id: 'temperature', icon: <Thermometer className="w-3.5 h-3.5" /> },
+    { id: 'co2', icon: <CloudRain className="w-3.5 h-3.5" /> },
+    { id: 'seaLevel', icon: <Waves className="w-3.5 h-3.5" /> },
+    { id: 'vegetation', icon: <Trees className="w-3.5 h-3.5" /> },
+    { id: 'ozone', icon: <ShieldAlert className="w-3.5 h-3.5" /> },
   ];
 
   const latestDataPoint = dataset.data[dataset.data.length - 1];
@@ -101,12 +194,35 @@ export const EarthExplorerSection: React.FC = () => {
     ? CLIMATE_SENTINELS.find((s) => s.id === displaySentinelId)
     : null;
 
-  const handleAuditSentinel = async (sentinelId: string) => {
+  const handleSelectLayer = async (key: DatasetKey) => {
+    await setActiveDataset(key);
+    await setActiveEicKey(SCIENTIFIC_LAYERS[key].eicKey);
+  };
+
+  const handleListenToData = async () => {
     if (!isAudioUnlocked) {
       await unlockAudio();
     }
-    await selectSentinel(sentinelId);
+    await setActiveEicKey(activeLayer.eicKey);
     await startPlayback();
+    const sonificationEl =
+      document.getElementById('sonification') || document.getElementById('listen');
+    if (sonificationEl) {
+      sonificationEl.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleViewInJukebox = async () => {
+    await setActiveEicKey(activeLayer.eicKey);
+    const jukeboxEl =
+      document.getElementById('eic-jukebox') || document.getElementById('stories');
+    if (jukeboxEl) {
+      jukeboxEl.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleBackToOverview = () => {
+    selectSentinel(null);
   };
 
   return (
@@ -120,58 +236,72 @@ export const EarthExplorerSection: React.FC = () => {
         <div className="explorer-reveal">
           <SectionHeader
             number="02"
-            category="PLANETARY OBSERVATORY"
-            title="INTERACTIVE 3D EARTH ATLAS"
-            subtitle="Direct spatial inspection of Earth System Science parameters. Select observational layers or climate sentinels to reveal anomalies, orbital telemetry, and sonic mappings."
-            badge="ORBITAL TELEMETRY MESH"
+            category="PLANETARY OBSERVATORY ATLAS"
+            title="INTERACTIVE 3D EARTH EXPLORATION"
+            subtitle="An interactive scientific atlas powered by authentic NASA Earth-observing satellite telemetry. Rotate the globe, pinpoint verified ground sentinels, and select empirical planetary layers to audition their sonic properties."
+            badge="NASA EIC VERIFIED DATA"
             badgeVariant="sand"
           />
         </div>
 
-        {/* Dataset Editorial Layer Switcher */}
-        <div className="explorer-reveal flex flex-wrap items-center gap-3 mb-10 pb-5 border-b border-[#F0EEE5]/10">
-          <span className="font-mono text-xs text-[#D1B77D] uppercase tracking-[0.2em] mr-2">
-            OBSERVATIONAL LAYER:
+        {/* Dataset Editorial Layer Switcher Bar */}
+        <div className="explorer-reveal flex flex-wrap items-center gap-2.5 sm:gap-3 mb-10 pb-5 border-b border-[#F0EEE5]/10">
+          <span className="font-mono text-xs text-[#D1B77D] uppercase tracking-[0.2em] mr-2 flex items-center gap-1.5">
+            <Compass className="w-3.5 h-3.5 text-[#D1B77D]" />
+            DATA LAYERS:
           </span>
-          {datasetOptions.map((opt) => {
-            const isActive = activeDataset === opt.id;
+          {layerNavList.map((item) => {
+            const layer = SCIENTIFIC_LAYERS[item.id];
+            const isActive = activeDataset === item.id;
             return (
               <button
-                key={opt.id}
-                onClick={() => setActiveDataset(opt.id)}
-                className={`inline-flex items-center gap-2.5 px-4 py-2 text-xs font-sans tracking-wide uppercase transition-all duration-300 cursor-pointer rounded-full ${
+                key={item.id}
+                onClick={() => handleSelectLayer(item.id)}
+                className={`inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 text-xs font-sans tracking-wide uppercase transition-all duration-300 cursor-pointer rounded-full ${
                   isActive
-                    ? 'bg-[#F0EEE5] text-[#111820] font-semibold shadow-[0_4px_20px_rgba(240,238,229,0.15)]'
+                    ? 'bg-[#F0EEE5] text-[#111820] font-semibold shadow-[0_4px_20px_rgba(240,238,229,0.18)] scale-105'
                     : 'bg-transparent text-[#F0EEE5]/70 border border-[#F0EEE5]/15 hover:border-[#D1B77D] hover:text-[#D1B77D]'
                 }`}
               >
-                <span className={`font-mono text-[10px] ${isActive ? 'text-[#111820]/60' : 'text-[#D1B77D]'}`}>
-                  {opt.number}
+                <span
+                  className={`font-mono text-[10px] ${
+                    isActive ? 'text-[#111820]/60' : 'text-[#D1B77D]'
+                  }`}
+                >
+                  {layer.number}
                 </span>
-                <span style={{ color: isActive ? '#111820' : opt.color }}>{opt.icon}</span>
-                <span>{opt.label}</span>
+                <span style={{ color: isActive ? '#111820' : layer.color }}>{item.icon}</span>
+                <span>{layer.shortLabel}</span>
               </button>
             );
           })}
         </div>
 
-        {/* Main 3D Canvas & Telemetry Grid */}
+        {/* Main 3D Canvas Viewport & Comprehensive Scientific Detail Panel */}
         <div className="explorer-reveal grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* Left Column: 3D Earth Globe Canvas Viewport */}
-          <div className="lg:col-span-8 relative min-h-[520px] sm:min-h-[640px] bg-[#0c1219] border border-[#F0EEE5]/10 overflow-hidden flex flex-col justify-between p-6 sm:p-8">
-            {/* Viewport Top Editorial Info */}
+          <div className="lg:col-span-7 relative min-h-[520px] sm:min-h-[660px] bg-[#0c1219] border border-[#F0EEE5]/10 overflow-hidden flex flex-col justify-between p-6 sm:p-8">
+            {/* Viewport Top Header */}
             <div className="relative z-20 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="font-mono text-xs tracking-widest text-[#D1B77D] uppercase">
-                  ACTIVE SENSOR: {dataset.shortCode}
+                  ACTIVE LAYER: {activeLayer.shortLabel}
                 </span>
                 <span className="hidden sm:inline text-[#F0EEE5]/20">•</span>
                 <span className="hidden sm:inline font-sans text-xs text-[#F0EEE5]/70">
-                  {dataset.satellitePlatform}
+                  {activeLayer.leadAgency}
                 </span>
               </div>
 
               <div className="flex items-center gap-2">
+                {activeSentinelId && (
+                  <button
+                    onClick={handleBackToOverview}
+                    className="px-3 py-1.5 border border-[#D1B77D]/60 bg-[#D1B77D]/10 hover:bg-[#D1B77D]/20 text-[#D1B77D] text-xs font-mono tracking-wider uppercase transition-colors rounded-full cursor-pointer"
+                  >
+                    RESET VIEW
+                  </button>
+                )}
                 <button
                   onClick={() => setGlobeRotating(!globeRotating)}
                   className={`p-2 border text-xs font-mono transition-all cursor-pointer rounded-full ${
@@ -192,96 +322,129 @@ export const EarthExplorerSection: React.FC = () => {
               <EarthCanvas interactive={true} />
             </div>
 
-            {/* Viewport Bottom Overlay: Vantage Cues */}
+            {/* Viewport Bottom Overlay: Interactive Instructions */}
             <div className="relative z-20 flex flex-wrap items-end justify-between pt-4 border-t border-[#F0EEE5]/10 text-xs font-mono text-[#F0EEE5]/60">
               <div className="flex flex-col gap-1">
-                <span className="text-[#D1B77D]">
-                  INTERACTION: DRAG TO ROTATE GLOBE • SELECT SENTINEL PINS
+                <span className="text-[#D1B77D] flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#E16D54]" />
+                  DRAG GLOBE TO ROTATE • SCROLL TO ZOOM • SELECT BEACONS
                 </span>
                 <span className="text-[11px] text-[#F0EEE5]/40">
-                  OPTICAL CALIBRATION: RAYLEIGH SCATTERING WITH GEOGRAPHIC BEACONS
+                  RAYLEIGH SCATTERING WITH GEOGRAPHICALLY VERIFIED OBSERVATORIES
                 </span>
               </div>
               <div className="text-right hidden sm:block">
-                <span className="text-[#F0EEE5]/40">POLAR INCLINATION: </span>
-                <span className="text-[#F0EEE5]/80">23.4° AXIAL TILT</span>
+                <span className="text-[#F0EEE5]/40">POLAR TILT: </span>
+                <span className="text-[#F0EEE5]/80">23.44° EQUATORIAL EPOCH</span>
               </div>
             </div>
           </div>
 
-          {/* Right Column: Editorial Scientific Telemetry & Sentinel Cards */}
-          <div className="lg:col-span-4 flex flex-col gap-6 justify-between">
+          {/* Right Column: Editorial Scientific Detail Panel */}
+          <div className="lg:col-span-5 flex flex-col gap-6 justify-between">
             {/* Active Climate Sentinel Station Card (If Selected or Hovered) */}
             {currentSentinel ? (
-              <Panel className="border-[#D1B77D]/40 bg-[#17222c]/90 flex flex-col justify-between">
+              <Panel className="border-[#D1B77D]/50 bg-[#162330]/95 flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#F0EEE5]/10">
                     <div className="flex items-center gap-2 text-[#D1B77D]">
-                      <MapPin className="w-4 h-4" />
+                      <MapPin className="w-4 h-4 text-[#E16D54]" />
                       <span className="font-mono text-xs uppercase tracking-widest font-semibold">
-                        CLIMATE SENTINEL PIN
+                        VERIFIED CLIMATE OBSERVATORY
                       </span>
                     </div>
-                    {activeSentinelId && (
-                      <button
-                        onClick={() => selectSentinel(null)}
-                        className="text-[#F0EEE5]/60 hover:text-white transition-colors"
-                        aria-label="Close Sentinel Details"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    )}
+                    <button
+                      onClick={handleBackToOverview}
+                      className="text-[#F0EEE5]/60 hover:text-white transition-colors cursor-pointer"
+                      title="Back to Global Overview"
+                      aria-label="Back to Global Overview"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
                   </div>
 
-                  <h4 className="font-display text-xl font-bold text-[#F0EEE5] mb-1">
+                  <h4 className="font-display text-2xl font-bold text-[#F0EEE5] mb-1">
                     {currentSentinel.name}
                   </h4>
-                  <span className="font-mono text-xs text-[#D1B77D] block mb-3">
-                    {currentSentinel.lat > 0 ? `${currentSentinel.lat}° N` : `${Math.abs(currentSentinel.lat)}° S`},{' '}
-                    {currentSentinel.lng > 0 ? `${currentSentinel.lng}° E` : `${Math.abs(currentSentinel.lng)}° W`}{' '}
-                    <span className="text-[#F0EEE5]/40 font-sans">({currentSentinel.stationCode})</span>
-                  </span>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="font-mono text-xs text-[#D1B77D]">
+                      {currentSentinel.lat > 0
+                        ? `${currentSentinel.lat.toFixed(2)}°N`
+                        : `${Math.abs(currentSentinel.lat).toFixed(2)}°S`}
+                      ,{' '}
+                      {currentSentinel.lng > 0
+                        ? `${currentSentinel.lng.toFixed(2)}°E`
+                        : `${Math.abs(currentSentinel.lng).toFixed(2)}°W`}
+                    </span>
+                    <span className="text-[#F0EEE5]/30">•</span>
+                    <span className="font-mono text-xs text-[#F0EEE5]/60">
+                      ID: {currentSentinel.stationCode}
+                    </span>
+                  </div>
 
-                  <p className="font-sans text-xs sm:text-sm text-[#F0EEE5]/80 leading-relaxed mb-5 font-light">
+                  <p className="font-sans text-xs sm:text-sm text-[#F0EEE5]/85 leading-relaxed mb-5 font-light">
                     {currentSentinel.description}
                   </p>
 
                   <div className="p-4 bg-[#111820]/80 border border-[#F0EEE5]/10 space-y-2 text-xs font-mono mb-5">
                     <div className="flex justify-between">
-                      <span className="text-[#F0EEE5]/50">Sensor:</span>
-                      <span className="text-[#F0EEE5] truncate max-w-[170px]">{currentSentinel.instrument}</span>
+                      <span className="text-[#F0EEE5]/50">Primary Sensor:</span>
+                      <span className="text-[#F0EEE5] truncate max-w-[200px]">
+                        {currentSentinel.instrument}
+                      </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-[#F0EEE5]/50">Baseline:</span>
-                      <span className="text-[#D1B77D] truncate max-w-[170px]">{currentSentinel.baseline}</span>
+                      <span className="text-[#F0EEE5]/50">Baseline Reference:</span>
+                      <span className="text-[#D1B77D] truncate max-w-[200px]">
+                        {currentSentinel.baseline}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                <button
-                  onClick={() => handleAuditSentinel(currentSentinel.id)}
-                  className="w-full py-3 px-4 text-xs font-sans tracking-widest uppercase bg-[#E16D54] hover:bg-[#EB7B63] text-[#F0EEE5] font-semibold transition-all duration-300 rounded-full flex items-center justify-center gap-2 cursor-pointer shadow-[0_4px_20px_rgba(225,109,84,0.25)]"
-                >
-                  <Radio className="w-3.5 h-3.5 animate-pulse" />
-                  <span>AUDIT SENTINEL FREQUENCY</span>
-                </button>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={handleListenToData}
+                    className="flex-1 py-3 px-4 text-xs font-sans tracking-widest uppercase bg-[#E16D54] hover:bg-[#EB7B63] text-[#F0EEE5] font-semibold transition-all duration-300 rounded-full flex items-center justify-center gap-2 cursor-pointer shadow-[0_4px_20px_rgba(225,109,84,0.3)]"
+                  >
+                    <Headphones className="w-4 h-4" />
+                    <span>LISTEN TO THIS DATA</span>
+                  </button>
+
+                  <button
+                    onClick={handleBackToOverview}
+                    className="py-3 px-4 text-xs font-sans tracking-wider uppercase border border-[#F0EEE5]/20 hover:border-[#D1B77D] text-[#F0EEE5]/80 hover:text-[#D1B77D] transition-colors rounded-full cursor-pointer text-center"
+                  >
+                    RESET OVERVIEW
+                  </button>
+                </div>
               </Panel>
             ) : null}
 
-            {/* Scientific Layer Metric Panel */}
+            {/* Scientific Layer Detail Panel */}
             <Panel className="flex-1 flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="font-mono text-xs text-[#D1B77D] tracking-widest uppercase">
-                    MEASUREMENT ({latestDataPoint.year})
-                  </span>
-                  <span
-                    className="w-2.5 h-2.5 rounded-full"
-                    style={{ backgroundColor: dataset.themeColor }}
-                  />
+                {/* Header Tag with Agency Badge */}
+                <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#F0EEE5]/10">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="w-2.5 h-2.5 rounded-full"
+                      style={{ backgroundColor: activeLayer.color }}
+                    />
+                    <span className="font-mono text-xs text-[#D1B77D] tracking-widest uppercase font-medium">
+                      {activeLayer.category}
+                    </span>
+                  </div>
+                  <Badge variant="paper">{activeLayer.leadAgency}</Badge>
                 </div>
 
-                <div className="flex items-baseline gap-2 mb-2">
+                {/* Layer Master Scientific Title */}
+                <h3 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#F0EEE5] mb-2 leading-tight">
+                  {activeLayer.scientificTitle}
+                </h3>
+
+                {/* Measurement Metric Callout */}
+                <div className="flex items-baseline gap-2 mb-3">
                   <span
                     className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#F0EEE5]"
                   >
@@ -289,47 +452,75 @@ export const EarthExplorerSection: React.FC = () => {
                       ? `+${latestDataPoint.value}`
                       : latestDataPoint.value}
                   </span>
-                  <span className="font-mono text-xs text-[#F0EEE5]/60">{dataset.unit}</span>
+                  <span className="font-mono text-xs text-[#F0EEE5]/60">{activeLayer.unit}</span>
+                  <span className="text-xs font-mono text-[#D1B77D] ml-2">
+                    ({latestDataPoint.year})
+                  </span>
                 </div>
 
-                <p className="font-mono text-xs text-[#D1B77D]/90 mb-4">
-                  Baseline: {dataset.baseline}
+                {/* Layer Description */}
+                <p className="font-sans text-xs sm:text-sm text-[#F0EEE5]/80 leading-relaxed mb-5 font-light">
+                  {activeLayer.description}
                 </p>
 
-                <p className="font-sans text-xs sm:text-sm text-[#F0EEE5]/80 leading-relaxed mb-6 font-light">
-                  {dataset.description}
-                </p>
+                {/* Scientific Explanation Box */}
+                <div className="p-4 bg-[#111820]/70 border border-[#F0EEE5]/10 mb-5 space-y-2">
+                  <span className="font-mono text-[11px] text-[#D1B77D] uppercase tracking-wider block font-medium">
+                    SCIENTIFIC PHENOMENON & MECHANISM:
+                  </span>
+                  <p className="font-sans text-xs text-[#F0EEE5]/85 leading-relaxed font-normal">
+                    {activeLayer.scientificExplanation}
+                  </p>
+                </div>
 
-                <div className="p-4 bg-[#111820]/60 border border-[#F0EEE5]/10 space-y-2.5 mb-6 text-xs font-mono">
-                  <div className="flex justify-between">
-                    <span className="text-[#F0EEE5]/50">Agency:</span>
-                    <span className="text-[#F0EEE5]">{dataset.leadAgency}</span>
+                {/* Key Metadata Table */}
+                <div className="grid grid-cols-2 gap-3 mb-6 text-xs font-mono">
+                  <div className="p-3 bg-[#111820]/50 border border-[#F0EEE5]/10">
+                    <span className="text-[#F0EEE5]/50 block text-[10px] uppercase">
+                      TIME RANGE
+                    </span>
+                    <span className="text-[#D1B77D] font-medium">{activeLayer.timeRange}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-[#F0EEE5]/50">Instrument:</span>
-                    <span className="text-[#F0EEE5]">{dataset.instrument}</span>
+
+                  <div className="p-3 bg-[#111820]/50 border border-[#F0EEE5]/10">
+                    <span className="text-[#F0EEE5]/50 block text-[10px] uppercase">
+                      PRIMARY SENSOR
+                    </span>
+                    <span className="text-[#F0EEE5] font-medium truncate block">
+                      {activeLayer.instrument}
+                    </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-[#F0EEE5]/50">Epoch:</span>
-                    <span className="text-[#D1B77D]">{dataset.temporalRange}</span>
+
+                  <div className="col-span-2 p-3 bg-[#111820]/50 border border-[#F0EEE5]/10">
+                    <span className="text-[#F0EEE5]/50 block text-[10px] uppercase">
+                      NASA EIC VISUALIZATION
+                    </span>
+                    <span className="text-[#F0EEE5] font-medium flex items-center justify-between">
+                      <span>{activeLayer.nasaVisualization}</span>
+                      <Sparkles className="w-3.5 h-3.5 text-[#D1B77D]" />
+                    </span>
                   </div>
                 </div>
               </div>
 
-              {/* Sonification Mapping Summary */}
-              <div className="pt-4 border-t border-[#F0EEE5]/10">
-                <div className="flex items-center gap-2 mb-2 text-[#E16D54] font-mono text-xs uppercase tracking-widest">
-                  <Volume2 className="w-3.5 h-3.5" />
-                  <span>ACOUSTIC TRANSLATION</span>
-                </div>
-                <p className="font-sans text-xs text-[#F0EEE5]/85 mb-2 font-normal">
-                  <strong className="font-medium text-[#F0EEE5]">{dataset.sonificationRule.acousticParameter}:</strong>{' '}
-                  {dataset.sonificationRule.musicalMapping}
-                </p>
-                <div className="flex items-center justify-between text-[11px] font-mono text-[#F0EEE5]/50">
-                  <span>Frequency: {dataset.sonificationRule.frequencyRange}</span>
-                  <span className="text-[#D1B77D]">Deterministic Synthesis</span>
-                </div>
+              {/* Action Buttons: Listen & Jukebox Navigation */}
+              <div className="pt-4 border-t border-[#F0EEE5]/10 flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={handleListenToData}
+                  className="flex-1 py-3.5 px-6 text-xs font-sans tracking-widest uppercase bg-[#F0EEE5] hover:bg-white text-[#111820] font-semibold transition-all duration-300 rounded-full flex items-center justify-center gap-2 cursor-pointer shadow-[0_4px_20px_rgba(240,238,229,0.2)] active:scale-[0.98]"
+                >
+                  <Headphones className="w-4 h-4 text-[#111820]" />
+                  <span>LISTEN TO THIS DATA</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-[#111820]" />
+                </button>
+
+                <button
+                  onClick={handleViewInJukebox}
+                  className="py-3.5 px-5 text-xs font-sans tracking-wider uppercase border border-[#F0EEE5]/20 hover:border-[#D1B77D] text-[#F0EEE5]/80 hover:text-[#D1B77D] transition-colors rounded-full cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <span>VIEW EIC JUKEBOX</span>
+                  <ExternalLink className="w-3 h-3 text-[#D1B77D]" />
+                </button>
               </div>
             </Panel>
           </div>

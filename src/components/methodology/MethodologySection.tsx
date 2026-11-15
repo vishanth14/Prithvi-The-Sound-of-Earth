@@ -122,29 +122,30 @@ export const MethodologySection: React.FC = () => {
     <section
       ref={sectionRef}
       id="methodology"
-      className="relative w-full py-24 px-4 sm:px-6 lg:px-8 border-t border-white/[0.06] z-10"
+      className="relative w-full py-28 px-6 sm:px-10 lg:px-16 border-t border-[#F0EEE5]/10 z-10 bg-[#111820]"
     >
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto space-y-12">
         <SectionHeader
-          number="07"
-          category="METHODOLOGY & CREDITS"
-          title="SOURCES, SCIENTIFIC CITATIONS & PROJECT INFORMATION"
-          subtitle="PRITHVI is built upon open NASA Earth observation data architectures, honoring rigorous open-science principles and multimodal accessibility."
-          badge="OPEN SCIENCE CITATIONS"
+          number="05.5"
+          category="METHODOLOGY & CITATIONS"
+          title="OPEN SCIENCE CITATIONS & METHODOLOGY"
+          subtitle="PRITHVI is built upon open NASA Earth observation data architectures, honoring rigorous open-science principles, WCAG 2.2 AA accessibility, and transparent telemetry verification."
+          badge="OPEN SCIENCE"
+          badgeVariant="sand"
         />
 
         {/* Open Science Data Export Action Banner */}
-        <Panel className="mb-12 border-cyan-500/30 bg-cyan-950/20 flex flex-col sm:flex-row items-center justify-between gap-4 p-5 sm:p-6">
-          <div className="flex items-center gap-3.5">
-            <div className="p-2.5 border border-cyan-400/30 bg-cyan-900/30 text-cyan-300">
+        <Panel className="border-[#D1B77D]/25 bg-[#0C1017] flex flex-col sm:flex-row items-center justify-between gap-5 p-6 sm:p-8 rounded-sm">
+          <div className="flex items-center gap-4">
+            <div className="p-3 border border-[#F0EEE5]/15 bg-[#111820] text-[#D1B77D] rounded-sm shrink-0">
               <FileSpreadsheet className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-display text-base sm:text-lg font-bold text-white">
+              <h3 className="font-serif text-xl sm:text-2xl font-normal text-[#F0EEE5]">
                 Download Calibrated Earth Observations (CSV)
               </h3>
-              <p className="font-sans text-xs text-slate-300">
-                Export all validated NASA EIC multi-decadal time-series (GISTEMP, Mauna Loa CO₂, PO.DAAC Sea Level, GEOS Aerosols, VIIRS Radiance) for independent research or evaluation.
+              <p className="font-sans text-xs sm:text-sm text-[#F0EEE5]/75 mt-1 leading-relaxed">
+                Export all validated NASA EIC multi-decadal time-series (GISTEMP, Mauna Loa CO₂, PO.DAAC Sea Level, GEOS Aerosols, VIIRS Radiance) for independent verification or research.
               </p>
             </div>
           </div>
@@ -162,41 +163,41 @@ export const MethodologySection: React.FC = () => {
         </Panel>
 
         {/* Scientific Sources Grid */}
-        <div className="space-y-4 mb-16">
-          <span className="font-mono text-xs text-slate-400 uppercase tracking-widest block mb-2">
+        <div className="space-y-4">
+          <span className="font-mono text-xs text-[#D1B77D] uppercase tracking-[0.2em] block mb-2 font-semibold">
             OFFICIAL SCIENTIFIC DATA REPOSITORIES:
           </span>
 
           {sources.map((s, idx) => (
             <Panel
               key={idx}
-              className="source-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              className="source-card p-5 sm:p-6 bg-[#0C1017] border-[#F0EEE5]/10 flex flex-col sm:flex-row sm:items-center justify-between gap-5 rounded-sm"
             >
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <div className="flex items-center gap-2">
-                  <Database className="w-3.5 h-3.5 text-cyan-400" />
-                  <span className="font-display font-semibold text-sm sm:text-base text-white">
+                  <Database className="w-3.5 h-3.5 text-[#D1B77D]" />
+                  <span className="font-serif text-lg font-normal text-[#F0EEE5]">
                     {s.title}
                   </span>
                 </div>
-                <p className="font-mono text-xs text-slate-400">{s.agency}</p>
-                <p className="font-sans text-xs text-slate-300 italic">{s.citation}</p>
+                <p className="font-mono text-xs text-[#D1B77D]">{s.agency}</p>
+                <p className="font-serif italic text-xs text-[#F0EEE5]/75">{s.citation}</p>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-3 shrink-0">
                 <button
                   onClick={() => handleCopyCitation(s.citation, idx)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono border border-white/10 hover:border-white/30 text-slate-300 hover:text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-mono border border-[#F0EEE5]/15 hover:border-[#D1B77D] text-[#F0EEE5]/70 hover:text-[#F0EEE5] transition-colors cursor-pointer rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D1B77D]"
                   title="Copy BibTeX / APA citation to clipboard"
                 >
                   {copiedCitationIdx === idx ? (
                     <>
-                      <Check className="w-3 h-3 text-emerald-400" />
-                      <span className="text-emerald-400">COPIED</span>
+                      <Check className="w-3 h-3 text-[#10B981]" />
+                      <span className="text-[#10B981]">COPIED</span>
                     </>
                   ) : (
                     <>
-                      <Copy className="w-3 h-3 text-slate-400" />
+                      <Copy className="w-3 h-3 text-[#F0EEE5]/50" />
                       <span>COPY CITATION</span>
                     </>
                   )}
@@ -206,7 +207,7 @@ export const MethodologySection: React.FC = () => {
                   href={s.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono border border-cyan-500/30 bg-cyan-950/20 hover:border-cyan-400 hover:text-cyan-300 text-slate-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-mono border border-[#D1B77D]/30 bg-[#F0EEE5]/5 hover:border-[#D1B77D] text-[#F0EEE5] hover:text-[#D1B77D] transition-colors rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D1B77D]"
                 >
                   <span>DATA ARCHIVE</span>
                   <ExternalLink className="w-3 h-3" />
@@ -217,57 +218,57 @@ export const MethodologySection: React.FC = () => {
         </div>
 
         {/* Space Apps Mission Information & Accessibility Statement */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8 border-t border-white/[0.08] mb-12">
-          <Panel className="flex flex-col justify-between">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 pt-8 border-t border-[#F0EEE5]/10">
+          <Panel className="flex flex-col justify-between bg-[#0C1017] border-[#F0EEE5]/10 p-7 sm:p-8 rounded-sm">
             <div>
-              <div className="flex items-center gap-2 mb-3 text-cyan-400">
+              <div className="flex items-center gap-2 mb-4 pb-2 border-b border-[#F0EEE5]/10 text-[#D1B77D]">
                 <Award className="w-4 h-4" />
-                <span className="font-mono text-xs uppercase tracking-widest">
+                <span className="font-mono text-xs uppercase tracking-[0.2em] font-semibold">
                   CHALLENGE PARTICIPATION
                 </span>
               </div>
-              <h3 className="font-display text-xl font-bold text-white mb-2">
+              <h3 className="font-serif text-2xl font-normal text-[#F0EEE5] mb-3">
                 NASA Space Apps Challenge 2026
               </h3>
-              <p className="font-sans text-xs sm:text-sm text-slate-300 leading-relaxed mb-4">
+              <p className="font-sans text-xs sm:text-sm text-[#F0EEE5]/75 leading-relaxed mb-4">
                 <strong>Challenge:</strong> The Earth Information Jukebox<br />
                 <strong>Team:</strong> MULTIVERSE VENDHAN<br />
                 <strong>Project:</strong> PRITHVI — The Sound of Earth
               </p>
-              <p className="font-sans text-xs text-slate-400 leading-relaxed">
+              <p className="font-serif italic text-xs text-[#F0EEE5]/70 leading-relaxed">
                 Created to empower citizens, educators, and scientists to listen to planetary health
-                and engage with NASA's Earth System Observatory through sound and spatial graphics.
+                and engage with NASA's Earth System Observatory through harmonic sound and spatial graphics.
               </p>
             </div>
           </Panel>
 
-          <Panel className="flex flex-col justify-between">
+          <Panel className="flex flex-col justify-between bg-[#0C1017] border-[#F0EEE5]/10 p-7 sm:p-8 rounded-sm">
             <div>
-              <div className="flex items-center gap-2 mb-3 text-emerald-400">
+              <div className="flex items-center gap-2 mb-4 pb-2 border-b border-[#F0EEE5]/10 text-[#10B981]">
                 <ShieldCheck className="w-4 h-4" />
-                <span className="font-mono text-xs uppercase tracking-widest">
+                <span className="font-mono text-xs uppercase tracking-[0.2em] font-semibold">
                   MULTIMODAL ACCESSIBILITY
                 </span>
               </div>
-              <h3 className="font-display text-xl font-bold text-white mb-2">
+              <h3 className="font-serif text-2xl font-normal text-[#F0EEE5] mb-3">
                 WCAG 2.2 AA Conformance
               </h3>
-              <div className="space-y-2 text-xs font-sans text-slate-300 mb-4">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <div className="space-y-2.5 text-xs font-sans text-[#F0EEE5]/75">
+                <div className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
                   <span><strong>Visual-to-Audio Equivalence:</strong> Every acoustic parameter has a real-time numeric and visual readout.</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <div className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
                   <span><strong>Full Keyboard Navigation:</strong> Global shortcuts [Space, M, ArrowKeys, 1-5, ?] and clear focus rings.</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <div className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
                   <span><strong>Reduced Motion Support:</strong> Automatically softens animations for users with vestibular sensitivities.</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span><strong>High-Contrast Typography:</strong> Optimized IBM Plex Mono, Inter, and Space Grotesk meeting 4.5:1 ratio.</span>
+                <div className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981] shrink-0" />
+                  <span><strong>High-Contrast Typography:</strong> Optimized IBM Plex Mono, Inter, and Newsreader meeting 4.5:1 ratio.</span>
                 </div>
               </div>
             </div>
@@ -275,10 +276,10 @@ export const MethodologySection: React.FC = () => {
         </div>
 
         {/* Global Observatory Footer */}
-        <div className="mt-16 pt-8 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-slate-400">
+        <div className="pt-10 border-t border-[#F0EEE5]/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-[#F0EEE5]/50">
           <div className="flex items-center gap-2">
-            <Globe className="w-3.5 h-3.5 text-cyan-400" />
-            <span>PRITHVI // NASA SPACE APPS 2026 // MULTIVERSE VENDHAN</span>
+            <Globe className="w-3.5 h-3.5 text-[#D1B77D]" />
+            <span>PRITHVI • AN EARTH OBSERVATORY • MULTIVERSE VENDHAN • NASA SPACE APPS 2026</span>
           </div>
           <span>BUILT WITH THREE.JS • REACT THREE FIBER • TONE.JS • GSAP • TAILWIND V4</span>
         </div>

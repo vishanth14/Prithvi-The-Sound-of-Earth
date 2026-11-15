@@ -182,8 +182,8 @@ const AtmosphereRimShader = {
   uniforms: {
     uSunPosition: { value: new THREE.Vector3(-5, 3, 4) },
     uColor: { value: new THREE.Color('#1E5A7A') },
-    uCoefficient: { value: 0.58 },
-    uPower: { value: 4.2 },
+    uCoefficient: { value: 0.35 },
+    uPower: { value: 3.8 },
   },
   vertexShader: `
     varying vec3 vNormal;
@@ -212,13 +212,13 @@ const AtmosphereRimShader = {
       float fresnel = 1.0 - max(dot(viewDir, normal), 0.0);
       float atmosphere = pow(fresnel, uPower) * uCoefficient;
 
-      // Rayleigh sun-phase scattering (brighter towards solar incidence)
+      // Rayleigh sun-phase scattering (gentle forward and back scattering)
       float cosTheta = dot(normal, sunDir);
-      float sunFactor = smoothstep(-0.25, 0.35, cosTheta);
-      float phase = 0.75 * (1.0 + cosTheta * cosTheta);
+      float sunFactor = smoothstep(-0.20, 0.30, cosTheta);
+      float phase = 0.75 * (1.0 + 0.5 * cosTheta * cosTheta);
 
-      vec3 finalColor = uColor * atmosphere * phase * (0.2 + 0.8 * sunFactor);
-      float alpha = atmosphere * (0.22 + 0.78 * sunFactor);
+      vec3 finalColor = uColor * atmosphere * phase * (0.15 + 0.85 * sunFactor);
+      float alpha = clamp(atmosphere * (0.18 + 0.82 * sunFactor), 0.0, 0.85);
 
       gl_FragColor = vec4(finalColor, alpha);
     }
@@ -434,7 +434,20 @@ export const EarthGlobe: React.FC = () => {
     }
   });
 
-  const handleSentinelClick = async (sentinelId: string) => {
+  const pointerDownPos = useRef({ x: 0, y: 0 });
+
+  const handleSentinelPointerDown = (e: any) => {
+    pointerDownPos.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handleSentinelClick = async (e: any, sentinelId: string) => {
+    e.stopPropagation();
+    const dx = e.clientX - pointerDownPos.current.x;
+    const dy = e.clientY - pointerDownPos.current.y;
+    if (Math.hypot(dx, dy) > 8) {
+      // User was dragging the globe, not clicking
+      return;
+    }
     if (!isAudioUnlocked) {
       await unlockAudio();
     }
@@ -476,10 +489,8 @@ export const EarthGlobe: React.FC = () => {
           <group
             key={s.id}
             position={s.pos}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleSentinelClick(s.id);
-            }}
+            onPointerDown={handleSentinelPointerDown}
+            onClick={(e) => handleSentinelClick(e, s.id)}
             onPointerOver={(e) => {
               e.stopPropagation();
               setHoveredSentinelId(s.id);

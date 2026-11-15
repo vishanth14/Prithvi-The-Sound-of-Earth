@@ -39,7 +39,7 @@ const AUDITION_EPOCHS: EpochAudition[] = [
     character: 'Harmonic Resolution',
     explanation:
       'Equilibrium state. Fundamental tone pairs with a natural 3:2 harmonic fifth and serene 48 BPM biological resting pulse.',
-    color: '#06b6d4',
+    color: '#17465B',
   },
   {
     id: '1975',
@@ -54,8 +54,8 @@ const AUDITION_EPOCHS: EpochAudition[] = [
     tensionScore: 0.35,
     character: 'Developing Tension',
     explanation:
-      'Infrared trapping emerges. Cadence accelerates to 69 BPM, harmonics brighten as carbon forcing builds.',
-    color: '#f59e0b',
+      'Infrared trapping emerges. Cadence accelerates to 69 BPM, harmonics brighten as carbon radiative forcing builds.',
+    color: '#D1B77D',
   },
   {
     id: '2026',
@@ -71,7 +71,7 @@ const AUDITION_EPOCHS: EpochAudition[] = [
     character: 'Severe Dissonance',
     explanation:
       'Planetary stress. +1.45°C anomaly introduces a grating minor second clash and urgent 96 BPM distress heartbeat.',
-    color: '#ef4444',
+    color: '#E16D54',
   },
 ];
 
@@ -135,28 +135,28 @@ export const SoundToScienceSection: React.FC = () => {
 
   const principles = [
     {
-      icon: <Brain className="w-5 h-5 text-cyan-400" />,
+      icon: <Brain className="w-5 h-5 text-[#D1B77D]" />,
       title: 'Human Auditory Temporal Resolution',
       description:
-        'The human ear processes temporal transients up to 10× faster than visual saccades. Sonification allows researchers to perceive rapid acceleration and multi-decadal phase changes simultaneously.',
+        'The human ear processes temporal transients up to 10× faster than visual saccades. Sonification allows researchers to perceive rapid acceleration and multi-decadal phase shifts simultaneously.',
     },
     {
-      icon: <Layers className="w-5 h-5 text-amber-400" />,
+      icon: <Layers className="w-5 h-5 text-[#E16D54]" />,
       title: 'Polyphonic Multi-Variable Tracking',
       description:
-        'While 2D visual charts suffer from visual clutter when plotting 5+ dimensions, the human auditory cortex effortlessly segregates independent sound streams (e.g. listening to bass, melody, and rhythm together).',
+        'While 2D visual charts suffer from severe clutter when plotting 5+ dimensions, the human auditory cortex effortlessly segregates independent sound streams into distinct harmonic components.',
     },
     {
-      icon: <Binary className="w-5 h-5 text-rose-400" />,
+      icon: <Binary className="w-5 h-5 text-[#D1B77D]" />,
       title: 'Calibrated Deterministic Mapping',
       description:
-        'Every sound generated in PRITHVI is mathematically bound to empirical NASA observations. There are no randomized embellishments or arbitrary synthesizer presets.',
+        'Every sound synthesized in PRITHVI is mathematically bound to empirical NASA observations. There are zero randomized embellishments, generative hallucinations, or arbitrary synthesizer presets.',
     },
     {
-      icon: <Music className="w-5 h-5 text-emerald-400" />,
+      icon: <Music className="w-5 h-5 text-[#17465B]" />,
       title: 'Psychoacoustic Consonance vs Dissonance',
       description:
-        'Equilibrium conditions (pre-industrial 280 ppm, 0°C anomaly) resolve into pure harmonic fifths. Climate stress introduces minor seconds and tritones, triggering natural biological tension.',
+        'Equilibrium conditions (pre-industrial 280 ppm, 0°C anomaly) resolve into pure harmonic fifths. Climate stress introduces minor seconds and tritones, triggering natural biological urgency.',
     },
   ];
 
@@ -164,31 +164,35 @@ export const SoundToScienceSection: React.FC = () => {
     <section
       ref={sectionRef}
       id="science"
-      className="relative w-full py-24 px-4 sm:px-6 lg:px-8 border-t border-white/[0.06] z-10"
+      className="relative w-full py-28 px-6 sm:px-10 lg:px-16 border-t border-[#F0EEE5]/10 z-10 bg-[#111820]"
     >
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto space-y-12">
         <SectionHeader
-          number="06"
+          number="05"
           category="ACOUSTIC EPISTEMOLOGY"
-          title="SOUND-TO-SCIENCE: THE MECHANICS OF AUDITORY DISPLAY"
-          subtitle="Why sonification? Acoustic data analysis uncovers hidden temporal cycles and interdependencies across Earth system components that 2D static visual graphs cannot convey."
+          title="SOUND-TO-SCIENCE: AUDITORY DISPLAY MECHANICS"
+          subtitle="Why sonification? Acoustic data analysis uncovers hidden temporal cycles and interdependencies across Earth system components that static 2D graphs cannot convey."
           badge="SCIENTIFIC METHOD"
+          badgeVariant="sand"
         />
 
         {/* 4 Core Scientific Sonification Principles */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
           {principles.map((p, idx) => (
-            <Panel key={idx} className="science-card flex flex-col justify-between">
+            <Panel
+              key={idx}
+              className="science-card flex flex-col justify-between bg-[#0C1017] border-[#F0EEE5]/10 p-7"
+            >
               <div>
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 border border-white/10 bg-white/[0.02]">
+                <div className="flex items-center gap-3.5 mb-4">
+                  <div className="p-2.5 border border-[#F0EEE5]/15 bg-[#111820] rounded-sm">
                     {p.icon}
                   </div>
-                  <h3 className="font-display text-lg font-semibold text-white">
+                  <h3 className="font-serif text-xl font-normal text-[#F0EEE5]">
                     {p.title}
                   </h3>
                 </div>
-                <p className="font-sans text-xs sm:text-sm text-slate-300 leading-relaxed">
+                <p className="font-sans text-xs sm:text-sm text-[#F0EEE5]/75 leading-relaxed">
                   {p.description}
                 </p>
               </div>
@@ -197,31 +201,35 @@ export const SoundToScienceSection: React.FC = () => {
         </div>
 
         {/* Mathematical Formulation Showcase */}
-        <Panel className="border-cyan-500/20 bg-cyan-950/10">
-          <div className="flex items-center gap-2 mb-4 text-cyan-400">
+        <Panel className="border-[#D1B77D]/25 bg-[#0C1017] p-7 sm:p-8">
+          <div className="flex items-center gap-2 mb-5 pb-3 border-b border-[#F0EEE5]/10 text-[#D1B77D]">
             <Sliders className="w-4 h-4" />
-            <span className="font-mono text-xs uppercase tracking-widest">
+            <span className="font-mono text-xs uppercase tracking-[0.2em] font-semibold">
               DETERMINISTIC TRANSFER EQUATIONS
             </span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs font-mono">
-            <div className="p-4 bg-black/40 border border-white/5 space-y-2">
-              <span className="text-slate-400 block text-[11px]">// 01 THERMAL FREQUENCY EQUATION</span>
-              <div className="text-cyan-300 text-sm font-semibold">
+            <div className="p-4 bg-[#111820] border border-[#F0EEE5]/10 space-y-2 rounded-sm">
+              <span className="text-[#D1B77D] block text-[11px] uppercase tracking-wider font-semibold">
+                // 01 THERMAL FREQUENCY EQUATION
+              </span>
+              <div className="text-[#F0EEE5] text-base font-bold font-mono">
                 f(ΔT) = 220 · 2^(ΔT / 1.2) [Hz]
               </div>
-              <p className="text-slate-400 font-sans text-xs leading-normal">
-                Maps GISTEMP global temperature deviation (ΔT) to fundamental frequency. Each +1.2°C anomaly doubles the pitch octave.
+              <p className="text-[#F0EEE5]/70 font-sans text-xs leading-relaxed">
+                Maps GISTEMP global temperature deviation (ΔT) to fundamental pitch frequency. Each +1.2°C anomaly doubles the pitch octave.
               </p>
             </div>
 
-            <div className="p-4 bg-black/40 border border-white/5 space-y-2">
-              <span className="text-slate-400 block text-[11px]">// 02 CARBON CADENCE EQUATION</span>
-              <div className="text-amber-300 text-sm font-semibold">
+            <div className="p-4 bg-[#111820] border border-[#F0EEE5]/10 space-y-2 rounded-sm">
+              <span className="text-[#E16D54] block text-[11px] uppercase tracking-wider font-semibold">
+                // 02 CARBON CADENCE EQUATION
+              </span>
+              <div className="text-[#F0EEE5] text-base font-bold font-mono">
                 BPM(CO₂) = 48 · (CO₂ / 280)^1.4 [Beats/Min]
               </div>
-              <p className="text-slate-400 font-sans text-xs leading-normal">
+              <p className="text-[#F0EEE5]/70 font-sans text-xs leading-relaxed">
                 Accelerates the subterranean membrane pulse rate from a calm 48 BPM pre-industrial heartbeat to an urgent 96 BPM at present-day levels.
               </p>
             </div>
@@ -229,72 +237,75 @@ export const SoundToScienceSection: React.FC = () => {
         </Panel>
 
         {/* Interactive Psychoacoustic Harmonic Lab */}
-        <div className="mt-12">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-white/[0.08] gap-2">
+        <div className="pt-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-8 border-b border-[#F0EEE5]/10 gap-3">
             <div>
-              <span className="font-mono text-xs text-cyan-400 uppercase tracking-widest flex items-center gap-2">
+              <span className="font-mono text-xs text-[#D1B77D] uppercase tracking-[0.2em] flex items-center gap-2">
                 <Sparkles className="w-3.5 h-3.5" />
                 INTERACTIVE PSYCHOACOUSTIC HARMONIC AUDITION LAB
               </span>
-              <h3 className="font-display text-xl sm:text-2xl font-bold text-white mt-1">
+              <h3 className="font-serif text-2xl sm:text-3xl font-light text-[#F0EEE5] mt-1.5">
                 Hear the Acoustic Shift: Equilibrium vs Planetary Strain
               </h3>
             </div>
-            <span className="text-xs font-mono text-slate-400">
+            <span className="text-xs font-mono text-[#F0EEE5]/50 uppercase tracking-wider">
               CLICK ANY EPOCH TO AUDITION SYNTHESIZED HARMONICS
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {AUDITION_EPOCHS.map((epoch) => {
               const isActive = activeEpochId === epoch.id;
               return (
                 <Panel
                   key={epoch.id}
-                  className={`flex flex-col justify-between transition-all duration-300 border ${
+                  className={`flex flex-col justify-between transition-all duration-300 p-7 bg-[#0C1017] rounded-sm border ${
                     isActive
-                      ? 'border-cyan-400 bg-cyan-950/30 shadow-[0_0_25px_rgba(56,189,248,0.2)]'
-                      : 'border-white/10 bg-white/[0.02] hover:border-white/25'
+                      ? 'border-[#D1B77D] shadow-[0_4px_24px_rgba(209,183,125,0.15)]'
+                      : 'border-[#F0EEE5]/10 hover:border-[#F0EEE5]/25'
                   }`}
                 >
                   <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="font-mono text-xs font-semibold px-2 py-0.5 border" style={{ borderColor: epoch.color, color: epoch.color }}>
+                    <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#F0EEE5]/10">
+                      <span
+                        className="font-mono text-xs font-semibold px-2.5 py-0.5 border rounded-full"
+                        style={{ borderColor: epoch.color, color: epoch.color }}
+                      >
                         {epoch.year} EPOCH
                       </span>
-                      <Badge variant={epoch.tensionScore > 0.5 ? 'crimson' : epoch.tensionScore > 0.2 ? 'amber' : 'cyan'}>
+                      <Badge variant={epoch.tensionScore > 0.5 ? 'signal' : epoch.tensionScore > 0.2 ? 'sand' : 'ocean'}>
                         {epoch.character}
                       </Badge>
                     </div>
 
-                    <h4 className="font-display text-lg font-bold text-white mb-2">
+                    <h4 className="font-serif text-xl font-normal text-[#F0EEE5] mb-2">
                       {epoch.title}
                     </h4>
 
-                    <p className="font-sans text-xs text-slate-300 leading-relaxed mb-4">
+                    <p className="font-sans text-xs text-[#F0EEE5]/75 leading-relaxed mb-5">
                       {epoch.explanation}
                     </p>
 
-                    <div className="p-3 bg-black/50 border border-white/5 space-y-2 font-mono text-xs mb-4">
+                    <div className="p-4 bg-[#111820] border border-[#F0EEE5]/10 space-y-2.5 font-mono text-xs mb-6 rounded-sm">
                       <div className="flex justify-between">
-                        <span className="text-slate-400">Atmospheric CO₂:</span>
-                        <span className="text-white font-bold">{epoch.co2} ppm</span>
+                        <span className="text-[#F0EEE5]/50">Atmospheric CO₂:</span>
+                        <span className="text-[#F0EEE5] font-semibold">{epoch.co2} ppm</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400">Temp Anomaly:</span>
-                        <span className="text-white font-bold">{epoch.anomaly > 0 ? `+${epoch.anomaly}` : epoch.anomaly}°C</span>
+                        <span className="text-[#F0EEE5]/50">Temp Anomaly:</span>
+                        <span className="text-[#E16D54] font-semibold">{epoch.anomaly > 0 ? `+${epoch.anomaly}` : epoch.anomaly}°C</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400">Pitch & Note:</span>
-                        <span className="text-cyan-300 font-bold">{epoch.frequencyHz} Hz ({epoch.noteName})</span>
+                        <span className="text-[#F0EEE5]/50">Pitch & Note:</span>
+                        <span className="text-[#D1B77D] font-semibold">{epoch.frequencyHz} Hz ({epoch.noteName})</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400">Harmonic Ratio:</span>
-                        <span className="text-solar-gold font-bold">{epoch.intervalRatio}</span>
+                        <span className="text-[#F0EEE5]/50">Harmonic Ratio:</span>
+                        <span className="text-[#F0EEE5] font-semibold">{epoch.intervalRatio}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400">Pulse Cadence:</span>
-                        <span className="text-emerald-400 font-bold">{epoch.tempoBpm} BPM</span>
+                        <span className="text-[#F0EEE5]/50">Pulse Cadence:</span>
+                        <span className="text-[#E16D54] font-semibold">{epoch.tempoBpm} BPM</span>
                       </div>
                     </div>
                   </div>

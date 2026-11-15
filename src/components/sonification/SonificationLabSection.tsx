@@ -42,7 +42,7 @@ const EIC_TRACKS: TrackDef[] = [
     trackLabel: 'Track 01 // Thermal PolySynth',
     nominalHz: '146.8 — 739.9 Hz',
     timbreDescription: 'Dual-oscillator triangle + dynamic 24dB/oct low-pass filter',
-    themeColor: '#f59e0b',
+    themeColor: '#D1B77D',
   },
   {
     key: 'co2_maunaloa',
@@ -50,7 +50,7 @@ const EIC_TRACKS: TrackDef[] = [
     trackLabel: 'Track 02 // Anthropocene Pulse',
     nominalHz: '45.0 — 90.0 Hz',
     timbreDescription: 'Sub-bass membrane punch with rate-coupled heartbeat',
-    themeColor: '#ef4444',
+    themeColor: '#E16D54',
   },
   {
     key: 'sealevel_podaac',
@@ -58,7 +58,7 @@ const EIC_TRACKS: TrackDef[] = [
     trackLabel: 'Track 03 // Oceanic Resonance',
     nominalHz: '120.0 — 2400.0 Hz',
     timbreDescription: 'Hydrodynamic brown noise through 4-pole resonant bandpass',
-    themeColor: '#06b6d4',
+    themeColor: '#17465B',
   },
   {
     key: 'aerosols_geos',
@@ -66,7 +66,7 @@ const EIC_TRACKS: TrackDef[] = [
     trackLabel: 'Track 04 // Granular Cloud',
     nominalHz: '329.6 — 493.9 Hz',
     timbreDescription: 'Crystalline FM synthesis with metallic wildfire inharmonicity',
-    themeColor: '#8b5cf6',
+    themeColor: '#8B5CF6',
   },
   {
     key: 'nightlights_viirs',
@@ -74,7 +74,7 @@ const EIC_TRACKS: TrackDef[] = [
     trackLabel: 'Track 05 // Nocturnal Choral',
     nominalHz: '261.6 — 392.0 Hz',
     timbreDescription: 'Warm analog synthesizer pad with pentatonic chord spread',
-    themeColor: '#10b981',
+    themeColor: '#10B981',
   },
 ];
 
@@ -126,7 +126,6 @@ export const SonificationLabSection: React.FC = () => {
       const all = await EicDataService.loadAllDatasets();
       if (isMounted) {
         setDatasets(all);
-        // Load default sequence into audio transport
         const defaultObs = all.gistemp.observations;
         audioTransport.loadSequence(defaultObs, 0);
         const params = mapObservationToAudio(defaultObs[0]);
@@ -198,7 +197,7 @@ export const SonificationLabSection: React.FC = () => {
   // Transport Control Actions
   const handleTogglePlay = async () => {
     if (!isAudioUnlocked) {
-      unlockAudio();
+      await unlockAudio();
     }
     if (transportState === 'PLAYING') {
       audioTransport.pause();
@@ -212,7 +211,7 @@ export const SonificationLabSection: React.FC = () => {
   };
 
   const handleReplay = async () => {
-    if (!isAudioUnlocked) unlockAudio();
+    if (!isAudioUnlocked) await unlockAudio();
     await audioTransport.replay();
   };
 
@@ -232,7 +231,7 @@ export const SonificationLabSection: React.FC = () => {
     audioTransport.seekToIndex(idx, true);
   };
 
-  // Real Web Audio Oscilloscope & 48-Band FFT Loop
+  // Real Web Audio Oscilloscope & 48-Band FFT Loop (Warm Ink & Editorial Accents)
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -246,12 +245,12 @@ export const SonificationLabSection: React.FC = () => {
       const width = (canvas.width = canvas.clientWidth);
       const height = (canvas.height = canvas.clientHeight);
 
-      // Deep observatory background
-      ctx.fillStyle = '#02040a';
+      // Deep Ink background
+      ctx.fillStyle = '#080B10';
       ctx.fillRect(0, 0, width, height);
 
       // Subtle horizontal dB grid lines
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.strokeStyle = 'rgba(240, 238, 229, 0.06)';
       ctx.lineWidth = 1;
       ctx.setLineDash([2, 4]);
 
@@ -260,7 +259,7 @@ export const SonificationLabSection: React.FC = () => {
         { label: '-18 dB', y: height * 0.48 },
         { label: '-30 dB', y: height * 0.74 },
       ];
-      ctx.fillStyle = 'rgba(148, 163, 184, 0.35)';
+      ctx.fillStyle = 'rgba(240, 238, 229, 0.4)';
       ctx.font = '9px "IBM Plex Mono", monospace';
       dbMarkers.forEach((m) => {
         ctx.beginPath();
@@ -286,7 +285,7 @@ export const SonificationLabSection: React.FC = () => {
       ctx.setLineDash([]); // Reset line dash
 
       // Center zero-voltage reference line
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.12)';
+      ctx.strokeStyle = 'rgba(209, 183, 125, 0.15)';
       ctx.beginPath();
       ctx.moveTo(0, height / 2);
       ctx.lineTo(width, height / 2);
@@ -312,28 +311,28 @@ export const SonificationLabSection: React.FC = () => {
         const x = i * (barWidth + 2);
         const y = height - barHeight;
 
-        // Gradient bar
+        // Gradient bar (Warm Editorial styling)
         const grad = ctx.createLinearGradient(0, height, 0, 0);
-        grad.addColorStop(0, 'rgba(56, 189, 248, 0.08)');
+        grad.addColorStop(0, 'rgba(209, 183, 125, 0.08)');
         grad.addColorStop(0.65, currentTrack.themeColor);
-        grad.addColorStop(1, '#ffffff');
+        grad.addColorStop(1, '#F0EEE5');
 
         ctx.fillStyle = grad;
         ctx.fillRect(x, y, barWidth, barHeight);
 
         // Peak hold marker
         if (isSynthesizing && peaks[i] > 6) {
-          ctx.fillStyle = '#ffffff';
+          ctx.fillStyle = '#F0EEE5';
           ctx.fillRect(x, height - peaks[i] - 1.5, barWidth, 1.5);
         }
       }
 
-      // Draw real Web Audio time-domain waveform line with glow
+      // Draw real Web Audio time-domain waveform line
       ctx.shadowColor = currentTrack.themeColor;
       ctx.shadowBlur = isSynthesizing ? 8 : 0;
       ctx.beginPath();
       ctx.lineWidth = 1.75;
-      ctx.strokeStyle = isSynthesizing ? currentTrack.themeColor : 'rgba(255, 255, 255, 0.2)';
+      ctx.strokeStyle = isSynthesizing ? currentTrack.themeColor : 'rgba(240, 238, 229, 0.25)';
 
       const waveStep = Math.max(1, Math.floor(waveData.length / width));
       for (let x = 0; x < width; x++) {
@@ -343,7 +342,7 @@ export const SonificationLabSection: React.FC = () => {
         else ctx.lineTo(x, y);
       }
       ctx.stroke();
-      ctx.shadowBlur = 0; // Reset shadow
+      ctx.shadowBlur = 0;
 
       animId = requestAnimationFrame(render);
     };
@@ -360,29 +359,30 @@ export const SonificationLabSection: React.FC = () => {
     <section
       ref={sectionRef}
       id="sonification"
-      className="relative w-full py-24 px-4 sm:px-6 lg:px-8 border-t border-white/[0.06] z-10"
+      className="relative w-full py-28 px-6 sm:px-10 lg:px-16 border-t border-[#F0EEE5]/10 z-10 bg-[#111820]"
     >
-      <div className="max-w-7xl mx-auto space-y-8">
+      <div className="max-w-7xl mx-auto space-y-10">
         <div className="lab-reveal">
           <SectionHeader
-            number="05"
-            category="AUDIO SYNTHESIS ENGINE"
-            title="REAL-TIME EARTH SONIFICATION LABORATORY"
+            number="04.5"
+            category="ACOUSTIC SYNTHESIS LABORATORY"
+            title="REAL-TIME PLANETARY SONIFICATION"
             subtitle="True real-time auditory display of empirical NASA measurements. Physical data values modulate synthesizer pitch, harmonic dissonance, and rhythmic cadence without prerecorded audio."
-            badge="TONE.JS + WEB AUDIO API"
+            badge="TONE.JS + WEB AUDIO ENGINE"
+            badgeVariant="signal"
           />
         </div>
 
         {/* Audio Context Unlock Prompt (If Suspended) */}
         {!isAudioUnlocked && (
-          <div className="lab-reveal p-4 bg-cyan-950/40 border border-cyan-400/40 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <Radio className="w-5 h-5 text-cyan-400 animate-pulse" />
+          <div className="lab-reveal p-5 bg-[#E16D54]/10 border border-[#E16D54]/30 rounded-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <Radio className="w-5 h-5 text-[#E16D54] animate-pulse" />
               <div>
-                <h4 className="font-display font-semibold text-white text-sm">
+                <h4 className="font-sans font-semibold text-[#F0EEE5] text-sm uppercase tracking-wide">
                   BROWSER AUDIO SUSPENDED (AUTOPLAY POLICY)
                 </h4>
-                <p className="font-sans text-xs text-slate-300">
+                <p className="font-serif italic text-xs text-[#F0EEE5]/75">
                   Initialize the Web Audio API context to enable real-time synthesis and auditory display.
                 </p>
               </div>
@@ -394,11 +394,11 @@ export const SonificationLabSection: React.FC = () => {
         )}
 
         {/* Master Jukebox Rack Panel */}
-        <div className="lab-reveal grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        <div className="lab-reveal grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* Left Console: 5 EIC Track Channels */}
           <div className="lg:col-span-5 flex flex-col gap-3">
-            <span className="font-mono text-xs text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-2">
-              <Disc className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="font-mono text-xs text-[#D1B77D] uppercase tracking-[0.2em] mb-1 flex items-center gap-2">
+              <Disc className="w-3.5 h-3.5 text-[#D1B77D]" />
               EIC JUKEBOX CHANNELS:
             </span>
 
@@ -419,31 +419,31 @@ export const SonificationLabSection: React.FC = () => {
                       handleSelectTrack(track.key);
                     }
                   }}
-                  className={`p-3.5 border transition-all cursor-pointer flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+                  className={`p-4 border transition-all duration-200 cursor-pointer flex items-center justify-between rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D1B77D] ${
                     isSelected
-                      ? 'border-cyan-400 bg-cyan-950/40 text-white shadow-[0_0_15px_rgba(56,189,248,0.15)]'
-                      : 'border-white/10 bg-white/[0.02] text-slate-400 hover:text-white hover:border-white/20'
+                      ? 'border-[#D1B77D] bg-[#F0EEE5]/10 text-[#F0EEE5] shadow-[0_4px_16px_rgba(209,183,125,0.12)]'
+                      : 'border-[#F0EEE5]/10 bg-[#0C1017] text-[#F0EEE5]/70 hover:text-[#F0EEE5] hover:border-[#D1B77D]/40'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3.5">
                     <Disc
-                      className={`w-4 h-4 ${isPlaying ? 'animate-spin text-cyan-400' : 'text-slate-400'}`}
+                      className={`w-4 h-4 ${isPlaying ? 'animate-spin text-[#D1B77D]' : 'text-[#F0EEE5]/40'}`}
                     />
                     <div className="flex flex-col">
-                      <span className="font-mono text-[11px] text-cyan-400/90 tracking-wider">
+                      <span className="font-mono text-[11px] text-[#D1B77D] tracking-wider uppercase">
                         {track.trackLabel}
                       </span>
-                      <span className="font-display font-medium text-sm text-slate-200">
+                      <span className="font-serif text-base font-normal text-[#F0EEE5]">
                         {track.name}
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-end text-[10px] font-mono text-slate-400">
-                    <span className="text-white font-semibold">
+                  <div className="flex flex-col items-end text-[10px] font-mono text-[#F0EEE5]/60">
+                    <span className="text-[#F0EEE5] font-semibold">
                       {isSelected && activeParams ? `${activeParams.tempoBpm} BPM` : 'AUTO BPM'}
                     </span>
-                    <span className="text-cyan-400/80">{track.nominalHz}</span>
+                    <span className="text-[#D1B77D]">{track.nominalHz}</span>
                   </div>
                 </div>
               );
@@ -451,18 +451,18 @@ export const SonificationLabSection: React.FC = () => {
           </div>
 
           {/* Right Console: Live Waveform Visualizer & Transport Deck */}
-          <Panel className="lg:col-span-7 flex flex-col justify-between p-6 bg-[#020510]/90">
+          <Panel className="lg:col-span-7 flex flex-col justify-between p-6 sm:p-7 bg-[#0C1017] border-[#F0EEE5]/10">
             <div>
               {/* Visualizer Top Bar */}
-              <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/[0.08]">
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#F0EEE5]/10">
                 <div className="flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-cyan-400" />
-                  <span className="font-mono text-xs text-white uppercase tracking-wider">
+                  <Activity className="w-4 h-4 text-[#D1B77D]" />
+                  <span className="font-mono text-xs text-[#F0EEE5] uppercase tracking-wider font-semibold">
                     LIVE SPECTRAL OSCILLOGRAM: {activeTrack.name.toUpperCase()}
                   </span>
                 </div>
                 <Badge
-                  variant={transportState === 'PLAYING' && !isMuted ? 'cyan' : 'neutral'}
+                  variant={transportState === 'PLAYING' && !isMuted ? 'signal' : 'sand'}
                   pulse={transportState === 'PLAYING'}
                 >
                   {transportState === 'PLAYING' && !isMuted ? 'SYNTHESIZING LIVE' : transportState}
@@ -470,13 +470,13 @@ export const SonificationLabSection: React.FC = () => {
               </div>
 
               {/* Waveform Canvas & Multimodal Visual Audio Activity Meter */}
-              <div className="relative w-full h-44 sm:h-48 bg-[#02040a] border border-white/10 mb-4 overflow-hidden">
+              <div className="relative w-full h-44 sm:h-48 bg-[#080B10] border border-[#F0EEE5]/10 mb-4 overflow-hidden rounded-sm">
                 <canvas ref={canvasRef} className="w-full h-full" />
-                <div className="absolute top-2 right-2 text-[10px] font-mono text-slate-400 bg-black/70 px-2 py-0.5 border border-white/10 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+                <div className="absolute top-2 right-2 text-[10px] font-mono text-[#F0EEE5]/60 bg-[#111820]/80 px-2 py-0.5 border border-[#F0EEE5]/10 flex items-center gap-1.5 rounded-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#E16D54] animate-ping" />
                   <span>FFT 48-BAND SPECTRUM</span>
                 </div>
-                <div className="absolute bottom-2 left-2 text-[10px] font-mono text-cyan-300 bg-black/70 px-2 py-0.5 border border-white/10 flex items-center gap-2">
+                <div className="absolute bottom-2 left-2 text-[10px] font-mono text-[#D1B77D] bg-[#111820]/80 px-2 py-0.5 border border-[#F0EEE5]/10 flex items-center gap-2 rounded-sm">
                   <span>
                     {activeParams
                       ? `${activeParams.frequencyHz} Hz (${activeParams.noteName}${
@@ -484,7 +484,6 @@ export const SonificationLabSection: React.FC = () => {
                         })`
                       : 'AWAITING PLAYHEAD'}
                   </span>
-                  {/* Multimodal visual activity surrogate for hearing-impaired accessibility */}
                   <span
                     className="inline-block w-1.5 h-1.5 rounded-full"
                     style={{
@@ -504,39 +503,39 @@ export const SonificationLabSection: React.FC = () => {
               </div>
 
               {/* Live Telemetry KPI Strip */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3 bg-white/[0.02] border border-white/5 mb-4 text-xs font-mono">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 bg-[#111820] border border-[#F0EEE5]/10 mb-4 text-xs font-mono rounded-sm">
                 <div>
-                  <span className="text-slate-400 block text-[10px]">CURRENT PITCH:</span>
-                  <span className="text-solar-gold font-bold">
+                  <span className="text-[#F0EEE5]/50 block text-[10px] uppercase">CURRENT PITCH:</span>
+                  <span className="text-[#D1B77D] font-bold">
                     {activeParams ? `${activeParams.frequencyHz} Hz` : '—'}
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px]">NOTE EQUIVALENT:</span>
-                  <span className="text-cyan-300 font-bold">
+                  <span className="text-[#F0EEE5]/50 block text-[10px] uppercase">NOTE EQUIVALENT:</span>
+                  <span className="text-[#F0EEE5] font-bold">
                     {activeParams ? activeParams.noteName : '—'}
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px]">CADENCE TEMPO:</span>
-                  <span className="text-emerald-400 font-bold">
+                  <span className="text-[#F0EEE5]/50 block text-[10px] uppercase">CADENCE TEMPO:</span>
+                  <span className="text-[#E16D54] font-bold">
                     {activeParams ? `${activeParams.tempoBpm} BPM` : '—'}
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px]">RECORD POSITION:</span>
-                  <span className="text-white font-bold">
+                  <span className="text-[#F0EEE5]/50 block text-[10px] uppercase">RECORD POSITION:</span>
+                  <span className="text-[#F0EEE5] font-bold">
                     {activeObs ? `${activeObs.year} (${(currentPayload?.index || 0) + 1}/${currentPayload?.totalRecords || 0})` : '—'}
                   </span>
                 </div>
               </div>
 
-              {/* Scrubber Range Slider with WCAG 2.2 AA ARIA Labels */}
+              {/* Scrubber Range Slider */}
               {currentPayload && (
                 <div className="space-y-1 mb-4">
-                  <div className="flex justify-between text-[10px] font-mono text-slate-400">
+                  <div className="flex justify-between text-[10px] font-mono text-[#F0EEE5]/60">
                     <span>SEEK HEAD: {currentPayload.index + 1}</span>
-                    <span className="text-cyan-400">{currentPayload.progressPercent}% PROGRESSION</span>
+                    <span className="text-[#D1B77D] font-semibold">{currentPayload.progressPercent}% PROGRESSION</span>
                     <span>TOTAL: {currentPayload.totalRecords} DATUMS</span>
                   </div>
                   <input
@@ -551,14 +550,14 @@ export const SonificationLabSection: React.FC = () => {
                     max={currentPayload.totalRecords - 1}
                     value={currentPayload.index}
                     onChange={(e) => handleScrub(Number(e.target.value))}
-                    className="w-full accent-cyan-400 cursor-pointer h-1.5 bg-slate-800 rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+                    className="w-full accent-[#E16D54] cursor-pointer h-2 bg-[#111820] border border-[#F0EEE5]/20 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D1B77D]"
                   />
                 </div>
               )}
             </div>
 
             {/* Transport Action Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/[0.08]">
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-[#F0EEE5]/10">
               {/* Playback Controls */}
               <div className="flex flex-wrap items-center gap-2">
                 <Button
@@ -596,10 +595,10 @@ export const SonificationLabSection: React.FC = () => {
 
                 <button
                   onClick={handleToggleLoop}
-                  className={`p-2 border text-xs font-mono transition-colors flex items-center gap-1 ${
+                  className={`p-2 border text-xs font-mono transition-colors rounded-sm flex items-center gap-1 cursor-pointer ${
                     isLooping
-                      ? 'border-cyan-400 text-cyan-300 bg-cyan-950/40'
-                      : 'border-white/10 text-slate-400 hover:text-white'
+                      ? 'border-[#D1B77D] text-[#D1B77D] bg-[#D1B77D]/10'
+                      : 'border-[#F0EEE5]/15 text-[#F0EEE5]/60 hover:text-[#F0EEE5]'
                   }`}
                   title="Toggle Timeline Looping"
                 >
@@ -609,15 +608,15 @@ export const SonificationLabSection: React.FC = () => {
               </div>
 
               {/* Speed Multipliers */}
-              <div className="flex items-center gap-1 border border-white/10 p-0.5 bg-black/40">
+              <div className="flex items-center gap-1 border border-[#F0EEE5]/15 p-1 bg-[#111820] rounded-sm">
                 {[0.5, 1.0, 1.5, 2.0].map((speed) => (
                   <button
                     key={speed}
                     onClick={() => handleSpeedChange(speed)}
-                    className={`px-2 py-0.5 text-[10px] font-mono transition-colors ${
+                    className={`px-2 py-0.5 text-[10px] font-mono transition-colors rounded-sm cursor-pointer ${
                       speedMultiplier === speed
-                        ? 'bg-cyan-500/20 text-cyan-300 font-bold'
-                        : 'text-slate-400 hover:text-white'
+                        ? 'bg-[#F0EEE5] text-[#111820] font-bold'
+                        : 'text-[#F0EEE5]/60 hover:text-[#F0EEE5]'
                     }`}
                   >
                     {speed}x
@@ -630,16 +629,16 @@ export const SonificationLabSection: React.FC = () => {
                 <button
                   onClick={toggleMute}
                   aria-label={isMuted ? 'Unmute master audio bus' : 'Mute master audio bus'}
-                  className="p-1.5 border border-white/10 hover:border-cyan-400 text-slate-400 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+                  className="p-1.5 border border-[#F0EEE5]/15 hover:border-[#D1B77D] text-[#F0EEE5]/60 hover:text-[#F0EEE5] transition-colors rounded-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D1B77D]"
                 >
                   {isMuted ? (
-                    <VolumeX className="w-4 h-4 text-rose-400" />
+                    <VolumeX className="w-4 h-4 text-[#E16D54]" />
                   ) : (
-                    <Volume2 className="w-4 h-4 text-cyan-400" />
+                    <Volume2 className="w-4 h-4 text-[#D1B77D]" />
                   )}
                 </button>
 
-                <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
+                <div className="flex items-center gap-2 text-xs font-mono text-[#F0EEE5]/60">
                   <Sliders className="w-3.5 h-3.5" />
                   <input
                     type="range"
@@ -654,9 +653,9 @@ export const SonificationLabSection: React.FC = () => {
                     step="0.05"
                     value={masterVolume}
                     onChange={(e) => setMasterVolume(parseFloat(e.target.value))}
-                    className="w-16 sm:w-20 accent-cyan-400 cursor-pointer h-1.5 bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+                    className="w-16 sm:w-20 accent-[#E16D54] cursor-pointer h-1.5 bg-[#111820] rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D1B77D]"
                   />
-                  <span className="text-white w-7 text-right">{Math.round(masterVolume * 100)}%</span>
+                  <span className="text-[#F0EEE5] w-7 text-right">{Math.round(masterVolume * 100)}%</span>
                 </div>
               </div>
             </div>
@@ -665,82 +664,82 @@ export const SonificationLabSection: React.FC = () => {
 
         {/* Live Scientific Sound-to-Data Explanation Panel */}
         {activeParams && (
-          <Panel className="lab-reveal p-6 border-white/10 bg-[#020510]/80">
-            <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/[0.08]">
-              <div className="flex items-center gap-2 text-cyan-400">
+          <Panel className="lab-reveal p-6 sm:p-7 border-[#F0EEE5]/10 bg-[#0C1017]">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#F0EEE5]/10">
+              <div className="flex items-center gap-2 text-[#D1B77D]">
                 <Info className="w-4 h-4" />
-                <span className="font-mono text-xs uppercase tracking-widest font-semibold">
+                <span className="font-mono text-xs uppercase tracking-[0.2em] font-semibold">
                   AUDITORY DISPLAY SPECIFICATION // REAL-TIME EMPIRICAL MAPPING
                 </span>
               </div>
-              <Badge variant="cyan">TRUE DETERMINISTIC SONIFICATION</Badge>
+              <Badge variant="signal">TRUE DETERMINISTIC SONIFICATION</Badge>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-mono">
               {/* Mapping 1: Magnitude to Pitch */}
-              <div className="p-3 bg-black/40 border border-white/[0.06] space-y-1.5">
-                <span className="text-slate-400 block text-[10px] uppercase">
+              <div className="p-3.5 bg-[#111820] border border-[#F0EEE5]/10 space-y-1.5 rounded-sm">
+                <span className="text-[#F0EEE5]/50 block text-[10px] uppercase tracking-wider">
                   1. MAGNITUDE → PITCH FREQUENCY
                 </span>
-                <div className="text-solar-gold font-bold text-sm">
+                <div className="text-[#D1B77D] font-bold text-sm">
                   {activeParams.frequencyHz} Hz ({activeParams.noteName})
                 </div>
-                <p className="text-slate-300 font-sans text-[11px] leading-relaxed">
+                <p className="text-[#F0EEE5]/75 font-sans text-[11px] leading-relaxed">
                   {activeParams.explanation.pitchFormula}
                 </p>
               </div>
 
               {/* Mapping 2: Rate of Change to Rhythm */}
-              <div className="p-3 bg-black/40 border border-white/[0.06] space-y-1.5">
-                <span className="text-slate-400 block text-[10px] uppercase">
+              <div className="p-3.5 bg-[#111820] border border-[#F0EEE5]/10 space-y-1.5 rounded-sm">
+                <span className="text-[#F0EEE5]/50 block text-[10px] uppercase tracking-wider">
                   2. CHANGE RATE → RHYTHM CADENCE
                 </span>
-                <div className="text-emerald-400 font-bold text-sm">
+                <div className="text-[#E16D54] font-bold text-sm">
                   {activeParams.tempoBpm} BPM ({activeParams.stepIntervalMs} ms)
                 </div>
-                <p className="text-slate-300 font-sans text-[11px] leading-relaxed">
+                <p className="text-[#F0EEE5]/75 font-sans text-[11px] leading-relaxed">
                   {activeParams.explanation.rhythmFormula}
                 </p>
               </div>
 
               {/* Mapping 3: Intensity & Filter */}
-              <div className="p-3 bg-black/40 border border-white/[0.06] space-y-1.5">
-                <span className="text-slate-400 block text-[10px] uppercase">
+              <div className="p-3.5 bg-[#111820] border border-[#F0EEE5]/10 space-y-1.5 rounded-sm">
+                <span className="text-[#F0EEE5]/50 block text-[10px] uppercase tracking-wider">
                   3. VARIATION → SPECTRAL INTENSITY
                 </span>
-                <div className="text-cyan-300 font-bold text-sm">
+                <div className="text-[#F0EEE5] font-bold text-sm">
                   Cutoff {activeParams.filterCutoffHz} Hz (Gain: {activeParams.gain})
                 </div>
-                <p className="text-slate-300 font-sans text-[11px] leading-relaxed">
+                <p className="text-[#F0EEE5]/75 font-sans text-[11px] leading-relaxed">
                   {activeParams.explanation.intensityFormula}
                 </p>
               </div>
 
-              {/* Mapping 4: Psychoacoustic Consonance vs Dissonance */}
-              <div className="p-3 bg-black/40 border border-white/[0.06] space-y-1.5">
-                <span className="text-slate-400 block text-[10px] uppercase">
+              {/* Mapping 4: Psychoacoustic Harmony */}
+              <div className="p-3.5 bg-[#111820] border border-[#F0EEE5]/10 space-y-1.5 rounded-sm">
+                <span className="text-[#F0EEE5]/50 block text-[10px] uppercase tracking-wider">
                   4. PSYCHOACOUSTIC HARMONY
                 </span>
-                <div className="text-rose-400 font-bold text-sm flex items-center gap-1">
-                  <Sparkles className="w-3.5 h-3.5" />
+                <div className="text-[#D1B77D] font-bold text-sm flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5 text-[#E16D54]" />
                   <span>{activeParams.explanation.dissonanceInterpretation.split(' ')[0]} Tension</span>
                 </div>
-                <p className="text-slate-300 font-sans text-[11px] leading-relaxed">
+                <p className="text-[#F0EEE5]/75 font-sans text-[11px] leading-relaxed">
                   {activeParams.explanation.dissonanceInterpretation}
                 </p>
               </div>
             </div>
 
             {/* Empirical Observation Summary */}
-            <div className="mt-4 pt-3 border-t border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between text-[11px] font-mono text-slate-400 gap-2">
+            <div className="mt-4 pt-3 border-t border-[#F0EEE5]/10 flex flex-col sm:flex-row sm:items-center justify-between text-[11px] font-mono text-[#F0EEE5]/60 gap-2">
               <div>
-                <span className="text-slate-400">RAW OBSERVATION: </span>
-                <span className="text-white font-semibold">
+                <span>RAW OBSERVATION: </span>
+                <span className="text-[#F0EEE5] font-semibold">
                   {activeParams.explanation.rawMeasurement} ({activeObs?.year})
                 </span>
-                <span className="text-slate-400"> — {activeParams.explanation.baselineComparison}</span>
+                <span> — {activeParams.explanation.baselineComparison}</span>
               </div>
-              <span className="text-cyan-400/90 font-mono">
+              <span className="text-[#D1B77D] font-mono">
                 RATE: {activeParams.explanation.rateOfChangeMetric}
               </span>
             </div>

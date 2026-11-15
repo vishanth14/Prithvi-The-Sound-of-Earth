@@ -15,6 +15,16 @@ interface EarthCanvasProps {
   enablePostprocessing?: boolean;
 }
 
+// Converts geographic Latitude & Longitude to 3D Cartesian coordinates on sphere (Radius 2.0)
+function latLngToVector3(lat: number, lng: number, radius = 2.016): [number, number, number] {
+  const phi = (lat * Math.PI) / 180;
+  const theta = ((lng + 180) * Math.PI) / 180;
+  const x = -radius * Math.cos(phi) * Math.cos(theta);
+  const y = radius * Math.sin(phi);
+  const z = radius * Math.cos(phi) * Math.sin(theta);
+  return [x, y, z];
+}
+
 // Section Camera Coordinates & Vantage Angles (Distance 5.2-5.6 ensures zero edge clipping)
 const CAMERA_PRESETS: Record<
   'hero' | 'explorer' | 'fleet' | 'timeline' | 'sonification' | 'science',
@@ -28,16 +38,47 @@ const CAMERA_PRESETS: Record<
   science: { pos: [0.0, 0.22, 5.6], lookAt: [0, 0, 0] },
 };
 
-// Smooth Camera Controller linked to Observatory Scrollytelling
+// Smooth Camera Controller linked to Observatory Scrollytelling & Climate Sentinel Zoom Focus
 const CinematicCameraController: React.FC<{
   controlsRef: React.RefObject<OrbitControlsImpl | null>;
   isInteractingRef: React.RefObject<boolean>;
 }> = ({ controlsRef, isInteractingRef }) => {
-  const { activeCameraTarget } = useObservatoryStore();
+  const { activeCameraTarget, activeSentinelId } = useObservatoryStore();
 
   useFrame((state, delta) => {
     // If user is actively dragging the 3D globe, do not override their manual view
     if (isInteractingRef.current) return;
+
+    // If a verified Climate Sentinel is selected in Explorer, glide camera directly to that station!
+    if (activeSentinelId && activeCameraTarget === 'explorer') {
+      const s = useObservatoryStore.getState();
+      const match = s.activeSentinelId;
+      // Coordinates for all 5 verified climate sentinels
+      const coords: Record<string, { lat: number; lng: number }> = {
+        'mauna-loa': { lat: 19.5362, lng: -155.5763 },
+        'svalbard': { lat: 78.2232, lng: 15.6267 },
+        'vostok': { lat: -78.4644, lng: 106.8373 },
+        'atto-amazon': { lat: -2.1436, lng: -59.0011 },
+        'pacific-tao': { lat: 0.0, lng: -140.0 },
+      };
+      const c = match ? coords[match] : null;
+      if (c) {
+        const [sx, sy, sz] = latLngToVector3(c.lat, c.lng, 2.0);
+        const norm = Math.hypot(sx, sy, sz) || 2.0;
+        const camDistance = 3.9;
+        const targetPos: [number, number, number] = [
+          (sx / norm) * camDistance,
+          (sy / norm) * camDistance + 0.15,
+          (sz / norm) * camDistance,
+        ];
+        easing.damp3(state.camera.position, targetPos, 0.65, delta);
+        if (controlsRef.current) {
+          easing.damp3(controlsRef.current.target, [sx * 0.4, sy * 0.4, sz * 0.4], 0.65, delta);
+          controlsRef.current.update();
+        }
+        return;
+      }
+    }
 
     const preset = CAMERA_PRESETS[activeCameraTarget] || CAMERA_PRESETS.hero;
 
