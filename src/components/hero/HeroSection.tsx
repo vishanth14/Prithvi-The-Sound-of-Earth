@@ -156,11 +156,11 @@ export const HeroSection: React.FC = () => {
       {/* 2. Center Monumental Editorial Typography (Scroll-exit scrubbed) */}
       <div className="hero-content-wrapper relative z-10 max-w-5xl mx-auto w-full my-auto text-center py-2 sm:py-4 flex flex-col items-center pointer-events-none">
         {/* Mission Index Identification */}
-        <div className="mb-3 flex items-center gap-2 font-mono text-[10px] tracking-[0.28em] text-[#7E8B98] uppercase">
+        <div className="mb-3.5 inline-flex items-center gap-2 px-3 py-1 bg-[#070B10]/75 backdrop-blur-md border border-[#252D36]/80 rounded-xs font-mono text-[10px] tracking-[0.28em] text-[#7E8B98] uppercase shadow-lg">
           <span className="w-1.5 h-1.5 bg-[#FF5938]" />
           <span>EXPEDITION IDENTIFIER: PRITHVI-EO26</span>
           <span className="text-[#252D36]">|</span>
-          <span className="text-[#83BBD5]">MULTIVERSE VENDHAN</span>
+          <span className="text-[#83BBD5] font-semibold">MULTIVERSE VENDHAN</span>
         </div>
 
         {/* Main Title Reveal through Precision Aerospace Mask */}
