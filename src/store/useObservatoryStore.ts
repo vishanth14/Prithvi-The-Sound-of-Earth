@@ -2,7 +2,11 @@ import { create } from 'zustand';
 import type { DatasetKey } from '../data/types';
 import type { EicDatasetKey, EicObservation } from '../data/eicSchemas';
 import type { SonificationParams } from '../audio/dataMapping';
-import { audioTransport, type TransportState } from '../audio/audioTransport';
+import {
+  audioTransport,
+  type TransportState,
+  type MeasuredSyncError,
+} from '../audio/audioTransport';
 import { sonificationCore } from '../audio/sonification';
 import { mapObservationToAudio } from '../audio/dataMapping';
 import { EicDataService } from '../data/eicDataService';
@@ -106,24 +110,37 @@ export const CLIMATE_SENTINELS: ClimateSentinel[] = [
   },
 ];
 
-interface ObservatoryState {
+export interface ObservatoryState {
   // Navigation & View
   activeSection: string;
   isAudioUnlocked: boolean;
   isMuted: boolean;
   masterVolume: number; // 0 to 1
-  
-  // Dataset & Observation State (Single Source of Truth)
+
+  // =========================================================================
+  // AUTHORITATIVE STATE FIELDS (Required Specification)
+  // =========================================================================
+  activeDatasetId: EicDatasetKey;
+  currentObservationIndex: number;
+  currentTimestamp: number | string;
+  playbackState: TransportState;
+  playbackSpeed: number;
+  loopEnabled: boolean;
+  volume: number;
+  audioEnabled: boolean;
+
+  // Real-Time Measured Synchronization Metrics
+  measuredSyncError: MeasuredSyncError;
+
+  // Backward-compatibility Aliases
   activeDataset: DatasetKey;
   activeEicKey: EicDatasetKey;
   selectedYear: number;
   selectedObservationIndex: number;
   currentObservation: EicObservation | null;
   currentSonificationParams: SonificationParams | null;
-  
-  // Transport & Timeline Sequencer
   transportState: TransportState;
-  timelineSpeed: number; // 0.5, 1, 1.5, 2
+  timelineSpeed: number;
   isLooping: boolean;
 
   // 3D Globe Shader & Physical Environment Controls
@@ -144,20 +161,24 @@ interface ObservatoryState {
   unlockAudio: () => Promise<void>;
   toggleMute: () => void;
   setMasterVolume: (vol: number) => void;
-  
+
   // Unified Dataset Switcher
   setActiveDataset: (key: DatasetKey) => Promise<void>;
   setActiveEicKey: (key: EicDatasetKey) => Promise<void>;
-  
-  // Unified Playback Controls
+  setActiveDatasetId: (key: EicDatasetKey) => Promise<void>;
+
+  // Authoritative Playback & Transport Controls
   startPlayback: () => Promise<void>;
   pausePlayback: () => void;
+  resumePlayback: () => void;
   stopPlayback: () => void;
   replayPlayback: () => Promise<void>;
   seekToIndex: (index: number, triggerAudio?: boolean) => void;
   seekToYear: (year: number, triggerAudio?: boolean) => void;
   setTimelineSpeed: (speed: number) => void;
+  setPlaybackSpeed: (speed: number) => void;
   toggleLooping: () => void;
+  setLoopEnabled: (enabled: boolean) => void;
 
   // 3D Globe & Sentinel Actions
   setGlobeRotating: (rotating: boolean) => void;
@@ -171,12 +192,13 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
   if (typeof window !== 'undefined') {
     (window as any).__observatoryStore = { getState: get, setState: set };
   }
-  // Wire AudioTransport ticker callback directly into store
-  audioTransport.onTick(({ observation, params, index }) => {
+
+  // Wire authoritative AudioTransport ticker callback directly into store
+  audioTransport.onTick(({ observation, params, index, syncMetrics }) => {
     const eicKey = observation.datasetId as EicDatasetKey;
     const datasetKey = EIC_TO_DATASET_MAP[eicKey] || 'temperature';
 
-    // Compute 3D shader targets based on active measurement (Editorial, non-overexposed palette)
+    // Compute 3D shader targets based on active measurement
     let atmosphereColor = '#1E5A7A';
     let atmosphereCoeff = 0.38;
     let nightBoost = 1.0;
@@ -216,12 +238,23 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
     }
 
     set({
+      // Authoritative State Fields
+      activeDatasetId: eicKey,
+      currentObservationIndex: index,
+      currentTimestamp: observation.year,
+      volume: get().masterVolume,
+      audioEnabled: get().isAudioUnlocked && !get().isMuted,
+      measuredSyncError: syncMetrics || get().measuredSyncError,
+
+      // Backward-compatibility aliases
       selectedYear: observation.year,
       selectedObservationIndex: index,
       currentObservation: observation,
       currentSonificationParams: params,
       activeDataset: datasetKey,
       activeEicKey: eicKey,
+
+      // 3D Shader Uniform Targets
       atmosphereTargetColor: atmosphereColor,
       atmosphereTargetCoefficient: atmosphereCoeff,
       nightLightBoost: nightBoost,
@@ -229,10 +262,11 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
     });
   });
 
-  // Wire transport state changes
+  // Wire authoritative transport state changes
   audioTransport.onStateChange((state) => {
     set({
       transportState: state,
+      playbackState: state,
     });
   });
 
@@ -242,15 +276,33 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
     isMuted: false,
     masterVolume: 0.75,
 
+    // Authoritative State Defaults
+    activeDatasetId: 'gistemp',
+    currentObservationIndex: 0,
+    currentTimestamp: 2024,
+    playbackState: 'STOPPED',
+    playbackSpeed: 1.0,
+    loopEnabled: false,
+    volume: 0.75,
+    audioEnabled: false,
+
+    measuredSyncError: {
+      lastJitterMs: 0,
+      meanJitterMs: 0,
+      maxJitterMs: 0,
+      sampleCount: 0,
+    },
+
+    // Backward-compatibility Aliases
     activeDataset: 'temperature',
     activeEicKey: 'gistemp',
-    selectedYear: 2026,
+    selectedYear: 2024,
     selectedObservationIndex: 0,
     currentObservation: null,
     currentSonificationParams: null,
 
     transportState: 'STOPPED',
-    timelineSpeed: 1,
+    timelineSpeed: 1.0,
     isLooping: false,
 
     globeRotating: true,
@@ -269,23 +321,34 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
     unlockAudio: async () => {
       const ok = await sonificationCore.init();
       if (ok) {
-        set({ isAudioUnlocked: true });
+        set({
+          isAudioUnlocked: true,
+          audioEnabled: !get().isMuted,
+        });
       }
     },
 
     toggleMute: () => {
       const nextMuted = !get().isMuted;
-      set({ isMuted: nextMuted });
+      set({
+        isMuted: nextMuted,
+        audioEnabled: get().isAudioUnlocked && !nextMuted,
+      });
       sonificationCore.setMuted(nextMuted);
     },
 
     setMasterVolume: (masterVolume) => {
-      set({ masterVolume });
-      sonificationCore.setVolume(masterVolume);
+      const clamped = Math.max(0, Math.min(1, masterVolume));
+      set({ masterVolume: clamped, volume: clamped });
+      sonificationCore.setVolume(clamped);
     },
 
     setActiveDataset: async (key: DatasetKey) => {
       const eicKey = DATASET_TO_EIC_MAP[key];
+      await get().setActiveEicKey(eicKey);
+    },
+
+    setActiveDatasetId: async (eicKey: EicDatasetKey) => {
       await get().setActiveEicKey(eicKey);
     },
 
@@ -294,18 +357,22 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
       const obs = dataset.observations;
       const legacyKey = EIC_TO_DATASET_MAP[eicKey] || 'temperature';
 
-      const wasPlaying = get().transportState === 'PLAYING';
-      audioTransport.loadSequence(obs, obs.length - 1);
+      const wasPlaying = get().playbackState === 'PLAYING';
+      const initialIndex = obs.length - 1;
+      audioTransport.loadSequence(obs, initialIndex);
 
-      const latestObs = obs[obs.length - 1];
+      const latestObs = obs[initialIndex];
       const prevObs = obs.length > 1 ? obs[obs.length - 2] : undefined;
       const params = mapObservationToAudio(latestObs, prevObs);
 
       set({
+        activeDatasetId: eicKey,
         activeEicKey: eicKey,
         activeDataset: legacyKey,
+        currentObservationIndex: initialIndex,
+        selectedObservationIndex: initialIndex,
+        currentTimestamp: latestObs.year,
         selectedYear: latestObs.year,
-        selectedObservationIndex: obs.length - 1,
         currentObservation: latestObs,
         currentSonificationParams: params,
       });
@@ -320,15 +387,19 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
         await get().unlockAudio();
       }
 
-      // If no sequence loaded, load active dataset sequence
-      const activeEic = get().activeEicKey;
+      // Ensure active dataset sequence is loaded
+      const activeEic = get().activeDatasetId;
       const dataset = await EicDataService.loadDataset(activeEic);
-      audioTransport.loadSequence(dataset.observations, get().selectedObservationIndex);
+      audioTransport.loadSequence(dataset.observations, get().currentObservationIndex);
       await audioTransport.play();
     },
 
     pausePlayback: () => {
       audioTransport.pause();
+    },
+
+    resumePlayback: () => {
+      audioTransport.resume();
     },
 
     stopPlayback: () => {
@@ -349,14 +420,22 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
     },
 
     setTimelineSpeed: (speed: number) => {
-      set({ timelineSpeed: speed });
+      get().setPlaybackSpeed(speed);
+    },
+
+    setPlaybackSpeed: (speed: number) => {
+      set({ playbackSpeed: speed, timelineSpeed: speed });
       audioTransport.setSpeedMultiplier(speed);
     },
 
     toggleLooping: () => {
-      const next = !get().isLooping;
-      set({ isLooping: next });
-      audioTransport.setIsLooping(next);
+      const next = !get().loopEnabled;
+      get().setLoopEnabled(next);
+    },
+
+    setLoopEnabled: (enabled: boolean) => {
+      set({ loopEnabled: enabled, isLooping: enabled });
+      audioTransport.setIsLooping(enabled);
     },
 
     setGlobeRotating: (globeRotating) => set({ globeRotating }),
@@ -381,7 +460,7 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
       await get().setActiveEicKey(sentinel.eicKey);
 
       // Play local acoustic signature
-      if (get().isAudioUnlocked) {
+      if (get().isAudioUnlocked && !get().isMuted) {
         const obs = get().currentObservation;
         if (obs) {
           const params = mapObservationToAudio(obs);

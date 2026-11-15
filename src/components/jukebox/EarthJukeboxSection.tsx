@@ -1,13 +1,7 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import * as d3 from 'd3';
 import { useObservatoryStore } from '../../store/useObservatoryStore';
 import { sonificationCore } from '../../audio/sonification';
-import {
-  audioTransport,
-  type TransportState,
-  type TransportTickPayload,
-} from '../../audio/audioTransport';
-import { mapObservationToAudio } from '../../audio/dataMapping';
 import { EicDataService } from '../../data/eicDataService';
 import type {
   EicDataset,
@@ -32,6 +26,9 @@ import {
   Radio,
   Calendar,
   FileCheck,
+  Square,
+  ShieldAlert,
+  SlidersHorizontal,
 } from 'lucide-react';
 
 interface TrackDef {
@@ -44,6 +41,7 @@ interface TrackDef {
   unit: string;
   agency: string;
   mathFormula: string;
+  normDomain: string;
 }
 
 const EIC_TRACKS: TrackDef[] = [
@@ -56,7 +54,8 @@ const EIC_TRACKS: TrackDef[] = [
     themeColor: '#FF5938',
     unit: '°C Anomaly',
     agency: 'NASA Goddard Institute for Space Studies (GISS)',
-    mathFormula: 'f(ΔT) = 220 · 2^(ΔT / 1.2)',
+    mathFormula: 'f(ΔT) = 146.83 · 2^(norm · 2.33) [Hz]',
+    normDomain: '[-0.5°C, +1.5°C] → [0.0, 1.0]',
   },
   {
     key: 'co2_maunaloa',
@@ -67,7 +66,8 @@ const EIC_TRACKS: TrackDef[] = [
     themeColor: '#83BBD5',
     unit: 'ppm',
     agency: 'NOAA Global Monitoring Laboratory & NASA OCO-2',
-    mathFormula: 'BPM = 48 · (CO₂ / 280)^1.4',
+    mathFormula: 'BPM = 48 · (CO₂ / 280)^1.4  |  f(ppm) = 45.0 + norm · 45.0 Hz',
+    normDomain: '[280 ppm, 440 ppm] → [0.0, 1.0]',
   },
   {
     key: 'sealevel_podaac',
@@ -78,7 +78,8 @@ const EIC_TRACKS: TrackDef[] = [
     themeColor: '#83BBD5',
     unit: 'mm variance',
     agency: 'NASA PO.DAAC / Sentinel-6 Michael Freilich',
-    mathFormula: 'fc(h) = 120 + 2280 · (h / 120)',
+    mathFormula: 'fc(h) = 120 · 10^(norm · 1.30) [Hz]',
+    normDomain: '[0 mm, 135 mm] → [0.0, 1.0]',
   },
   {
     key: 'aerosols_geos',
@@ -89,7 +90,8 @@ const EIC_TRACKS: TrackDef[] = [
     themeColor: '#7E8B98',
     unit: 'AOD index (550nm)',
     agency: 'NASA GMAO (Quarantined Experimental Proxy)',
-    mathFormula: 'ModIndex = 0.2 + 2.5 · (AOD / 0.5)',
+    mathFormula: 'ModIndex = 1.0 + 8.0 · (BC / 0.8)  |  fc = 329.6 · 2^(norm · 0.58) Hz',
+    normDomain: '[0.10 AOD, 0.25 AOD] → [0.0, 1.0]',
   },
   {
     key: 'nightlights_viirs',
@@ -100,7 +102,8 @@ const EIC_TRACKS: TrackDef[] = [
     themeColor: '#E9EDF0',
     unit: 'nW·cm⁻²·sr⁻¹',
     agency: 'NASA ESDS Black Marble HD Suite',
-    mathFormula: 'Gain = 0.2 + 0.7 · min(1, R / 100)',
+    mathFormula: 'f(nW) = 261.63 · 2^(norm · 0.58) Hz (Pentatonic Voicing)',
+    normDomain: '[15.0 nW, 30.0 nW] → [0.0, 1.0]',
   },
 ];
 
@@ -117,6 +120,8 @@ const HISTORICAL_MILESTONES = [
 
 export const EarthJukeboxSection: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
+
+  // Authoritative Observatory Store (Single Source of Truth)
   const {
     isAudioUnlocked,
     unlockAudio,
@@ -124,10 +129,23 @@ export const EarthJukeboxSection: React.FC = () => {
     toggleMute,
     masterVolume,
     setMasterVolume,
-    activeEicKey,
+    activeDatasetId,
     setActiveEicKey,
-    selectedObservationIndex,
+    currentObservationIndex,
+    playbackState,
+    playbackSpeed,
+    loopEnabled,
+    measuredSyncError,
+    currentObservation,
+    currentSonificationParams,
+    startPlayback,
+    pausePlayback,
+    resumePlayback,
+    stopPlayback,
+    replayPlayback,
     seekToIndex,
+    setPlaybackSpeed,
+    toggleLooping,
   } = useObservatoryStore();
 
   useGSAP(
@@ -150,21 +168,17 @@ export const EarthJukeboxSection: React.FC = () => {
     { scope: sectionRef }
   );
 
-  // View state
+  // View tabs
   const [activeVisualTab, setActiveVisualTab] = useState<'spiral' | 'multitrack' | 'audit'>('spiral');
   const [datasets, setDatasets] = useState<Record<EicDatasetKey, EicDataset> | null>(null);
   const [validationReport, setValidationReport] = useState<EicValidationReport | null>(null);
-  const [transportState, setTransportState] = useState<TransportState>('STOPPED');
-  const [currentPayload, setCurrentPayload] = useState<TransportTickPayload | null>(null);
-  const [speedMultiplier, setSpeedMultiplier] = useState<number>(1.0);
-  const [isLooping, setIsLooping] = useState<boolean>(false);
 
   // Visualization canvas refs
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const spiralSvgRef = useRef<SVGSVGElement | null>(null);
   const peaksRef = useRef<number[]>(new Array(48).fill(0));
 
-  // Load empirical EIC datasets
+  // Load empirical EIC datasets on mount for visual charts
   useEffect(() => {
     let isMounted = true;
     async function loadData() {
@@ -176,17 +190,6 @@ export const EarthJukeboxSection: React.FC = () => {
         if (isMounted) {
           setDatasets(all);
           setValidationReport(report);
-          const defaultObs = all[activeEicKey].observations;
-          audioTransport.loadSequence(defaultObs, selectedObservationIndex || 0);
-          const activeObs = defaultObs[selectedObservationIndex || 0] || defaultObs[0];
-          const params = mapObservationToAudio(activeObs);
-          setCurrentPayload({
-            observation: activeObs,
-            params,
-            index: selectedObservationIndex || 0,
-            totalRecords: defaultObs.length,
-            progressPercent: ((selectedObservationIndex || 0) / (defaultObs.length - 1)) * 100,
-          });
         }
       } catch (err) {
         console.error('[Earth Jukebox] Failed to load validated EIC datasets:', err);
@@ -195,22 +198,6 @@ export const EarthJukeboxSection: React.FC = () => {
     loadData();
     return () => {
       isMounted = false;
-    };
-  }, []);
-
-  // Listen to Transport events
-  useEffect(() => {
-    const unsubTick = audioTransport.onTick((payload) => {
-      setCurrentPayload(payload);
-    });
-
-    const unsubState = audioTransport.onStateChange((state) => {
-      setTransportState(state);
-    });
-
-    return () => {
-      unsubTick();
-      unsubState();
     };
   }, []);
 
@@ -224,69 +211,46 @@ export const EarthJukeboxSection: React.FC = () => {
     sonificationCore.setVolume(masterVolume);
   }, [masterVolume]);
 
-  // Handle Track Switching
-  const handleSelectTrack = useCallback(
-    async (key: EicDatasetKey) => {
-      await setActiveEicKey(key);
-      if (!datasets) return;
-      const obs = datasets[key].observations;
-      const wasPlaying = transportState === 'PLAYING';
-      audioTransport.loadSequence(obs, 0);
-      const params = mapObservationToAudio(obs[0]);
-      setCurrentPayload({
-        observation: obs[0],
-        params,
-        index: 0,
-        totalRecords: obs.length,
-        progressPercent: 0,
-      });
+  // Track Switching via authoritative store
+  const handleSelectTrack = async (key: EicDatasetKey) => {
+    await setActiveEicKey(key);
+  };
 
-      if (wasPlaying) {
-        audioTransport.play();
-      }
-    },
-    [datasets, transportState, setActiveEicKey]
-  );
-
-  // Transport Control Actions
+  // Authoritative Transport Control Handlers
   const handleTogglePlay = async () => {
     if (!isAudioUnlocked) {
       await unlockAudio();
     }
-    if (transportState === 'PLAYING') {
-      audioTransport.pause();
+    if (playbackState === 'PLAYING') {
+      pausePlayback();
+    } else if (playbackState === 'PAUSED') {
+      resumePlayback();
     } else {
-      audioTransport.play();
+      await startPlayback();
     }
   };
 
-  const handleRestart = () => {
-    audioTransport.seekToIndex(0, true);
-    seekToIndex(0, true);
+  const handleStop = () => {
+    stopPlayback();
+  };
+
+  const handleRestart = async () => {
+    await replayPlayback();
   };
 
   const handleScrub = (idx: number) => {
     if (!isAudioUnlocked) unlockAudio();
-    audioTransport.seekToIndex(idx, true);
     seekToIndex(idx, true);
   };
 
   const handleSpeedCycle = () => {
-    const speeds = [0.5, 1.0, 2.0, 4.0];
-    const nextIdx = (speeds.indexOf(speedMultiplier) + 1) % speeds.length;
-    const nextSpeed = speeds[nextIdx];
-    setSpeedMultiplier(nextSpeed);
-    audioTransport.setSpeedMultiplier(nextSpeed);
-  };
-
-  const handleToggleLoop = () => {
-    const next = !isLooping;
-    setIsLooping(next);
-    audioTransport.setIsLooping(next);
+    const speeds = [0.5, 1.0, 1.5, 2.0, 4.0];
+    const nextIdx = (speeds.indexOf(playbackSpeed) + 1) % speeds.length;
+    setPlaybackSpeed(speeds[nextIdx]);
   };
 
   // ---------------------------------------------------------------------------
-  // 48-BAND FFT & OSCILLOSCOPE REAL-TIME CANVAS LOOP
+  // 48-BAND FFT & OSCILLOSCOPE REAL-TIME CANVAS LOOP (Direct RAF, Zero Store Rerenders)
   // ---------------------------------------------------------------------------
   useEffect(() => {
     let animId: number;
@@ -300,7 +264,7 @@ export const EarthJukeboxSection: React.FC = () => {
       const height = canvas.height;
       ctx.clearRect(0, 0, width, height);
 
-      const isSynthesizing = transportState === 'PLAYING' && !isMuted;
+      const isSynthesizing = playbackState === 'PLAYING' && !isMuted;
       const fftData = sonificationCore.getFftData();
       const waveData = sonificationCore.getWaveformData();
 
@@ -324,7 +288,7 @@ export const EarthJukeboxSection: React.FC = () => {
       const barCount = 48;
       const barWidth = width / barCount - 2;
       const peaks = peaksRef.current;
-      const trackTheme = EIC_TRACKS.find((t) => t.key === activeEicKey)?.themeColor || '#FF5938';
+      const trackTheme = EIC_TRACKS.find((t) => t.key === activeDatasetId)?.themeColor || '#FF5938';
 
       for (let i = 0; i < barCount; i++) {
         const rawFft = fftData[i];
@@ -372,7 +336,7 @@ export const EarthJukeboxSection: React.FC = () => {
 
     render();
     return () => cancelAnimationFrame(animId);
-  }, [transportState, isMuted, activeEicKey]);
+  }, [playbackState, isMuted, activeDatasetId]);
 
   // ---------------------------------------------------------------------------
   // D3 CLIMATE SPIRAL COMPUTATION (NASA SVS #5190)
@@ -414,8 +378,8 @@ export const EarthJukeboxSection: React.FC = () => {
       .clamp(true);
 
     const maxIdx =
-      activeEicKey === 'gistemp'
-        ? selectedObservationIndex
+      activeDatasetId === 'gistemp'
+        ? currentObservationIndex
         : gistempData.length - 1;
     const activePoints = gistempData.slice(0, Math.max(1, maxIdx + 1));
 
@@ -453,15 +417,15 @@ export const EarthJukeboxSection: React.FC = () => {
       spiralD,
       currentTip,
     };
-  }, [datasets, activeEicKey, selectedObservationIndex]);
+  }, [datasets, activeDatasetId, currentObservationIndex]);
 
   // Current track metadata
-  const currentTrack = EIC_TRACKS.find((t) => t.key === activeEicKey) || EIC_TRACKS[0];
-  const activeDataset = datasets ? datasets[activeEicKey] : null;
+  const currentTrack = EIC_TRACKS.find((t) => t.key === activeDatasetId) || EIC_TRACKS[0];
+  const activeDataset = datasets ? datasets[activeDatasetId] : null;
   const observations: EicObservation[] = activeDataset?.observations || [];
   const activeObs: EicObservation | undefined =
-    currentPayload?.observation || observations[selectedObservationIndex] || observations[0];
-  const activeParams = currentPayload?.params;
+    currentObservation || observations[currentObservationIndex] || observations[0];
+  const activeParams = currentSonificationParams;
 
   return (
     <section
@@ -476,7 +440,7 @@ export const EarthJukeboxSection: React.FC = () => {
             number="04"
             category="PRIMARY CHALLENGE EXPERIENCE"
             title="THE EARTH JUKEBOX"
-            subtitle="The centerpiece of PRITHVI: empirical NASA Earth Information Center telemetry married to real-time deterministic sonification. Audition the planet across space and time through an integrated visual and acoustic display."
+            subtitle="The centerpiece of PRITHVI: empirical NASA Earth Information Center telemetry married to real-time deterministic sonification. Audition the planet across space and time through an integrated visual and acoustic display driven by an authoritative master audio clock."
             badge="TONE.JS + WEB AUDIO ENGINE"
             badgeVariant="signal"
           />
@@ -509,7 +473,7 @@ export const EarthJukeboxSection: React.FC = () => {
             EIC CHANNELS:
           </span>
           {EIC_TRACKS.map((track) => {
-            const isSelected = activeEicKey === track.key;
+            const isSelected = activeDatasetId === track.key;
             const isQuarantined = track.key === 'aerosols_geos';
             return (
               <button
@@ -727,7 +691,7 @@ export const EarthJukeboxSection: React.FC = () => {
                       />
                     )}
 
-                    {/* Current Scrubber Head */}
+                    {/* Current Frame-Aligned Scrubber Head */}
                     {spiralParams.currentTip && (
                       <g>
                         <circle
@@ -758,7 +722,7 @@ export const EarthJukeboxSection: React.FC = () => {
               </Panel>
             )}
 
-            {/* TAB 2: TIME-SERIES CURVE */}
+            {/* TAB 2: FRAME-ALIGNED TIME-SERIES CURVE */}
             {activeVisualTab === 'multitrack' && (
               <Panel className="p-6 sm:p-8 flex flex-col justify-between bg-[#0E141D] border-[#252D36] rounded-none min-h-[440px]">
                 <div className="flex items-center justify-between border-b border-[#252D36] pb-3 text-xs font-mono">
@@ -810,6 +774,63 @@ export const EarthJukeboxSection: React.FC = () => {
                         stroke={currentTrack.themeColor}
                         strokeWidth="2"
                       />
+                    )}
+
+                    {/* Active Scrubber Playhead Line */}
+                    {observations.length > 1 && (
+                      (() => {
+                        const w = 540;
+                        const h = 180;
+                        const vals = observations.map((o) => o.originalValue ?? 0);
+                        const minV = Math.min(...vals);
+                        const maxV = Math.max(...vals);
+                        const range = maxV - minV || 1;
+                        const clampedIdx = Math.max(0, Math.min(observations.length - 1, currentObservationIndex));
+                        const curV = observations[clampedIdx]?.originalValue ?? 0;
+                        const curX = 40 + (clampedIdx / (observations.length - 1)) * w;
+                        const curY = 200 - ((curV - minV) / range) * h;
+
+                        return (
+                          <g>
+                            <line
+                              x1={curX}
+                              y1={20}
+                              x2={curX}
+                              y2={220}
+                              stroke="#FF5938"
+                              strokeWidth="1.5"
+                              strokeDasharray="3,3"
+                            />
+                            <circle
+                              cx={curX}
+                              cy={curY}
+                              r="6"
+                              fill="#FF5938"
+                              className="animate-ping"
+                              opacity="0.6"
+                            />
+                            <circle
+                              cx={curX}
+                              cy={curY}
+                              r="4.5"
+                              fill="#E9EDF0"
+                              stroke="#FF5938"
+                              strokeWidth="2"
+                            />
+                            <text
+                              x={curX > 480 ? curX - 10 : curX + 10}
+                              y={Math.max(30, curY - 10)}
+                              textAnchor={curX > 480 ? 'end' : 'start'}
+                              fill="#E9EDF0"
+                              fontSize="11"
+                              fontFamily="IBM Plex Mono, monospace"
+                              fontWeight="bold"
+                            >
+                              {observations[clampedIdx]?.year}: {curV} {currentTrack.unit}
+                            </text>
+                          </g>
+                        );
+                      })()
                     )}
                   </svg>
                 </div>
@@ -865,7 +886,7 @@ export const EarthJukeboxSection: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <span
                     className={`w-2 h-2 rounded-none ${
-                      transportState === 'PLAYING' ? 'bg-[#FF5938] animate-pulse' : 'bg-[#E9EDF0]/30'
+                      playbackState === 'PLAYING' ? 'bg-[#FF5938] animate-pulse' : 'bg-[#E9EDF0]/30'
                     }`}
                   />
                   <span className="text-[#E9EDF0] font-semibold uppercase tracking-wider">
@@ -873,7 +894,7 @@ export const EarthJukeboxSection: React.FC = () => {
                   </span>
                 </div>
                 <span className="text-[#83BBD5]">
-                  {transportState === 'PLAYING'
+                  {playbackState === 'PLAYING'
                     ? `${activeParams?.tempoBpm || 60} BPM • 60 FPS`
                     : 'AWAITING SYNTHESIS'}
                 </span>
@@ -892,6 +913,20 @@ export const EarthJukeboxSection: React.FC = () => {
               <div className="flex items-center justify-between text-[11px] font-mono text-[#E9EDF0]/50 pt-1">
                 <span>FFT: 20 Hz — 20 kHz Logarithmic Filterbank</span>
                 <span className="text-[#83BBD5]">Waveform: Dynamic Polyphonic Bus</span>
+              </div>
+
+              {/* MEASURED SYNCHRONIZATION JITTER HUD */}
+              <div className="pt-2 border-t border-[#252D36]/60 flex items-center justify-between text-[11px] font-mono">
+                <span className="text-[#7E8B98] flex items-center gap-1.5">
+                  <SlidersHorizontal className="w-3 h-3 text-[#FF5938]" />
+                  MEASURED AUDIO-VISUAL JITTER:
+                </span>
+                <span className="text-[#83BBD5] font-semibold">
+                  ±{measuredSyncError.lastJitterMs.toFixed(1)} ms
+                  <span className="text-[#7E8B98] font-normal ml-2">
+                    (Mean: {measuredSyncError.meanJitterMs.toFixed(1)} ms, Max: {measuredSyncError.maxJitterMs.toFixed(1)} ms | {measuredSyncError.sampleCount} sampled)
+                  </span>
+                </span>
               </div>
             </Panel>
           </div>
@@ -944,7 +979,7 @@ export const EarthJukeboxSection: React.FC = () => {
               </div>
             </Panel>
 
-            {/* SOUND-TO-DATA EXPLANATION CARD */}
+            {/* SOUND-TO-DATA EXPLANATION CARD (Full Epistemological Rigor) */}
             <Panel className="p-6 sm:p-7 bg-[#0E141D] border-[#252D36] rounded-none space-y-4">
               <div className="flex items-center justify-between border-b border-[#252D36] pb-3">
                 <span className="font-mono text-xs text-[#83BBD5] uppercase tracking-widest font-semibold flex items-center gap-2">
@@ -956,9 +991,30 @@ export const EarthJukeboxSection: React.FC = () => {
 
               <div className="space-y-3 text-xs font-mono">
                 <div className="flex items-center justify-between">
+                  <span className="text-[#E9EDF0]/50">Original Scientific Value:</span>
+                  <span className="text-[#E9EDF0] font-bold">
+                    {activeObs?.originalValue ?? '—'} {currentTrack.unit}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-[#E9EDF0]/50">Climatological Baseline:</span>
+                  <span className="text-[#83BBD5] truncate max-w-[200px]">
+                    {activeDataset?.metadata.baselineDefinition || '1951–1980 mean'}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-[#E9EDF0]/50">Normalization Domain:</span>
+                  <span className="text-[#7E8B98]">
+                    {currentTrack.normDomain}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between">
                   <span className="text-[#E9EDF0]/50">Musical Pitch:</span>
                   <span className="text-[#E9EDF0] font-semibold">
-                    {activeParams?.noteName || 'D3'} ({activeParams?.frequencyHz.toFixed(1) || '146.8'} Hz)
+                    {activeParams?.noteName || 'D3'} ({activeParams?.frequencyHz.toFixed(1) || '146.8'} Hz, {activeParams?.centsOffset ?? 0} cents)
                   </span>
                 </div>
 
@@ -993,6 +1049,17 @@ export const EarthJukeboxSection: React.FC = () => {
                     {currentTrack.mathFormula}
                   </span>
                 </div>
+
+                {/* EPISTEMOLOGICAL DISCLAIMER */}
+                <div className="mt-3 p-3 bg-[#070B10] border border-[#252D36] rounded-none space-y-1">
+                  <div className="flex items-center gap-1.5 text-[#FF5938] text-[10px] font-bold uppercase tracking-wider">
+                    <ShieldAlert className="w-3.5 h-3.5" />
+                    <span>Epistemological Clarification</span>
+                  </div>
+                  <p className="font-sans text-[11px] text-[#7E8B98] leading-relaxed">
+                    Sonification is a creative auditory display designed for human pattern recognition, not a direct acoustic sound emitted by Earth. Musical tension and dissonance reflect mathematical intervals, not diagnostic clinical health.
+                  </p>
+                </div>
               </div>
             </Panel>
 
@@ -1014,7 +1081,7 @@ export const EarthJukeboxSection: React.FC = () => {
                   type="range"
                   min={0}
                   max={Math.max(0, observations.length - 1)}
-                  value={selectedObservationIndex || 0}
+                  value={currentObservationIndex || 0}
                   onChange={(e) => handleScrub(parseInt(e.target.value, 10))}
                   data-cursor-label="SEEK"
                   aria-label="Seek timeline observation"
@@ -1053,27 +1120,37 @@ export const EarthJukeboxSection: React.FC = () => {
                     variant="primary"
                     size="sm"
                     onClick={handleTogglePlay}
-                    data-cursor-label={transportState === 'PLAYING' ? 'PAUSE' : 'PLAY'}
+                    data-cursor-label={playbackState === 'PLAYING' ? 'PAUSE' : 'PLAY'}
                     data-cursor-magnetic="true"
                     icon={
-                      transportState === 'PLAYING' ? (
+                      playbackState === 'PLAYING' ? (
                         <Pause className="w-4 h-4 text-white" />
                       ) : (
                         <Play className="w-4 h-4 text-white" />
                       )
                     }
                   >
-                    {transportState === 'PLAYING' ? 'PAUSE' : 'PLAY'}
+                    {playbackState === 'PLAYING' ? 'PAUSE' : 'PLAY'}
                   </Button>
+
+                  <button
+                    onClick={handleStop}
+                    data-cursor-label="STOP"
+                    data-cursor-magnetic="true"
+                    className="p-2 border border-[#252D36] bg-[#070B10] hover:border-[#83BBD5] text-[#E9EDF0]/70 hover:text-white rounded-none transition-all cursor-pointer hover:scale-105 active:scale-95"
+                    title="Stop playback"
+                  >
+                    <Square className="w-3.5 h-3.5" />
+                  </button>
 
                   <button
                     onClick={handleRestart}
                     data-cursor-label="RESET"
                     data-cursor-magnetic="true"
                     className="p-2 border border-[#252D36] bg-[#070B10] hover:border-[#83BBD5] text-[#E9EDF0]/70 hover:text-white rounded-none transition-all cursor-pointer hover:scale-105 active:scale-95"
-                    title="Reset to 1880 origin"
+                    title="Replay from beginning"
                   >
-                    <RotateCcw className="w-4 h-4" />
+                    <RotateCcw className="w-3.5 h-3.5" />
                   </button>
 
                   <button
@@ -1083,21 +1160,21 @@ export const EarthJukeboxSection: React.FC = () => {
                     className="px-2.5 py-1 text-xs font-mono border border-[#252D36] bg-[#070B10] hover:border-[#83BBD5] text-[#83BBD5] rounded-none transition-all cursor-pointer hover:scale-105 active:scale-95"
                     title="Cycle Playback Speed"
                   >
-                    {speedMultiplier}x
+                    {playbackSpeed}x
                   </button>
 
                   <button
-                    onClick={handleToggleLoop}
+                    onClick={toggleLooping}
                     data-cursor-label="LOOP"
                     data-cursor-magnetic="true"
                     className={`p-2 border rounded-none transition-all cursor-pointer hover:scale-105 active:scale-95 ${
-                      isLooping
+                      loopEnabled
                         ? 'border-[#FF5938] text-[#FF5938] bg-[#FF5938]/10'
                         : 'border-[#252D36] bg-[#070B10] text-[#E9EDF0]/60 hover:text-white'
                     }`}
                     title="Toggle Loop"
                   >
-                    <Repeat className="w-4 h-4" />
+                    <Repeat className="w-3.5 h-3.5" />
                   </button>
                 </div>
 

@@ -174,8 +174,9 @@ export class SonificationEngineCore {
 
   /**
    * Triggers a sonification event dynamically from validated scientific parameters
+   * with optional sample-accurate audio timestamp
    */
-  public async playMeasurement(params: SonificationParams): Promise<void> {
+  public async playMeasurement(params: SonificationParams, audioTime?: number): Promise<void> {
     if (!this.isInitialized) {
       const ok = await this.init();
       if (!ok) return;
@@ -190,19 +191,19 @@ export class SonificationEngineCore {
 
       switch (params.timbreType) {
         case 'thermalSynth':
-          this.triggerThermalSound(params);
+          this.triggerThermalSound(params, audioTime);
           break;
         case 'carbonPulse':
-          this.triggerCarbonSound(params);
+          this.triggerCarbonSound(params, audioTime);
           break;
         case 'oceanSwell':
-          this.triggerOceanSound(params);
+          this.triggerOceanSound(params, audioTime);
           break;
         case 'aerosolGranular':
-          this.triggerAerosolSound(params);
+          this.triggerAerosolSound(params, audioTime);
           break;
         case 'radiancePad':
-          this.triggerRadianceSound(params);
+          this.triggerRadianceSound(params, audioTime);
           break;
       }
     } catch (err) {
@@ -213,11 +214,15 @@ export class SonificationEngineCore {
   /**
    * 1. Thermal Anomaly: Modulates fundamental pitch, filter opening & dissonance
    */
-  private triggerThermalSound(params: SonificationParams): void {
+  private triggerThermalSound(params: SonificationParams, audioTime?: number): void {
     if (!this.thermalSynth || !this.thermalFilter) return;
 
     // Smooth filter transition (avoids audio pops)
-    this.thermalFilter.frequency.rampTo(params.filterCutoffHz, 0.15);
+    if (audioTime !== undefined) {
+      this.thermalFilter.frequency.rampTo(params.filterCutoffHz, 0.15, audioTime);
+    } else {
+      this.thermalFilter.frequency.rampTo(params.filterCutoffHz, 0.15);
+    }
 
     const baseFreq = params.frequencyHz;
 
@@ -228,7 +233,7 @@ export class SonificationEngineCore {
       this.thermalSynth.triggerAttackRelease(
         [baseFreq, minorSecondFreq, tritoneFreq],
         params.durationTone,
-        undefined,
+        audioTime,
         params.velocity
       );
     } else {
@@ -237,7 +242,7 @@ export class SonificationEngineCore {
       this.thermalSynth.triggerAttackRelease(
         [baseFreq, fifthFreq],
         params.durationTone,
-        undefined,
+        audioTime,
         params.velocity
       );
     }
@@ -246,14 +251,14 @@ export class SonificationEngineCore {
   /**
    * 2. Carbon Heartbeat: Sub-bass percussive punch with tempo-coupled cadence
    */
-  private triggerCarbonSound(params: SonificationParams): void {
+  private triggerCarbonSound(params: SonificationParams, audioTime?: number): void {
     if (!this.carbonPulseSynth || !this.carbonSubBass) return;
 
     // Trigger membrane transient
     this.carbonPulseSynth.triggerAttackRelease(
       params.frequencyHz,
       params.durationTone,
-      undefined,
+      audioTime,
       params.velocity
     );
 
@@ -262,7 +267,7 @@ export class SonificationEngineCore {
     this.carbonSubBass.triggerAttackRelease(
       subFreq,
       params.durationTone,
-      undefined,
+      audioTime,
       params.velocity * 0.8
     );
   }
@@ -270,27 +275,36 @@ export class SonificationEngineCore {
   /**
    * 3. Oceanic Altimetry Swell: Resonant bandpass filter over brownian noise
    */
-  private triggerOceanSound(params: SonificationParams): void {
+  private triggerOceanSound(params: SonificationParams, audioTime?: number): void {
     if (!this.oceanNoiseSynth || !this.oceanFilter) return;
 
     // Smooth frequency ramp mimicking oceanic tidal surge
-    this.oceanFilter.frequency.rampTo(params.filterCutoffHz, 0.35);
-    this.oceanNoiseSynth.triggerAttackRelease(params.durationTone);
+    if (audioTime !== undefined) {
+      this.oceanFilter.frequency.rampTo(params.filterCutoffHz, 0.35, audioTime);
+    } else {
+      this.oceanFilter.frequency.rampTo(params.filterCutoffHz, 0.35);
+    }
+    this.oceanNoiseSynth.triggerAttackRelease(params.durationTone, audioTime);
   }
 
   /**
    * 4. Aerosol Particulate Cloud: FM synthesis with metallic inharmonicity
    */
-  private triggerAerosolSound(params: SonificationParams): void {
+  private triggerAerosolSound(params: SonificationParams, audioTime?: number): void {
     if (!this.aerosolFmSynth) return;
 
-    this.aerosolFmSynth.harmonicity.rampTo(params.harmonicity, 0.05);
-    this.aerosolFmSynth.modulationIndex.rampTo(params.modulationIndex, 0.05);
+    if (audioTime !== undefined) {
+      this.aerosolFmSynth.harmonicity.rampTo(params.harmonicity, 0.05, audioTime);
+      this.aerosolFmSynth.modulationIndex.rampTo(params.modulationIndex, 0.05, audioTime);
+    } else {
+      this.aerosolFmSynth.harmonicity.rampTo(params.harmonicity, 0.05);
+      this.aerosolFmSynth.modulationIndex.rampTo(params.modulationIndex, 0.05);
+    }
 
     this.aerosolFmSynth.triggerAttackRelease(
       params.frequencyHz,
       params.durationTone,
-      undefined,
+      audioTime,
       params.velocity
     );
   }
@@ -298,7 +312,7 @@ export class SonificationEngineCore {
   /**
    * 5. Night Lights Radiance: Warm analog pad with pentatonic chord Voicing
    */
-  private triggerRadianceSound(params: SonificationParams): void {
+  private triggerRadianceSound(params: SonificationParams, audioTime?: number): void {
     if (!this.radiancePadSynth) return;
 
     const root = params.frequencyHz;
@@ -310,7 +324,7 @@ export class SonificationEngineCore {
       root * 2.0,
     ];
 
-    this.radiancePadSynth.triggerAttackRelease(chord, params.durationTone, undefined, params.velocity);
+    this.radiancePadSynth.triggerAttackRelease(chord, params.durationTone, audioTime, params.velocity);
   }
 
   /**
@@ -367,6 +381,44 @@ export class SonificationEngineCore {
 
   public getIsMuted(): boolean {
     return this.isMuted;
+  }
+
+  /**
+   * Complete clean lifecycle disposal of synthesizers, analysers, and nodes
+   */
+  public dispose(): void {
+    this.stopAll();
+    try {
+      this.thermalSynth?.dispose();
+      this.thermalSynth = null;
+      this.thermalFilter?.dispose();
+      this.thermalFilter = null;
+      this.carbonPulseSynth?.dispose();
+      this.carbonPulseSynth = null;
+      this.carbonSubBass?.dispose();
+      this.carbonSubBass = null;
+      this.oceanNoiseSynth?.dispose();
+      this.oceanNoiseSynth = null;
+      this.oceanFilter?.dispose();
+      this.oceanFilter = null;
+      this.aerosolFmSynth?.dispose();
+      this.aerosolFmSynth = null;
+      this.radiancePadSynth?.dispose();
+      this.radiancePadSynth = null;
+      this.waveformAnalyser?.dispose();
+      this.waveformAnalyser = null;
+      this.fftAnalyser?.dispose();
+      this.fftAnalyser = null;
+      this.masterReverb?.dispose();
+      this.masterReverb = null;
+      this.limiter?.dispose();
+      this.limiter = null;
+      this.masterGain?.dispose();
+      this.masterGain = null;
+    } catch (e) {
+      console.warn('[Sonification] Error during audio disposal:', e);
+    }
+    this.isInitialized = false;
   }
 }
 
