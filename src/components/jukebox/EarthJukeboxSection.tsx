@@ -147,6 +147,8 @@ export const EarthJukeboxSection: React.FC = () => {
     seekToIndex,
     setPlaybackSpeed,
     toggleLooping,
+    isBuffering,
+    bufferingReason,
   } = useObservatoryStore();
 
   useGSAP(
@@ -984,6 +986,12 @@ export const EarthJukeboxSection: React.FC = () => {
               {/* Master Transport Action Buttons */}
               <div className="pt-3 border-t border-[#252D36] flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
+                  {isBuffering && (
+                    <span className="px-2 py-1 text-[10px] font-mono font-bold text-amber-400 bg-amber-400/10 border border-amber-400/50 animate-pulse flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                      {bufferingReason || 'BUFFERING ASSET...'}
+                    </span>
+                  )}
                   <MagneticButton
                     variant="primary"
                     size="sm"

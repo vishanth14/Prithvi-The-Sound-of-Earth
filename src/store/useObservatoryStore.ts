@@ -123,11 +123,14 @@ export interface ObservatoryState {
   activeDatasetId: EicDatasetKey;
   currentObservationIndex: number;
   currentTimestamp: number | string;
+  playbackPosition: number; // 0.0 to 1.0 fractional timeline progress
   playbackState: TransportState;
   playbackSpeed: number;
   loopEnabled: boolean;
   volume: number;
   audioEnabled: boolean;
+  isBuffering: boolean;
+  bufferingReason: string | null;
 
   // Real-Time Measured Synchronization Metrics
   measuredSyncError: MeasuredSyncError;
@@ -179,6 +182,7 @@ export interface ObservatoryState {
   setPlaybackSpeed: (speed: number) => void;
   toggleLooping: () => void;
   setLoopEnabled: (enabled: boolean) => void;
+  setBuffering: (isBuffering: boolean, reason?: string | null) => void;
 
   // 3D Globe & Sentinel Actions
   setGlobeRotating: (rotating: boolean) => void;
@@ -244,8 +248,11 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
       activeDatasetId: eicKey,
       currentObservationIndex: index,
       currentTimestamp: observation.year,
+      playbackPosition: Number((index / Math.max(1, (get().currentObservationIndex || 1))).toFixed(3)),
       volume: get().masterVolume,
       audioEnabled: get().isAudioUnlocked && !get().isMuted,
+      isBuffering: false,
+      bufferingReason: null,
       measuredSyncError: syncMetrics || get().measuredSyncError,
 
       // Backward-compatibility aliases
@@ -272,6 +279,14 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
     });
   });
 
+  // Wire authoritative buffering state changes
+  audioTransport.onBuffering(({ isBuffering, reason }) => {
+    set({
+      isBuffering,
+      bufferingReason: reason || null,
+    });
+  });
+
   return {
     activeSection: 'hero',
     isAudioUnlocked: false,
@@ -282,11 +297,14 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
     activeDatasetId: 'gistemp',
     currentObservationIndex: 0,
     currentTimestamp: 2024,
+    playbackPosition: 0.0,
     playbackState: 'STOPPED',
     playbackSpeed: 1.0,
     loopEnabled: false,
     volume: 0.75,
     audioEnabled: false,
+    isBuffering: false,
+    bufferingReason: null,
 
     measuredSyncError: {
       lastJitterMs: 0,
@@ -439,6 +457,11 @@ export const useObservatoryStore = create<ObservatoryState>((set, get) => {
     setLoopEnabled: (enabled: boolean) => {
       set({ loopEnabled: enabled, isLooping: enabled });
       audioTransport.setIsLooping(enabled);
+    },
+
+    setBuffering: (isBuffering: boolean, reason?: string | null) => {
+      audioTransport.setBuffering(isBuffering, reason || undefined);
+      set({ isBuffering, bufferingReason: reason || null });
     },
 
     setGlobeRotating: (globeRotating) => set({ globeRotating }),

@@ -65,7 +65,7 @@ export class SonificationEngineCore {
       await this.masterReverb.generate();
 
       // 4. Voice 01: Thermal Anomaly Synth (GISTEMP)
-      // Dual-oscillator with warm 24dB/oct lowpass filter
+      // Dual-oscillator with warm 24dB/oct lowpass filter and tight, controlled envelope
       this.thermalFilter = new Tone.Filter({
         frequency: 800,
         type: 'lowpass',
@@ -76,25 +76,25 @@ export class SonificationEngineCore {
       this.thermalSynth = new Tone.PolySynth(Tone.Synth, {
         oscillator: { type: 'triangle' },
         envelope: {
-          attack: 0.08, // Anti-click attack
-          decay: 0.6,
-          sustain: 0.4,
-          release: 1.4,
+          attack: 0.04, // Anti-click attack
+          decay: 0.32,
+          sustain: 0.25,
+          release: 0.38, // Controlled short release to prevent stale overlapping notes
         },
       }).connect(this.thermalFilter);
       this.thermalSynth.volume.value = -4;
 
       // 5. Voice 02: Carbon Pulse Synth (Mauna Loa CO2)
-      // Percussive membrane punch + resonant subharmonic tail
+      // Percussive membrane punch + resonant subharmonic tail with tight decay
       this.carbonPulseSynth = new Tone.MembraneSynth({
         pitchDecay: 0.04,
         octaves: 3.5,
         oscillator: { type: 'sine' },
         envelope: {
           attack: 0.008,
-          decay: 0.35,
+          decay: 0.28,
           sustain: 0.01,
-          release: 0.7,
+          release: 0.28,
         },
       }).connect(this.masterGain);
       this.carbonPulseSynth.volume.value = -3;
@@ -102,10 +102,10 @@ export class SonificationEngineCore {
       this.carbonSubBass = new Tone.Synth({
         oscillator: { type: 'sine' },
         envelope: {
-          attack: 0.05,
-          decay: 0.5,
-          sustain: 0.2,
-          release: 0.9,
+          attack: 0.03,
+          decay: 0.35,
+          sustain: 0.15,
+          release: 0.32,
         },
       }).connect(this.masterGain);
       this.carbonSubBass.volume.value = -6;
@@ -121,45 +121,45 @@ export class SonificationEngineCore {
       this.oceanNoiseSynth = new Tone.NoiseSynth({
         noise: { type: 'brown' },
         envelope: {
-          attack: 0.8,
-          decay: 1.6,
-          sustain: 0.4,
-          release: 2.0,
+          attack: 0.12,
+          decay: 0.45,
+          sustain: 0.2,
+          release: 0.45,
         },
       }).connect(this.oceanFilter);
       this.oceanNoiseSynth.volume.value = -8;
 
       // 7. Voice 04: Aerosol Particulate FM Synth (GEOS-FP)
-      // Inharmonic crystalline frequency modulation
+      // Inharmonic crystalline frequency modulation with controlled decay
       this.aerosolFmSynth = new Tone.FMSynth({
         harmonicity: 2.76,
         modulationIndex: 2.0,
         oscillator: { type: 'sine' },
         envelope: {
           attack: 0.02,
-          decay: 0.5,
-          sustain: 0.25,
-          release: 1.1,
+          decay: 0.28,
+          sustain: 0.15,
+          release: 0.32,
         },
         modulation: { type: 'triangle' },
         modulationEnvelope: {
-          attack: 0.04,
-          decay: 0.3,
-          sustain: 0.15,
-          release: 0.8,
+          attack: 0.03,
+          decay: 0.25,
+          sustain: 0.12,
+          release: 0.3,
         },
       }).connect(this.masterReverb);
       this.aerosolFmSynth.volume.value = -7;
 
       // 8. Voice 05: Night Lights Radiance Synth (VIIRS Black Marble)
-      // Analog-style warm pad with lush stereo spread
+      // Analog-style warm pad with controlled envelope
       this.radiancePadSynth = new Tone.PolySynth(Tone.Synth, {
         oscillator: { type: 'pwm', modulationFrequency: 0.4 },
         envelope: {
-          attack: 0.3,
-          decay: 0.8,
-          sustain: 0.5,
-          release: 1.6,
+          attack: 0.08,
+          decay: 0.38,
+          sustain: 0.28,
+          release: 0.42,
         },
       }).connect(this.masterReverb);
       this.radiancePadSynth.volume.value = -8;
@@ -353,10 +353,32 @@ export class SonificationEngineCore {
   public stopAll(): void {
     if (this.thermalSynth) this.thermalSynth.releaseAll();
     if (this.radiancePadSynth) this.radiancePadSynth.releaseAll();
+    if (this.masterGain && this.isInitialized) {
+      try {
+        const now = Tone.now();
+        this.masterGain.gain.cancelScheduledValues(now);
+        this.masterGain.gain.setValueAtTime(0, now);
+        this.masterGain.gain.rampTo(this.isMuted ? 0 : 0.8, 0.015, now + 0.005);
+      } catch {}
+    }
     if (this.activeNoteTimeout) {
       clearTimeout(this.activeNoteTimeout);
       this.activeNoteTimeout = null;
     }
+  }
+
+  /**
+   * Exposes authoritative Tone.js Transport clock
+   */
+  public getTransport(): typeof Tone.Transport {
+    return Tone.getTransport();
+  }
+
+  /**
+   * Returns current high-precision audio hardware timestamp
+   */
+  public getAudioTime(): number {
+    return Tone.now();
   }
 
   /**

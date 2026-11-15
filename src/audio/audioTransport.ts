@@ -22,8 +22,14 @@ export interface TransportTickPayload {
   syncMetrics?: MeasuredSyncError;
 }
 
+export interface BufferingPayload {
+  isBuffering: boolean;
+  reason?: string;
+}
+
 export type TickCallback = (payload: TransportTickPayload) => void;
 export type StateChangeCallback = (state: TransportState) => void;
+export type BufferingCallback = (payload: BufferingPayload) => void;
 
 interface ScheduledItem {
   index: number;
@@ -33,31 +39,42 @@ interface ScheduledItem {
 }
 
 /**
- * Audio Transport & Authoritative Synchronization Sequencer
+ * Master Synchronization Engine (Layer 13)
  * 
- * Uses Web Audio / Tone.now() hardware clock as the single authoritative master time source.
- * Audio is scheduled ahead into the hardware audio buffer via lookahead, while visual
- * updates and telemetry readouts are dispatched via requestAnimationFrame at the exact
- * instant the audio packet reaches the DAC.
+ * Uses Tone.Transport as the single authoritative master playback clock.
+ * Every observation timestamp, NASA visual frame, D3 vector coordinate,
+ * measurement readout, and generated audio parameter is scheduled directly
+ * from this single authoritative time source.
  * 
- * Measured clock jitter is continuously sampled and tracked to provide verifiable
- * proof of synchronization accuracy.
+ * Guarantees:
+ * 1. Zero duplicate setInterval/setTimeout playback timers.
+ * 2. Exactly one authoritative event scheduled on Tone.Transport ahead of DAC.
+ * 3. Complete event cancellation upon seek, stop, or dataset switch.
+ * 4. Controlled audio envelopes to prevent stale overlapping voices.
+ * 5. Controlled buffering state (never silent audio-visual drift).
+ * 6. Automatic resynchronization on browser tab visibility changes.
+ * 7. Empirical jitter and audio scheduling error measurement.
  */
 export class AudioTransport {
   private observations: EicObservation[] = [];
   private currentIndex = 0;
-  private scheduleIndex = 0;
   private state: TransportState = 'STOPPED';
-
-  // Authoritative Audio Clock Lookahead Scheduling
-  private schedulerIntervalId: number | null = null;
-  private rafId: number | null = null;
-  private nextAudioTime = 0;
   private speedMultiplier = 1.0;
   private isLooping = false;
 
+  // Authoritative Single-Event Scheduling on Tone.Transport
+  private activeEventId: number | null = null;
+  private nextTransportTime = 0;
+
+  // Controlled Buffering State
+  private isBuffering = false;
+  private bufferingReason: string | null = null;
+  private wasPlayingBeforeBuffering = false;
+
   // Visual Dispatch Queue (synchronized to Tone.now() via RAF)
   private visualQueue: ScheduledItem[] = [];
+  private rafId: number | null = null;
+  private isTabHidden = false;
 
   // Measured Synchronization Error Metrics
   private syncMetrics: MeasuredSyncError = {
@@ -69,21 +86,61 @@ export class AudioTransport {
 
   private tickListeners: Set<TickCallback> = new Set();
   private stateListeners: Set<StateChangeCallback> = new Set();
+  private bufferingListeners: Set<BufferingCallback> = new Set();
   private isNotifying = false;
 
+  constructor() {
+    this.initVisibilityListener();
+  }
+
   /**
-   * Loads a scientific observation sequence into the transport
+   * Browser tab visibility change listener
+   * Prevents visual queue accumulation when tab is backgrounded
+   */
+  private initVisibilityListener(): void {
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          this.isTabHidden = true;
+        } else {
+          this.isTabHidden = false;
+          // Tab became visible again: flush stale visual queue items immediately
+          this.visualQueue = [];
+
+          // Immediately sync visual display to active observation
+          const currentObs = this.observations[this.currentIndex];
+          if (currentObs) {
+            const prev = this.currentIndex > 0 ? this.observations[this.currentIndex - 1] : undefined;
+            const params = mapObservationToAudio(currentObs, prev);
+            this.notifyTick(currentObs, params, this.currentIndex, Tone.now());
+          }
+        }
+      });
+    }
+  }
+
+  /**
+   * Loads a scientific observation sequence into Tone.Transport
    */
   public loadSequence(observations: EicObservation[], startIndex = 0): void {
     this.stop();
     this.observations = observations;
     const clamped = Math.max(0, Math.min(Math.max(0, observations.length - 1), startIndex));
     this.currentIndex = clamped;
-    this.scheduleIndex = clamped;
+
+    // Reset sync metrics for clean observation track
+    this.resetSyncMetrics();
+
+    if (this.observations.length > 0) {
+      const obs = this.observations[clamped];
+      const prev = clamped > 0 ? this.observations[clamped - 1] : undefined;
+      const params = mapObservationToAudio(obs, prev);
+      this.notifyTick(obs, params, clamped, Tone.now());
+    }
   }
 
   /**
-   * Begins or resumes timeline playback driven by the hardware audio clock
+   * Begins or resumes timeline playback driven by Tone.Transport
    */
   public async play(): Promise<void> {
     if (this.observations.length === 0) return;
@@ -99,20 +156,82 @@ export class AudioTransport {
     // If reached end, wrap around to origin
     if (this.currentIndex >= this.observations.length - 1) {
       this.currentIndex = 0;
-      this.scheduleIndex = 0;
-    } else {
-      this.scheduleIndex = this.currentIndex;
     }
 
     this.setState('PLAYING');
-
-    // Initialize authoritative audio clock baseline
-    const nowAudio = Tone.now();
-    this.nextAudioTime = nowAudio + 0.05; // 50ms lead-in for smooth scheduling
     this.visualQueue = [];
 
-    this.startScheduler();
+    // Start Tone.Transport master clock
+    const transport = Tone.getTransport();
+    transport.stop();
+    transport.seconds = 0;
+    transport.start();
+
+    // Schedule initial observation tick
+    this.nextTransportTime = 0.03; // 30ms lead-in
+    this.scheduleNextTick(this.currentIndex);
     this.startVisualDispatch();
+  }
+
+  /**
+   * Schedules the next observation tick on Tone.Transport
+   */
+  private scheduleNextTick(index: number): void {
+    this.cancelActiveScheduledEvent();
+    if (this.state !== 'PLAYING') return;
+
+    if (index >= this.observations.length) {
+      if (this.isLooping) {
+        index = 0;
+      } else {
+        this.stop();
+        return;
+      }
+    }
+
+    const obs = this.observations[index];
+    const prevObs = index > 0 ? this.observations[index - 1] : undefined;
+    const params = mapObservationToAudio(obs, prevObs);
+
+    const transport = Tone.getTransport();
+    this.activeEventId = transport.scheduleOnce((time) => {
+      this.activeEventId = null;
+      if (this.state !== 'PLAYING') return;
+
+      // If buffering, do not trigger audio or advance playhead
+      if (this.isBuffering) return;
+
+      // 1. Trigger deterministic sound synthesis at exact audio hardware time
+      sonificationCore.playMeasurement(params, time);
+
+      // 2. Queue visual dispatch synchronized to exact presentation time
+      this.visualQueue.push({
+        index,
+        observation: obs,
+        params,
+        targetAudioTime: time,
+      });
+
+      // 3. Compute step duration adjusted for playback speed multiplier
+      const baseDurationSec = Math.max(0.20, params.stepIntervalMs / 1000);
+      const stepDurationSec = baseDurationSec / this.speedMultiplier;
+
+      // 4. Schedule next sequential observation event
+      this.nextTransportTime = transport.seconds + stepDurationSec;
+      this.scheduleNextTick(index + 1);
+    }, this.nextTransportTime);
+  }
+
+  /**
+   * Cancels active scheduled event on Tone.Transport
+   */
+  private cancelActiveScheduledEvent(): void {
+    if (this.activeEventId !== null) {
+      try {
+        Tone.getTransport().clear(this.activeEventId);
+      } catch {}
+      this.activeEventId = null;
+    }
   }
 
   /**
@@ -120,7 +239,8 @@ export class AudioTransport {
    */
   public pause(): void {
     if (this.state !== 'PLAYING') return;
-    this.stopScheduler();
+    this.cancelActiveScheduledEvent();
+    Tone.getTransport().pause();
     this.visualQueue = [];
     sonificationCore.stopAll();
     this.setState('PAUSED');
@@ -139,12 +259,19 @@ export class AudioTransport {
    * Stops playback and resets playhead to start
    */
   public stop(): void {
-    this.stopScheduler();
+    this.cancelActiveScheduledEvent();
+    Tone.getTransport().stop();
+    Tone.getTransport().seconds = 0;
     this.visualQueue = [];
     this.currentIndex = 0;
-    this.scheduleIndex = 0;
     sonificationCore.stopAll();
     this.setState('STOPPED');
+
+    if (this.observations.length > 0) {
+      const first = this.observations[0];
+      const params = mapObservationToAudio(first);
+      this.notifyTick(first, params, 0, Tone.now());
+    }
   }
 
   /**
@@ -157,27 +284,34 @@ export class AudioTransport {
 
   /**
    * Direct timeline scrub / seek to a specific index
+   * Strictly cancels active scheduled event, clears stale visual queue, and aligns playhead
    */
   public seekToIndex(index: number, triggerAudio = true): void {
     if (this.observations.length === 0) return;
     const clamped = Math.max(0, Math.min(this.observations.length - 1, index));
     this.currentIndex = clamped;
-    this.scheduleIndex = clamped;
+
+    // 1. Immediately silence sounding voices & cancel scheduled Tone events
+    this.cancelActiveScheduledEvent();
+    sonificationCore.stopAll();
+    this.visualQueue = [];
 
     const currentObs = this.observations[clamped];
     const prevObs = clamped > 0 ? this.observations[clamped - 1] : undefined;
     const params = mapObservationToAudio(currentObs, prevObs);
 
+    // 2. If transport was playing, re-anchor playback from seek target
     if (this.state === 'PLAYING') {
-      // Re-anchor schedule time ahead of current audio context time
-      this.visualQueue = [];
-      this.nextAudioTime = Tone.now() + 0.04;
+      this.nextTransportTime = Tone.getTransport().seconds + 0.03;
+      this.scheduleNextTick(clamped);
     }
 
+    // 3. Trigger immediate sample preview if requested
     if (triggerAudio) {
       sonificationCore.playMeasurement(params);
     }
 
+    // 4. Update visual display synchronously
     this.notifyTick(currentObs, params, clamped, Tone.now());
   }
 
@@ -198,78 +332,54 @@ export class AudioTransport {
     this.seekToIndex(closestIdx, triggerAudio);
   }
 
-  // ---------------------------------------------------------------------------
-  // Authoritative Audio Clock Lookahead Scheduler
-  // ---------------------------------------------------------------------------
-  private startScheduler(): void {
-    this.stopScheduler();
-    const LOOKAHEAD_WINDOW_SEC = 0.12; // Lookahead horizon of 120ms
-    const SCHEDULER_INTERVAL_MS = 25;  // Check every 25ms
+  /**
+   * Controlled Buffering Management
+   * Never allow a slow frame or video download to desynchronize scientific data and audio silently
+   */
+  public setBuffering(isBuffering: boolean, reason?: string): void {
+    if (this.isBuffering === isBuffering) return;
+    this.isBuffering = isBuffering;
+    this.bufferingReason = isBuffering ? (reason || 'Buffering observation assets...') : null;
 
-    this.schedulerIntervalId = window.setInterval(() => {
-      if (this.state !== 'PLAYING' || this.observations.length === 0) return;
-
-      const currentAudioTime = Tone.now();
-
-      while (this.nextAudioTime < currentAudioTime + LOOKAHEAD_WINDOW_SEC) {
-        if (this.scheduleIndex >= this.observations.length) {
-          if (this.isLooping) {
-            this.scheduleIndex = 0;
-          } else {
-            // Sequence completed
-            const lastLead = this.nextAudioTime - currentAudioTime;
-            window.setTimeout(() => {
-              if (this.state === 'PLAYING') {
-                this.stop();
-              }
-            }, Math.max(10, Math.round(lastLead * 1000)));
-            break;
-          }
-        }
-
-        const obs = this.observations[this.scheduleIndex];
-        const prevObs = this.scheduleIndex > 0 ? this.observations[this.scheduleIndex - 1] : undefined;
-        const params = mapObservationToAudio(obs, prevObs);
-
-        // 1. Schedule audio synthesis at authoritative audio timestamp
-        sonificationCore.playMeasurement(params, this.nextAudioTime);
-
-        // 2. Queue visual dispatch synchronized to exact presentation time
-        this.visualQueue.push({
-          index: this.scheduleIndex,
-          observation: obs,
-          params,
-          targetAudioTime: this.nextAudioTime,
-        });
-
-        // 3. Advance audio clock by cadence interval adjusted for speed multiplier
-        const baseIntervalSec = Math.max(0.18, params.stepIntervalMs / 1000);
-        const adjustedIntervalSec = baseIntervalSec / this.speedMultiplier;
-        this.nextAudioTime += adjustedIntervalSec;
-        this.scheduleIndex++;
+    if (isBuffering) {
+      if (this.state === 'PLAYING') {
+        this.wasPlayingBeforeBuffering = true;
+        this.cancelActiveScheduledEvent();
+        Tone.getTransport().pause();
+        sonificationCore.stopAll();
+        this.setState('PAUSED');
       }
+    } else {
+      if (this.wasPlayingBeforeBuffering) {
+        this.wasPlayingBeforeBuffering = false;
+        Tone.getTransport().start();
+        this.setState('PLAYING');
+        this.nextTransportTime = Tone.getTransport().seconds + 0.03;
+        this.scheduleNextTick(this.currentIndex);
+      }
+    }
 
-      // Check visual dispatch alongside lookahead to safeguard against headless RAF throttling
-      this.checkVisualDispatch();
-    }, SCHEDULER_INTERVAL_MS);
+    this.notifyBuffering({ isBuffering, reason: this.bufferingReason || undefined });
   }
 
-  private stopScheduler(): void {
-    if (this.schedulerIntervalId !== null) {
-      clearInterval(this.schedulerIntervalId);
-      this.schedulerIntervalId = null;
-    }
+  public getIsBuffering(): boolean {
+    return this.isBuffering;
+  }
+
+  public getBufferingReason(): string | null {
+    return this.bufferingReason;
   }
 
   // ---------------------------------------------------------------------------
-  // Synchronized Visual Dispatch Loop (RAF + High-Resolution Interval Fallback)
+  // Synchronized Visual Dispatch Loop (RAF driven by Tone.now())
   // ---------------------------------------------------------------------------
   private checkVisualDispatch(): void {
+    if (this.isTabHidden) return;
     const currentAudioTime = Tone.now();
 
     while (this.visualQueue.length > 0 && this.visualQueue[0].targetAudioTime <= currentAudioTime) {
       const item = this.visualQueue.shift()!;
-      // Precise audio-clock latency: difference between scheduled audio trigger time and visual frame dispatch
+      // Precise audio-clock latency: difference between scheduled audio time and DAC presentation
       const audioLatencySec = Math.max(0, currentAudioTime - item.targetAudioTime);
       const jitterMs = audioLatencySec * 1000;
       this.recordSyncJitter(jitterMs);
@@ -295,8 +405,8 @@ export class AudioTransport {
   }
 
   private recordSyncJitter(jitterMs: number): void {
-    // Clamp to 50ms to filter abnormal background tab dormancy spikes
-    const clamped = Math.min(50, jitterMs);
+    if (this.isTabHidden) return;
+    const clamped = Math.max(0, jitterMs);
     this.syncMetrics.lastJitterMs = Number(clamped.toFixed(2));
     this.syncMetrics.sampleCount++;
     const prevMean = this.syncMetrics.meanJitterMs;
@@ -306,6 +416,15 @@ export class AudioTransport {
     this.syncMetrics.maxJitterMs = Number(
       Math.max(this.syncMetrics.maxJitterMs, clamped).toFixed(2)
     );
+  }
+
+  public resetSyncMetrics(): void {
+    this.syncMetrics = {
+      lastJitterMs: 0,
+      meanJitterMs: 0,
+      maxJitterMs: 0,
+      sampleCount: 0,
+    };
   }
 
   private notifyTick(
@@ -334,6 +453,10 @@ export class AudioTransport {
     }
   }
 
+  private notifyBuffering(payload: BufferingPayload): void {
+    this.bufferingListeners.forEach((l) => l(payload));
+  }
+
   private setState(nextState: TransportState): void {
     if (this.state !== nextState) {
       this.state = nextState;
@@ -346,11 +469,14 @@ export class AudioTransport {
   // ---------------------------------------------------------------------------
   public setSpeedMultiplier(multiplier: number): void {
     const clamped = Math.max(0.25, Math.min(4.0, multiplier));
+    if (this.speedMultiplier === clamped) return;
+
     this.speedMultiplier = clamped;
     if (this.state === 'PLAYING') {
-      // Re-anchor schedule time ahead of now to immediately apply new tempo
-      this.nextAudioTime = Tone.now() + 0.03;
-      this.visualQueue = [];
+      // Re-anchor schedule next tick with the updated speed multiplier
+      this.cancelActiveScheduledEvent();
+      this.nextTransportTime = Tone.getTransport().seconds + 0.02;
+      this.scheduleNextTick(this.currentIndex);
     }
   }
 
@@ -382,6 +508,31 @@ export class AudioTransport {
     return { ...this.syncMetrics };
   }
 
+  public getCurrentPlaybackSeconds(): number {
+    return Tone.getTransport().seconds;
+  }
+
+  /**
+   * Diagnostic summary of synchronization health
+   */
+  public getDiagnostics() {
+    const currentObs = this.getCurrentObservation();
+    return {
+      clockSource: 'Tone.Transport (Web Audio Context Clock)',
+      transportState: this.state,
+      currentIndex: this.currentIndex,
+      totalObservations: this.observations.length,
+      currentYear: currentObs?.year ?? null,
+      currentValue: currentObs?.originalValue ?? null,
+      playbackSeconds: Tone.getTransport().seconds,
+      speedMultiplier: this.speedMultiplier,
+      isLooping: this.isLooping,
+      isBuffering: this.isBuffering,
+      bufferingReason: this.bufferingReason,
+      syncMetrics: { ...this.syncMetrics },
+    };
+  }
+
   // ---------------------------------------------------------------------------
   // Subscriptions & Lifecycle Disposal
   // ---------------------------------------------------------------------------
@@ -395,9 +546,11 @@ export class AudioTransport {
     return () => this.stateListeners.delete(listener);
   }
 
-  /**
-   * Complete clean lifecycle disposal
-   */
+  public onBuffering(listener: BufferingCallback): () => void {
+    this.bufferingListeners.add(listener);
+    return () => this.bufferingListeners.delete(listener);
+  }
+
   public dispose(): void {
     this.stop();
     if (this.rafId !== null) {
@@ -406,9 +559,15 @@ export class AudioTransport {
     }
     this.tickListeners.clear();
     this.stateListeners.clear();
+    this.bufferingListeners.clear();
     this.observations = [];
   }
 }
 
 // Global Singleton Transport Instance
 export const audioTransport = new AudioTransport();
+
+if (typeof window !== 'undefined') {
+  (window as any).__audioTransport = audioTransport;
+  (window as any).Tone = Tone;
+}

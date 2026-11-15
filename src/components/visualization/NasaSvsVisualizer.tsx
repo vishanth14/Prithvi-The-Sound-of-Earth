@@ -40,6 +40,9 @@ export const NasaSvsVisualizer: React.FC<NasaSvsVisualizerProps> = ({
     replayPlayback,
     isAudioUnlocked,
     unlockAudio,
+    isBuffering,
+    bufferingReason,
+    setBuffering,
   } = useObservatoryStore();
 
   const [frames, setFrames] = useState<NasaSvsFrame[]>([]);
@@ -118,18 +121,6 @@ export const NasaSvsVisualizer: React.FC<NasaSvsVisualizerProps> = ({
       pausePlayback();
     } else {
       await startPlayback();
-    }
-  };
-
-  const handleVideoTimeUpdate = () => {
-    if (!videoRef.current || !useVideoSync || transportState !== 'PLAYING') return;
-
-    const t = videoRef.current.currentTime;
-    // Map video time t (0 to 23.37s) back to observation index
-    const decYear = 1880 + t / 0.159138;
-    const closestIdx = frames.findIndex((f) => f.year >= Math.floor(decYear));
-    if (closestIdx !== -1 && closestIdx !== selectedObservationIndex) {
-      seekToIndex(closestIdx, false);
     }
   };
 
@@ -254,7 +245,9 @@ export const NasaSvsVisualizer: React.FC<NasaSvsVisualizerProps> = ({
                   className="w-full h-full object-contain"
                   playsInline
                   muted
-                  onTimeUpdate={handleVideoTimeUpdate}
+                  onWaiting={() => setBuffering(true, 'Buffering 60fps NASA visual stream...')}
+                  onCanPlay={() => setBuffering(false)}
+                  onPlaying={() => setBuffering(false)}
                 />
               ) : currentFrame ? (
                 <picture>
@@ -265,8 +258,14 @@ export const NasaSvsVisualizer: React.FC<NasaSvsVisualizerProps> = ({
                     className={`w-full h-full object-contain transition-opacity duration-300 ${
                       imageLoaded ? 'opacity-100' : 'opacity-80'
                     }`}
-                    onLoad={() => setImageLoaded(true)}
-                    onError={() => setImageError(true)}
+                    onLoad={() => {
+                      setImageLoaded(true);
+                      setBuffering(false);
+                    }}
+                    onError={() => {
+                      setImageError(true);
+                      setBuffering(false);
+                    }}
                     loading="lazy"
                   />
                 </picture>
@@ -274,6 +273,16 @@ export const NasaSvsVisualizer: React.FC<NasaSvsVisualizerProps> = ({
                 <div className="flex flex-col items-center justify-center p-6 text-center text-[#7E8B98]">
                   <Activity className="w-8 h-8 animate-spin mb-2 text-[#FF5938]" />
                   <span className="text-xs font-mono">SYNCHRONIZING NASA SVS ASSET...</span>
+                </div>
+              )}
+
+              {/* Controlled Buffering Overlay */}
+              {isBuffering && (
+                <div className="absolute inset-0 bg-[#070B10]/75 backdrop-blur-xs flex items-center justify-center z-20 transition-opacity">
+                  <div className="flex items-center gap-2.5 px-3 py-1.5 bg-[#0E141D] border border-amber-500/60 text-amber-400 font-mono text-xs shadow-lg">
+                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                    <span>{bufferingReason || 'BUFFERING OBSERVATION FRAME...'}</span>
+                  </div>
                 </div>
               )}
 
@@ -592,11 +601,18 @@ export const NasaSvsVisualizer: React.FC<NasaSvsVisualizerProps> = ({
             <span>{useVideoSync ? 'VIDEO STREAM: ACTIVE' : 'FRAME PIPELINE: ACTIVE'}</span>
           </button>
 
-          {/* Preloader Cache Metric */}
-          <div className="text-[11px] font-mono text-[#7E8B98] flex items-center gap-2">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-            <span>MEMORY CACHE: {cachedCount} FRAMES BUFFERED</span>
-          </div>
+          {/* Preloader Cache & Buffering Metric */}
+          {isBuffering ? (
+            <div className="text-[11px] font-mono text-amber-400 flex items-center gap-2 animate-pulse">
+              <span className="w-2 h-2 rounded-full bg-amber-400" />
+              <span>{bufferingReason || 'BUFFERING OBSERVATION ASSET...'}</span>
+            </div>
+          ) : (
+            <div className="text-[11px] font-mono text-[#7E8B98] flex items-center gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              <span>MEMORY CACHE: {cachedCount} FRAMES BUFFERED</span>
+            </div>
+          )}
         </div>
 
         {/* Master Timeline Scrubber */}
